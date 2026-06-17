@@ -1254,9 +1254,16 @@ function LangFlag({ code }) {
     </div>
   );
   if (code === 'en') return (
-    <div style={{ ...base, background: '#FFFFFF' }}>
-      <div style={{ position: 'absolute', left: '40%', top: 0, bottom: 0, width: '20%', background: '#CE1124' }} />
-      <div style={{ position: 'absolute', top: '37.5%', left: 0, right: 0, height: '25%', background: '#CE1124' }} />
+    <div style={base}>
+      <svg viewBox="0 0 24 16" width="24" height="16" style={{ display: 'block' }}>
+        <rect width="24" height="16" fill="#012169" />
+        <path d="M0,0 L24,16 M24,0 L0,16" stroke="#FFFFFF" strokeWidth="3.2" />
+        <path d="M0,0 L24,16 M24,0 L0,16" stroke="#C8102E" strokeWidth="1.4" />
+        <rect x="9" y="0" width="6" height="16" fill="#FFFFFF" />
+        <rect x="0" y="5" width="24" height="6" fill="#FFFFFF" />
+        <rect x="10.2" y="0" width="3.6" height="16" fill="#C8102E" />
+        <rect x="0" y="6.2" width="24" height="3.6" fill="#C8102E" />
+      </svg>
     </div>
   );
   return null;
@@ -1275,7 +1282,7 @@ function DrawerRowV2({ icon, label, danger, active, onClick, dark }) {
     }}>
       {active && <div style={{ position: 'absolute', left: 0, top: 7, bottom: 7, width: 4, borderRadius: '0 4px 4px 0', background: ACCENT }} />}
       <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</div>
-      <div style={{ fontSize: 16, fontWeight: danger ? 700 : active ? 800 : 600, color: danger ? NEG : active ? ACCENT : INK, flex: 1 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: danger ? 700 : 600, color: danger ? NEG : INK, flex: 1 }}>{label}</div>
     </div>
   );
 }
@@ -1321,14 +1328,17 @@ function ProfileDrawerV2({
           icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
         <DrawerRowV2 dark={dark} label="Alfík" active onClick={onAlfik}
           icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
-        {/* História pod Alfíkom */}
-        <div onClick={onHistoria} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '8px 22px 10px 34px', cursor: 'pointer' }}>
-          <div style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {/* História pod Alfíkom — podkategória */}
+        <div onClick={onHistoria} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 9px 30px', cursor: 'pointer' }}>
+          <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: 2, height: 20, background: 'rgba(15,30,55,0.12)', borderRadius: 2 }} />
+          </div>
+          <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l3 2" />
             </svg>
           </div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: INK, flex: 1 }}>História</div>
+          <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 0.2, color: '#41526A', flex: 1 }}>História</div>
         </div>
       </div>
 
@@ -1356,11 +1366,14 @@ function ProfileDrawerV2({
               const sel = l.code === lang;
               return (
                 <div key={l.code} onClick={() => { setLang(l.code); setOpenLang(false); }} style={{
-                  display: 'flex', alignItems: 'center', gap: 14, padding: '8px 22px 8px 34px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 7px 30px', cursor: 'pointer',
                   background: sel ? 'rgba(63,169,224,0.10)' : 'transparent',
                 }}>
+                  <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 2, height: 18, background: sel ? ACCENT : 'rgba(15,30,55,0.12)', borderRadius: 2 }} />
+                  </div>
                   <LangFlag code={l.code} />
-                  <div style={{ fontSize: 15, fontWeight: sel ? 700 : 600, color: INK, flex: 1 }}>{l.name}</div>
+                  <div style={{ fontSize: 14, fontWeight: sel ? 700 : 600, letterSpacing: 0.2, color: sel ? INK : '#41526A', flex: 1 }}>{l.name}</div>
                   {sel && (
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
