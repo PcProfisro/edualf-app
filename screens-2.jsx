@@ -591,9 +591,11 @@ function Breadcrumbs({ dark, crumbs }) {
 // ─────────────────────────────────────────────────────────────
 // 4. SUBCATEGORY (Interaktívne cvičenia → ...)
 // ─────────────────────────────────────────────────────────────
-function SubcategoryScreen({ dark = false, columns = 2 }) {
+function SubcategoryScreen({ dark = false, columns = 2, categoryId = 'interaktivne' }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
+  const cat = ALF_CATEGORIES.find(c => c.id === categoryId) ||
+              ALF_CATEGORIES.find(c => c.id === 'interaktivne');
 
   return (
     <PhoneFrame dark={dark} label="04 Interaktívne cvičenia">
@@ -605,10 +607,10 @@ function SubcategoryScreen({ dark = false, columns = 2 }) {
       }}>
         <CategoryHero
           dark={dark}
-          title="Interaktívne cvičenia"
-          icon="🎯"
-          img="uploads/Bez názvu - kópia (800 x 800 px) (32).png"
-          imgNoBg={true}
+          title={cat.name}
+          icon={cat.emoji}
+          img={cat.img}
+          imgNoBg={cat.imgNoBg}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
           gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
           shadowColor="rgba(0,168,181,0.45)"
@@ -617,7 +619,7 @@ function SubcategoryScreen({ dark = false, columns = 2 }) {
           showAgeAvatar={false}
           showSpeaker={true}
           speakerDot="#00A8B5"
-          crumbs={['Alfík', 'Interaktívne cvičenia']} />
+          crumbs={['Alfík', cat.name]} />
         
 
 

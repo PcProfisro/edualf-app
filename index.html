@@ -315,14 +315,14 @@ const FLOW = {
       // hamburger (TopBar)
       { x: 14, y: 56, w: 40, h: 40, profile: true },
       // Mriežka 2×4 — ALF_CATEGORIES poradie: slovencina, cudzie, rozpravky, pracovne, interaktivne, malovanky, hadanky, ukazky
-      { x: 31,  y: 118, w: 154, h: 154, go: 'interaktivne' },
-      { x: 205, y: 118, w: 154, h: 154, go: 'interaktivne' },
-      { x: 31,  y: 292, w: 154, h: 154, go: 'interaktivne' },
+      { x: 31,  y: 118, w: 154, h: 154, go: 'interaktivne', cat: 'slovencina' },
+      { x: 205, y: 118, w: 154, h: 154, go: 'interaktivne', cat: 'cudzie' },
+      { x: 31,  y: 292, w: 154, h: 154, go: 'interaktivne', cat: 'rozpravky' },
       { x: 205, y: 292, w: 154, h: 154, go: 'pracovne-listy' },
-      { x: 31,  y: 466, w: 154, h: 154, go: 'interaktivne' },
-      { x: 205, y: 466, w: 154, h: 154, go: 'interaktivne' },
-      { x: 31,  y: 640, w: 154, h: 154, go: 'interaktivne' },
-      { x: 205, y: 640, w: 154, h: 154, go: 'interaktivne' },
+      { x: 31,  y: 466, w: 154, h: 154, go: 'interaktivne', cat: 'interaktivne' },
+      { x: 205, y: 466, w: 154, h: 154, go: 'interaktivne', cat: 'malovanky' },
+      { x: 31,  y: 640, w: 154, h: 154, go: 'interaktivne', cat: 'hadanky' },
+      { x: 205, y: 640, w: 154, h: 154, go: 'interaktivne', cat: 'ukazky' },
     ]
   },
 
@@ -330,7 +330,7 @@ const FLOW = {
   interaktivne: {
     label: 'Interaktívne cvičenia',
     track: 'main',
-    render: () => <window.SubcategoryScreen dark={false} columns={2}/>,
+    render: (ctx) => <window.SubcategoryScreen dark={false} columns={2} categoryId={ctx.activeCat}/>,
     spots: [
       { x: 14, y: 56, w: 40, h: 40, profile: true },
       // Alfik title v TopBare → categories
@@ -569,6 +569,7 @@ function App() {
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [activeAge, setActiveAge]   = React.useState('all');
+  const [activeCat, setActiveCat]   = React.useState('interaktivne');
   const [subscribed, setSubscribed] = React.useState(true);
   const [goingBack, setGoingBack]   = React.useState(false);
 
@@ -577,9 +578,10 @@ function App() {
 
   const closeAll = () => { setFilterOpen(false); setProfileOpen(false); };
 
-  const go = (key) => {
+  const go = (key, cat) => {
     closeAll();
     setGoingBack(false);
+    if (cat) setActiveCat(cat);
     setStack(s => [...s, key]);
   };
 
@@ -633,13 +635,35 @@ function App() {
     setTimeout(() => r.remove(), 500);
   };
 
+  // — Touch: dovolí scrollovať aj keď prst chytí dlaždicu (hotspot) —
+  const touchRef = React.useRef({ y: 0, x: 0, lastY: 0, moved: false, el: null });
+
+  const onSpotTouchStart = (e) => {
+    const t = e.touches[0];
+    const el = document.querySelector('#phone-wrap [data-scroll-area]');
+    touchRef.current = { y: t.clientY, x: t.clientX, lastY: t.clientY, moved: false, el };
+  };
+
+  const onSpotTouchMove = (e) => {
+    const t = e.touches[0];
+    const st = touchRef.current;
+    if (Math.abs(t.clientY - st.y) > 8 || Math.abs(t.clientX - st.x) > 8) st.moved = true;
+    if (st.el) {
+      const wrap = document.getElementById('phone-wrap');
+      const rect = wrap.getBoundingClientRect();
+      const scale = rect.width / 390 || 1;
+      st.el.scrollTop -= (t.clientY - st.lastY) / scale;
+    }
+    st.lastY = t.clientY;
+  };
+
   const handleSpot = (spot) => {
     if (spot.filter)       return setFilterOpen(true);
     if (spot.profile)      return setProfileOpen(true);
     if (spot.tab)          return switchTab(spot.tab);
     if (spot.closeProfile) return closeProfile();
     if (spot.go === 'back') return back();
-    if (spot.go)           return go(spot.go);
+    if (spot.go)           return go(spot.go, spot.cat);
     if (spot.toast)        showToast(spot.toast);
   };
 
@@ -759,7 +783,7 @@ function App() {
         }}
         style={{ width: 390, height: 844, position: 'relative', borderRadius: 44, overflow: 'hidden' }}
       >
-        {step.render({ activeAge, subscribed })}
+        {step.render({ activeAge, subscribed, activeCat })}
 
         {/* HOTSPOT OVERLAY */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
@@ -768,7 +792,9 @@ function App() {
               key={i}
               className="hotspot"
               style={{ left: h.x, top: h.y, width: h.w, height: h.h }}
-              onClick={(e) => { spawnRipple(e); handleSpot(h); }}
+              onTouchStart={onSpotTouchStart}
+              onTouchMove={onSpotTouchMove}
+              onClick={(e) => { if (touchRef.current.moved) { touchRef.current.moved = false; return; } spawnRipple(e); handleSpot(h); }}
               title={
                 h.go === 'back' ? '← späť' :
                 h.go ? `→ ${FLOW[h.go]?.label || h.go}` :
