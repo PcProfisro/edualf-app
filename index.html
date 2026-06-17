@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alfík — Prototyp v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #0c1420;
+    min-height: 100vh;
+    font-family: 'Dosis', system-ui, sans-serif;
+    color: #F2F7FB;
+    overflow: hidden;
+  }
+  * { box-sizing: border-box; }
+
+  .stage {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+
+  .phone-wrap {
+    position: relative;
+    width: 390px; height: 844px;
+    flex-shrink: 0;
+  }
+
+  /* Hotspots */
+  .hotspot {
+    position: absolute;
+    background: transparent;
+    cursor: pointer;
+    z-index: 100;
+    border-radius: 14px;
+    pointer-events: auto;
+    transition: background .12s ease, transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hotspot:active {
+    background: rgba(125,184,0,0.14);
+    transform: scale(0.975);
+  }
+  body.debug-hotspots .hotspot {
+    background: rgba(255,215,80,0.12);
+    outline: 1.5px dashed rgba(255,215,80,0.8);
+  }
+
+  /* ── Smoother screen transitions — len fade, telefón ostáva statický ── */
+  @keyframes screen-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .screen-in { animation: screen-in .26s ease both; }
+
+  @keyframes screen-back {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .screen-back { animation: screen-back .26s ease both; }
+
+  /* ── Overlay animations ── */
+  @keyframes backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes drawer-slide-in {
+    from { transform: translateX(-102%); }
+    to   { transform: translateX(0); }
+  }
+  @keyframes sheet-slide-in {
+    from { transform: translateX(106%); }
+    to   { transform: translateX(0); }
+  }
+  .drawer-overlay { animation: backdrop-in .26s ease both; }
+  .drawer-overlay > div:first-child {
+    animation: drawer-slide-in .34s cubic-bezier(0.22,0.61,0.36,1) both;
+    will-change: transform;
+  }
+  .filter-overlay { animation: backdrop-in .24s ease both; }
+  .filter-overlay > div:first-child {
+    animation: sheet-slide-in .32s cubic-bezier(0.22,0.61,0.36,1) both;
+    will-change: transform;
+  }
+
+  /* ── Tap ripple ── */
+  @keyframes tap-ripple {
+    from { transform: translate(-50%,-50%) scale(0.2); opacity: 0.55; }
+    to   { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+  }
+  .tap-ripple {
+    position: absolute;
+    width: 120px; height: 120px;
+    margin: 0; border-radius: 50%;
+    background: radial-gradient(circle, rgba(125,184,0,0.45) 0%, rgba(125,184,0,0) 70%);
+    pointer-events: none;
+    z-index: 250;
+    animation: tap-ripple .5s ease-out forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .screen-in, .screen-back, .drawer-overlay > div:first-child, .filter-overlay > div:first-child { animation-duration: .01ms; }
+  }
+
+  @keyframes toast-anim {
+    0%   { opacity: 0; transform: translate(-50%, 14px) scale(.96); }
+    12%, 82% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -8px) scale(.96); }
+  }
+  .toast {
+    position: fixed; left: 50%; bottom: 72px;
+    transform: translateX(-50%);
+    padding: 11px 20px;
+    background: rgba(10,18,30,.96);
+    color: #FFD750;
+    border: 1.5px solid rgba(255,215,80,.30);
+    border-radius: 999px;
+    font-weight: 700; font-size: 14px;
+    animation: toast-anim 1.7s ease forwards;
+    pointer-events: none; z-index: 400;
+    white-space: nowrap;
+  }
+
+  /* Nav chrome */
+  .top-chrome {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px;
+    z-index: 300;
+    pointer-events: none;
+  }
+  .top-chrome > * { pointer-events: auto; }
+
+  .chrome-btn {
+    height: 36px; padding: 0 14px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.07);
+    color: #F2F7FB; font-family: inherit; font-weight: 700; font-size: 13px;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    transition: background .14s;
+    white-space: nowrap;
+  }
+  .chrome-btn:hover { background: rgba(255,255,255,.15); }
+  .chrome-btn:active { background: rgba(255,255,255,.22); transform: scale(.96); }
+  .chrome-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+  .flow-pills {
+    display: flex; align-items: center; gap: 4px;
+    flex-wrap: nowrap; overflow: hidden;
+    flex: 1; min-width: 0;
+  }
+  .flow-pill {
+    font-size: 11px; font-weight: 700; letter-spacing: .3px;
+    color: rgba(242,247,251,.45); text-transform: uppercase;
+    white-space: nowrap; cursor: default;
+  }
+  .flow-pill.active { color: #FFD750; }
+  .flow-sep { color: rgba(255,255,255,.2); font-size: 10px; }
+
+  .step-badge {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 999px; padding: 6px 14px;
+    font-size: 12px; font-weight: 700; color: rgba(255,255,255,.55);
+    pointer-events: none; z-index: 300;
+  }
+  .step-badge .cur { color: #FFD750; }
+
+  /* Debug toggle */
+  .debug-toggle {
+    position: fixed; bottom: 14px; right: 14px;
+    font-size: 11px; font-weight: 700; color: rgba(255,255,255,.3);
+    cursor: pointer; z-index: 300;
+    padding: 4px 8px; border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .debug-toggle:hover { color: #FFD750; border-color: rgba(255,215,80,.4); }
+</style>
+</head>
+<body>
+
+<!-- Top chrome -->
+<div class="top-chrome">
+  <button class="chrome-btn" id="btn-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Späť
+  </button>
+  <button class="chrome-btn" id="btn-restart">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+    Reset
+  </button>
+  <div class="flow-pills" id="flow-pills"></div>
+</div>
+
+<div class="stage">
+  <div class="phone-wrap" id="phone-wrap">
+    <div id="screen-root"></div>
+  </div>
+</div>
+
+<div class="step-badge" id="step-badge"></div>
+<div class="debug-toggle" id="debug-toggle" title="Zobraziť hotspoty">◎ hotspoty</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="screens-2.jsx"></script>
+<script type="text/babel" src="screens-pracovne.jsx"></script>
+<script type="text/babel" src="screens-quiz.jsx"></script>
+<script type="text/babel" src="screens-profile.jsx"></script>
+<script type="text/babel" src="screens-testy-v2.jsx"></script>
+
+<script type="text/babel">
+// ─────────────────────────────────────────────────────────────
+// KOORDINÁTY — všetky merané voči 390×844 PhoneFrame
+//
+// Mriežka kategórií (2 stĺpce, tile 154×154, medzera 20):
+//   stĺpec 0: x=31   stĺpec 1: x=205
+//   riadok 0: y=118  riadok 1: y=292  riadok 2: y=466  riadok 3: y=640
+//
+// Podkategórie po CategoryHero (hero ~194px):
+//   grid: padding 10px → y=204
+//   stĺpec 0: x=31   stĺpec 1: x=205
+//   riadok 0: y=204  riadok 1: y=378  riadok 2: y=552  riadok 3: y=726
+//
+// Pracovné listy grid (padding 26px → 1fr cols):
+//   stĺpec 0: x=26   stĺpec 1: x=208
+//   riadok 0: y=204  riadok 1: y=384  riadok 2: y=564
+//   (tile: ~154px, gap: 26px)
+//
+// TestList riadky (po CategoryHero ~198, gap 10, minHeight 63):
+//   riadok 0: y=202  výška 73  →  y=202,275,348,421,494,567
+// ─────────────────────────────────────────────────────────────
+
+const FLOW = {
+
+  // ── 00 ONBOARDING (slide 1) ─────────────────────────────────
+  onboarding: {
+    label: 'Onboarding 1',
+    track: 'main',
+    render: () => <window.WalkthroughScreen1 dark={false}/>,
+    spots: [
+      // Preskočiť (top right)
+      { x: 278, y: 64, w: 96, h: 34, go: 'login' },
+      // Ďalej button (spodný panel, y≈722)
+      { x: 36, y: 718, w: 318, h: 64, go: 'onboarding-2' },
+    ]
+  },
+
+  // ── 00b ONBOARDING (slide 2) ────────────────────────────────
+  'onboarding-2': {
+    label: 'Onboarding 2',
+    track: 'main',
+    render: () => <window.WalkthroughScreen2 dark={false}/>,
+    spots: [
+      // Prihlásiť sa button (spodný panel, y≈722)
+      { x: 36, y: 718, w: 318, h: 64, go: 'login' },
+    ]
+  },
+
+  // ── 01 PRIHLÁSENIE ─────────────────────────────────────────
+  login: {
+    label: 'Prihlásenie',
+    track: 'main',
+    render: () => <window.LoginScreen dark={false}/>,
+    spots: [
+      // Dalej → (logo 129px + margins → button y≈376)
+      { x: 22, y: 368, w: 346, h: 74, go: 'login-heslo' },
+      // Registruj sa (y≈448)
+      { x: 22, y: 442, w: 346, h: 58, toast: 'Registracia — zatial neimplementovana' },
+    ]
+  },
+
+  // ── 01a ZADAJ HESLO ─────────────────────────────────────────
+  'login-heslo': {
+    label: 'Zadaj heslo',
+    track: 'main',
+    render: () => <window.LoginStep2Screen dark={false}/>,
+    spots: [
+      // Prihlasit sa button (2 polia → y≈453)
+      { x: 22, y: 445, w: 346, h: 74, go: 'product' },
+      // SPAT (text dole)
+      { x: 22, y: 765, w: 110, h: 32, go: 'back' },
+    ]
+  },
+
+  // ── 02 VÝBER SVETA ──────────────────────────────────────────
+  product: {
+    label: 'Výber sveta',
+    track: 'main',
+    render: () => <window.ProductChoiceScreen dark={false}/>,
+    spots: [
+      // hamburger → profil drawer
+      { x: 14, y: 62, w: 40, h: 40, profile: true },
+      // Alfík world tile
+      { x: 14, y: 328, w: 362, h: 210, go: 'categories' },
+      // AlfBook world tile
+      { x: 14, y: 548, w: 362, h: 210, toast: 'AlfBook svet — pripravujeme 📚' },
+    ]
+  },
+
+  // ── 03 STROM KATEGÓRIÍ ──────────────────────────────────────
+  categories: {
+    label: 'Kategórie',
+    track: 'main',
+    render: () => <window.CategoryTreeScreen dark={false} columns={2}/>,
+    spots: [
+      // hamburger (TopBar)
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Mriežka 2×4 — ALF_CATEGORIES poradie: slovencina, cudzie, rozpravky, pracovne, interaktivne, malovanky, hadanky, ukazky
+      { x: 31,  y: 118, w: 154, h: 154, go: 'interaktivne' },
+      { x: 205, y: 118, w: 154, h: 154, go: 'interaktivne' },
+      { x: 31,  y: 292, w: 154, h: 154, go: 'interaktivne' },
+      { x: 205, y: 292, w: 154, h: 154, go: 'pracovne-listy' },
+      { x: 31,  y: 466, w: 154, h: 154, go: 'interaktivne' },
+      { x: 205, y: 466, w: 154, h: 154, go: 'interaktivne' },
+      { x: 31,  y: 640, w: 154, h: 154, go: 'interaktivne' },
+      { x: 205, y: 640, w: 154, h: 154, go: 'interaktivne' },
+    ]
+  },
+
+  // ── 04 INTERAKTÍVNE CVIČENIA ────────────────────────────────
+  interaktivne: {
+    label: 'Interaktívne cvičenia',
+    track: 'main',
+    render: () => <window.SubcategoryScreen dark={false} columns={2}/>,
+    spots: [
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Alfik title v TopBare → categories
+      { x: 130, y: 56, w: 130, h: 44, go: 'categories' },
+      // HeroBackButton
+      { x: 14, y: 153, w: 40, h: 36, go: 'back' },
+      // Breadcrumb: Alfik → categories
+      { x: 26, y: 108, w: 60, h: 28, go: 'categories' },
+      // Mriežka: INTERAKTIVNE_SUB: okolo, rodina, povolania, priroda, cisla, zdravie, geometria, doprava, logika, sviatky, abeceda, rocne, farby
+      { x: 31,  y: 204, w: 154, h: 154, go: 'priroda' },
+      { x: 205, y: 204, w: 154, h: 154, go: 'priroda' },
+      { x: 31,  y: 378, w: 154, h: 154, go: 'priroda' },
+      { x: 205, y: 378, w: 154, h: 154, go: 'priroda' },
+      { x: 31,  y: 552, w: 154, h: 154, go: 'priroda' },
+      { x: 205, y: 552, w: 154, h: 154, go: 'priroda' },
+      { x: 31,  y: 726, w: 154, h: 154, go: 'priroda' },
+      { x: 205, y: 726, w: 154, h: 154, go: 'priroda' },
+    ]
+  },
+
+  // ── 05 PRÍRODA ──────────────────────────────────────────────
+  priroda: {
+    label: 'Príroda',
+    track: 'main',
+    render: () => <window.PrirodaScreen dark={false} columns={2}/>,
+    spots: [
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Alfik title v TopBare → categories
+      { x: 130, y: 56, w: 130, h: 44, go: 'categories' },
+      { x: 14, y: 153, w: 40, h: 36, go: 'back' },
+      // Breadcrumbs: Alfik → categories, Interaktivne → interaktivne
+      { x: 26, y: 108, w: 60, h: 28, go: 'categories' },
+      { x: 99, y: 108, w: 120, h: 28, go: 'interaktivne' },
+      // PRIRODA_SUB: svet, rastliny, zivocichy
+      { x: 31,  y: 204, w: 154, h: 154, go: 'tests' },
+      { x: 205, y: 204, w: 154, h: 154, go: 'tests' },
+      { x: 31,  y: 378, w: 154, h: 154, go: 'tests' },
+    ]
+  },
+
+  // ── 06 ŽIVOČÍCHY — TESTY ────────────────────────────────────
+  tests: {
+    label: 'Živočíchy — testy',
+    track: 'main',
+    render: (ctx) => <window.TestListV2Screen dark={false} age={ctx.activeAge}/>,
+    spots: [
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Alfik title v TopBare → categories
+      { x: 130, y: 56, w: 130, h: 44, go: 'categories' },
+      { x: 14, y: 153, w: 40, h: 36, go: 'back' },
+      // Breadcrumbs: Alfik → categories, Interaktivne → interaktivne, Priroda → priroda
+      { x: 26, y: 108, w: 60, h: 28, go: 'categories' },
+      { x: 99, y: 108, w: 120, h: 28, go: 'interaktivne' },
+      { x: 232, y: 108, w: 60, h: 28, go: 'priroda' },
+      // Age filter (vpravo hore)
+      { x: 336, y: 56, w: 40, h: 40, filter: true },
+      // Riadky testov (po CategoryHero ~198px, gap 10, minHeight 63)
+      { x: 14, y: 202, w: 362, h: 73, go: 'test-open' },
+      { x: 14, y: 275, w: 362, h: 73, go: 'test-open' },
+      { x: 14, y: 348, w: 362, h: 73, go: 'test-open' },
+      { x: 14, y: 421, w: 362, h: 73, go: 'test-open' },
+      { x: 14, y: 494, w: 362, h: 73, go: 'test-open' },
+      { x: 14, y: 567, w: 362, h: 73, go: 'test-open' },
+    ]
+  },
+
+  // ── 07 OTVORENÝ TEST ────────────────────────────────────────
+  'test-open': {
+    label: 'Test',
+    track: 'main',
+    render: () => <window.TestOpenScreen dark={false}/>,
+    spots: [
+      { x: 14, y: 58, w: 56, h: 56, go: 'back' },
+      { x: 320, y: 58, w: 56, h: 56, go: 'back' },
+    ]
+  },
+
+  // ── PRACOVNÉ LISTY ──────────────────────────────────────────
+  'pracovne-listy': {
+    label: 'Pracovné listy',
+    track: 'pracovne',
+    render: () => <window.PracovneListyScreen dark={false} columns={2}/>,
+    spots: [
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Alfik title v TopBare → categories
+      { x: 130, y: 56, w: 130, h: 44, go: 'categories' },
+      { x: 14, y: 153, w: 40, h: 36, go: 'back' },
+      // Breadcrumb: Alfik → categories
+      { x: 26, y: 108, w: 60, h: 28, go: 'categories' },
+      // Grid padding:26 → 1fr, col0 x=26, col1 x=208, tile ~154px, gap 26
+      { x: 26,  y: 204, w: 154, h: 154, go: 'pracovne-sport' },
+      { x: 208, y: 204, w: 154, h: 154, toast: 'Zvieratá — ukážka' },
+      { x: 26,  y: 384, w: 154, h: 154, toast: 'Doprava — ukážka' },
+      { x: 208, y: 384, w: 154, h: 154, toast: 'Geometria — ukážka' },
+      { x: 26,  y: 564, w: 154, h: 154, toast: 'Povolania — ukážka' },
+      { x: 208, y: 564, w: 154, h: 154, toast: 'Ročné obdobia — ukážka' },
+    ]
+  },
+
+  'pracovne-sport': {
+    label: 'Šport',
+    track: 'pracovne',
+    render: () => <window.SportPracovneScreen dark={false} columns={2}/>,
+    spots: [
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Alfik title → categories
+      { x: 130, y: 56, w: 130, h: 44, go: 'categories' },
+      { x: 14, y: 153, w: 40, h: 36, go: 'back' },
+      // Breadcrumbs: Alfik → categories, Pracovne listy → pracovne-listy
+      { x: 26, y: 108, w: 60, h: 28, go: 'categories' },
+      { x: 99, y: 108, w: 110, h: 28, go: 'pracovne-listy' },
+      { x: 26,  y: 204, w: 154, h: 154, go: 'grafomotorika' },
+      { x: 208, y: 204, w: 154, h: 154, toast: 'Bludiská — ukážka' },
+      { x: 26,  y: 384, w: 154, h: 154, toast: 'Spoj dvojice — ukážka' },
+    ]
+  },
+
+  'grafomotorika': {
+    label: 'Grafomotorika',
+    track: 'pracovne',
+    render: () => <window.GrafomotorikaScreen dark={false} columns={2}/>,
+    spots: [
+      { x: 14, y: 56, w: 40, h: 40, profile: true },
+      // Alfik title → categories
+      { x: 130, y: 56, w: 130, h: 44, go: 'categories' },
+      { x: 14, y: 153, w: 40, h: 36, go: 'back' },
+      // Breadcrumbs: Alfik → categories, Pracovne listy → pracovne-listy, Sport → pracovne-sport
+      { x: 26, y: 108, w: 60, h: 28, go: 'categories' },
+      { x: 99, y: 108, w: 110, h: 28, go: 'pracovne-listy' },
+      { x: 222, y: 108, w: 50, h: 28, go: 'pracovne-sport' },
+      // Vekovy filter (AgeAvatar, vpravo hore v TopBare)
+      { x: 334, y: 56, w: 42, h: 42, filter: true },
+      // Grid zoznam pracovných listov (~y=244)
+      { x: 26,  y: 244, w: 154, h: 154, go: 'pracovny-list-open' },
+      { x: 208, y: 244, w: 154, h: 154, go: 'pracovny-list-open' },
+      { x: 26,  y: 424, w: 154, h: 154, go: 'pracovny-list-open' },
+      { x: 208, y: 424, w: 154, h: 154, go: 'pracovny-list-open' },
+      { x: 26,  y: 604, w: 154, h: 154, go: 'pracovny-list-open' },
+      { x: 208, y: 604, w: 154, h: 154, go: 'pracovny-list-open' },
+    ]
+  },
+
+  'pracovny-list-open': {
+    label: 'Pracovný list',
+    track: 'pracovne',
+    render: () => <window.PracovnyListOpenScreen dark={false}/>,
+    spots: [
+      { x: 12, y: 58, w: 50, h: 50, go: 'back' },
+      { x: 328, y: 58, w: 50, h: 50, toast: 'Možnosti — pripravujeme' },
+    ]
+  },
+
+  // ── PROFIL (5 tabov) ────────────────────────────────────────
+  'profile-zakladne': {
+    label: 'Profil — Základné',
+    track: 'profile',
+    render: (ctx) => <window.ProfileZakladneScreen dark={false} subscribed={ctx.subscribed}/>,
+    spots: [
+      { x: 14, y: 56, w: 44, h: 44, closeProfile: true },
+      { x: 0,   y: 108, w: 78, h: 50, tab: 'profile-zakladne' },
+      { x: 78,  y: 108, w: 78, h: 50, tab: 'profile-heslo' },
+      { x: 156, y: 108, w: 78, h: 50, tab: 'profile-ucitel' },
+      { x: 234, y: 108, w: 78, h: 50, tab: 'profile-ziak' },
+      { x: 312, y: 108, w: 78, h: 50, tab: 'profile-gdpr' },
+      { x: 334, y: 58,  w: 44, h: 44, closeProfile: true },
+    ]
+  },
+  'profile-heslo': {
+    label: 'Profil — Heslo',
+    track: 'profile',
+    render: () => <window.ProfileHesloScreen dark={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 44, h: 44, closeProfile: true },
+      { x: 0,   y: 108, w: 78, h: 50, tab: 'profile-zakladne' },
+      { x: 78,  y: 108, w: 78, h: 50, tab: 'profile-heslo' },
+      { x: 156, y: 108, w: 78, h: 50, tab: 'profile-ucitel' },
+      { x: 234, y: 108, w: 78, h: 50, tab: 'profile-ziak' },
+      { x: 312, y: 108, w: 78, h: 50, tab: 'profile-gdpr' },
+      { x: 334, y: 58,  w: 44, h: 44, closeProfile: true },
+    ]
+  },
+  'profile-ucitel': {
+    label: 'Profil — Učiteľ',
+    track: 'profile',
+    render: () => <window.ProfileUcitelScreen dark={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 44, h: 44, closeProfile: true },
+      { x: 0,   y: 108, w: 78, h: 50, tab: 'profile-zakladne' },
+      { x: 78,  y: 108, w: 78, h: 50, tab: 'profile-heslo' },
+      { x: 156, y: 108, w: 78, h: 50, tab: 'profile-ucitel' },
+      { x: 234, y: 108, w: 78, h: 50, tab: 'profile-ziak' },
+      { x: 312, y: 108, w: 78, h: 50, tab: 'profile-gdpr' },
+      { x: 334, y: 58,  w: 44, h: 44, closeProfile: true },
+    ]
+  },
+  'profile-ziak': {
+    label: 'Profil — Žiak',
+    track: 'profile',
+    render: () => <window.ProfileZiakScreen dark={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 44, h: 44, closeProfile: true },
+      { x: 0,   y: 108, w: 78, h: 50, tab: 'profile-zakladne' },
+      { x: 78,  y: 108, w: 78, h: 50, tab: 'profile-heslo' },
+      { x: 156, y: 108, w: 78, h: 50, tab: 'profile-ucitel' },
+      { x: 234, y: 108, w: 78, h: 50, tab: 'profile-ziak' },
+      { x: 312, y: 108, w: 78, h: 50, tab: 'profile-gdpr' },
+      { x: 334, y: 58,  w: 44, h: 44, closeProfile: true },
+    ]
+  },
+  'profile-gdpr': {
+    label: 'Profil — GDPR',
+    track: 'profile',
+    render: () => <window.ProfileGdprScreen dark={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 44, h: 44, closeProfile: true },
+      { x: 0,   y: 108, w: 78, h: 50, tab: 'profile-zakladne' },
+      { x: 78,  y: 108, w: 78, h: 50, tab: 'profile-heslo' },
+      { x: 156, y: 108, w: 78, h: 50, tab: 'profile-ucitel' },
+      { x: 234, y: 108, w: 78, h: 50, tab: 'profile-ziak' },
+      { x: 312, y: 108, w: 78, h: 50, tab: 'profile-gdpr' },
+      { x: 334, y: 58,  w: 44, h: 44, closeProfile: true },
+    ]
+  },
+};
+
+// Zoznam krokov pre každú cestu
+const TRACKS = {
+  main:     ['onboarding', 'onboarding-2', 'login', 'login-heslo', 'product', 'categories', 'interaktivne', 'priroda', 'tests', 'test-open'],
+  pracovne: ['categories', 'pracovne-listy', 'pracovne-sport', 'grafomotorika', 'pracovny-list-open'],
+  profile:  ['profile-zakladne', 'profile-heslo', 'profile-ucitel', 'profile-ziak', 'profile-gdpr'],
+};
+
+function App() {
+  const [stack, setStack]           = React.useState(['onboarding']);
+  const [toast, setToast]           = React.useState(null);
+  const [filterOpen, setFilterOpen] = React.useState(false);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const [activeAge, setActiveAge]   = React.useState('all');
+  const [subscribed, setSubscribed] = React.useState(true);
+  const [goingBack, setGoingBack]   = React.useState(false);
+
+  const current = stack[stack.length - 1];
+  const step    = FLOW[current];
+
+  const closeAll = () => { setFilterOpen(false); setProfileOpen(false); };
+
+  const go = (key) => {
+    closeAll();
+    setGoingBack(false);
+    setStack(s => [...s, key]);
+  };
+
+  const back = () => {
+    closeAll();
+    if (stack.length <= 1) return;
+    setGoingBack(true);
+    setStack(s => s.slice(0, -1));
+  };
+
+  const restart = () => {
+    closeAll();
+    setGoingBack(true);
+    setStack(['login']);
+  };
+
+  const closeProfile = () => {
+    closeAll();
+    setStack(s => {
+      let i = s.length - 1;
+      while (i >= 1 && FLOW[s[i]].track === 'profile') i--;
+      return s.slice(0, i + 1);
+    });
+  };
+
+  const switchTab = (key) => {
+    closeAll();
+    setStack(s => {
+      if (FLOW[s[s.length - 1]].track === 'profile') return [...s.slice(0, -1), key];
+      return [...s, key];
+    });
+  };
+
+  const showToast = (text) => {
+    setToast({ text, key: Date.now() });
+    setTimeout(() => setToast(null), 1700);
+  };
+
+  const spawnRipple = (e) => {
+    const sc = document.getElementById('screen-content');
+    if (!sc) return;
+    const rect = sc.getBoundingClientRect();
+    const scale = rect.width / 390 || 1;
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+    const r = document.createElement('div');
+    r.className = 'tap-ripple';
+    r.style.left = x + 'px';
+    r.style.top = y + 'px';
+    sc.appendChild(r);
+    setTimeout(() => r.remove(), 500);
+  };
+
+  const handleSpot = (spot) => {
+    if (spot.filter)       return setFilterOpen(true);
+    if (spot.profile)      return setProfileOpen(true);
+    if (spot.tab)          return switchTab(spot.tab);
+    if (spot.closeProfile) return closeProfile();
+    if (spot.go === 'back') return back();
+    if (spot.go)           return go(spot.go);
+    if (spot.toast)        showToast(spot.toast);
+  };
+
+  // Update chrome
+  React.useEffect(() => {
+    const track = FLOW[current].track;
+    const order = TRACKS[track] || [];
+    const idx   = order.indexOf(current);
+    const pills = order.map(k => ({
+      key: k, label: FLOW[k].label, active: k === current
+    }));
+    const el = document.getElementById('flow-pills');
+    if (el) {
+      el.innerHTML = pills.map((p, i) =>
+        (i > 0 ? '<span class="flow-sep">›</span>' : '') +
+        `<span class="flow-pill${p.active ? ' active' : ''}">${p.label}</span>`
+      ).join('');
+    }
+    const badge = document.getElementById('step-badge');
+    if (badge) badge.innerHTML = `<span class="cur">${(idx >= 0 ? idx : 0) + 1}</span> / ${order.length} &nbsp;${step.label}`;
+
+    const btnBack = document.getElementById('btn-back');
+    if (btnBack) btnBack.disabled = stack.length <= 1;
+  }, [current, stack.length]);
+
+  // Dynamický fade pre scroll oblasti — sleduje scrollTop po každom rendrovaní
+  React.useEffect(() => {
+    const applyFade = (el) => {
+      const atTop    = el.scrollTop < 6;
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 6;
+      const top = atTop    ? '#000 0%'                    : 'transparent 0px, #000 28px';
+      const bot = atBottom ? '#000 100%'                  : '#000 calc(100% - 32px), transparent 100%';
+      const mask = `linear-gradient(180deg, ${top}, ${bot})`;
+      el.style.WebkitMaskImage = mask;
+      el.style.maskImage = mask;
+    };
+    const wrap = document.getElementById('phone-wrap');
+    if (!wrap) return;
+    const els = wrap.querySelectorAll('[data-scroll-area]');
+    const cleanups = [];
+    els.forEach(el => {
+      applyFade(el);
+      const handler = () => applyFade(el);
+      el.addEventListener('scroll', handler, { passive: true });
+      cleanups.push(() => el.removeEventListener('scroll', handler));
+    });
+    return () => cleanups.forEach(fn => fn());
+  });
+
+  // Fit phone to viewport
+  React.useEffect(() => {
+    const fit = () => {
+      const wrap = document.getElementById('phone-wrap');
+      if (!wrap) return;
+      const pad = 90; // reserve for top/bottom chrome
+      const sx = (window.innerWidth - 20) / 390;
+      const sy = (window.innerHeight - pad) / 844;
+      const s  = Math.min(sx, sy, 1.1);
+      wrap.style.transform = `scale(${s})`;
+      wrap.style.transformOrigin = 'center center';
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
+
+  // Forward scroll to inner scrollable area
+  React.useEffect(() => {
+    const wrap = document.getElementById('phone-wrap');
+    if (!wrap) return;
+    const findScroll = () => {
+      const tagged = wrap.querySelector('[data-scroll-area]');
+      if (tagged) return tagged;
+      const all = wrap.querySelectorAll('div');
+      for (const d of all) {
+        if (d.scrollHeight > d.clientHeight + 2) {
+          const ov = getComputedStyle(d).overflowY;
+          if (ov === 'auto' || ov === 'scroll') return d;
+        }
+      }
+      return null;
+    };
+    const onWheel = (e) => {
+      const sc = findScroll();
+      if (!sc || sc.contains(e.target)) return;
+      if (sc.scrollHeight > sc.clientHeight) {
+        sc.scrollBy({ top: e.deltaY });
+        e.preventDefault();
+      }
+    };
+    wrap.addEventListener('wheel', onWheel, { passive: false });
+    return () => wrap.removeEventListener('wheel', onWheel);
+  }, []);
+
+  // Wire chrome buttons + debug toggle
+  React.useEffect(() => {
+    const b = document.getElementById('btn-back');
+    const r = document.getElementById('btn-restart');
+    const d = document.getElementById('debug-toggle');
+    if (b) b.onclick = back;
+    if (r) r.onclick = restart;
+    if (d) d.onclick = () => document.body.classList.toggle('debug-hotspots');
+    if (location.search.includes('debug')) document.body.classList.add('debug-hotspots');
+  }, []);
+
+  const animClass = goingBack ? 'screen-back' : 'screen-in';
+
+  return (
+    <>
+      <div
+        id="screen-content"
+        key={current + '|' + stack.length}
+        className={animClass}
+        onClick={(e) => {
+          const cb = e.target.closest('[data-checkbox]');
+          if (cb && cb.dataset.checkbox === 'subscribed') setSubscribed(v => !v);
+        }}
+        style={{ width: 390, height: 844, position: 'relative', borderRadius: 44, overflow: 'hidden' }}
+      >
+        {step.render({ activeAge, subscribed })}
+
+        {/* HOTSPOT OVERLAY */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          {step.spots.map((h, i) => (
+            <div
+              key={i}
+              className="hotspot"
+              style={{ left: h.x, top: h.y, width: h.w, height: h.h }}
+              onClick={(e) => { spawnRipple(e); handleSpot(h); }}
+              title={
+                h.go === 'back' ? '← späť' :
+                h.go ? `→ ${FLOW[h.go]?.label || h.go}` :
+                h.filter ? '🔍 Filter veku' :
+                h.profile ? '👤 Menu' :
+                h.toast || ''
+              }
+            />
+          ))}
+        </div>
+
+        {/* VEKOVY FILTER OVERLAY */}
+        {filterOpen && (
+          <div
+            className="filter-overlay"
+            onClick={() => setFilterOpen(false)}
+            style={{
+              position: 'absolute', top: 50, left: 0, right: 0, bottom: 0,
+              zIndex: 150,
+              background: 'rgba(10,22,40,0.28)',
+              backdropFilter: 'blur(2px)',
+              WebkitBackdropFilter: 'blur(2px)',
+            }}
+          >
+            {window.AgePickerSheet && <window.AgePickerSheet dark={false} active={activeAge}/>}
+            {['all','3-4','4-5','5-6'].map((age, i) => (
+              <div
+                key={age}
+                className="hotspot"
+                style={{ position: 'absolute', left: 288, top: 14 + i * 98, width: 92, height: 90, zIndex: 160 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveAge(age);
+                  setTimeout(() => setFilterOpen(false), 180);
+                }}
+                title={age === 'all' ? 'Vsetky vekove skupiny' : `${age} rokov`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* PROFIL / DRAWER OVERLAY — zacina pod status barom (top:50) */}
+        {profileOpen && (
+          <div
+            className="drawer-overlay"
+            onClick={() => setProfileOpen(false)}
+            style={{
+              position: 'absolute', top: 50, left: 0, right: 0, bottom: 0,
+              zIndex: 150,
+              background: 'rgba(10,22,40,0.22)',
+              backdropFilter: 'blur(2px)',
+              WebkitBackdropFilter: 'blur(2px)',
+            }}
+          >
+            {window.ProfileDrawerV2 && <window.ProfileDrawerV2
+              dark={false}
+              onEduAlf={() => { setProfileOpen(false); go('product'); }}
+              onAlfBook={() => { showToast('AlfBook — pripravujeme'); }}
+              onAlfik={() => { setProfileOpen(false); }}
+              onHistoria={() => { showToast('História — pripravujeme'); }}
+              onProfil={() => { setProfileOpen(false); go('profile-zakladne'); }}
+              onAdmin={() => { showToast('Administrácia — pripravujeme'); }}
+              onPodpora={() => { showToast('Podpora — pripravujeme'); }}
+              onAbout={() => { showToast('O EduAlf — pripravujeme'); }}
+              onLogout={() => { restart(); }}
+            />}
+          </div>
+        )}
+      </div>
+
+      {toast && <div key={toast.key} className="toast">{toast.text}</div>}
+    </>
+  );
+}
+
+// ── Čakáme, kým sa načítajú všetky screen komponenty ─────────
+const start = () => {
+  const ok =
+    window.WalkthroughScreen1 && window.WalkthroughScreen2 &&
+    window.LoginStep2Screen &&
+    window.LoginScreen && window.ProductChoiceScreen &&
+    window.CategoryTreeScreen && window.SubcategoryScreen &&
+    window.PrirodaScreen && window.TestListV2Screen &&
+    window.TestOpenScreen && window.AgePickerSheet &&
+    window.PracovneListyScreen && window.SportPracovneScreen &&
+    window.GrafomotorikaScreen && window.PracovnyListOpenScreen &&
+    window.ProfileZakladneScreen && window.ProfileHesloScreen &&
+    window.ProfileUcitelScreen && window.ProfileZiakScreen &&
+    window.ProfileGdprScreen && window.CategoryHero && window.SubTile;
+
+  if (!ok) return setTimeout(start, 40);
+  ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);
+};
+start();
+</script>
+
+</body>
+</html>
