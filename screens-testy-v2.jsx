@@ -38,6 +38,7 @@ function TestListV2Screen({ dark = false, expanded = false, age = 'all' }) {
           shadowColor="rgba(0,168,181,0.45)"
           ageIcon={age}
           ageActive={expanded}
+          showAgeLabel={true}
           showSpeaker={true}
           speakerDot="#00A8B5"
           crumbs={['Alfík', 'Interaktívne cvičenia', 'Príroda', 'Živočíchy']}
@@ -122,7 +123,7 @@ function TestListRow({ test, dark, speakerColor = '#00A8B5' }) {
       minHeight: 63
     }}>
       {/* vekový odznak */}
-      {window.AgeBadge && <window.AgeBadge age={test.age} size={28} />}
+      {window.AgeBadge && <window.AgeBadge age={test.age} size={30} />}
 
       {/* test icon button — rovnaký štýl ako PDF/JPG badge na 06c */}
       <button style={{
@@ -130,11 +131,11 @@ function TestListRow({ test, dark, speakerColor = '#00A8B5' }) {
         border: 'none',
         background: 'transparent',
         borderRadius: 8,
-        padding: '3px 8px',
+        padding: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer'
       }}>
-        <img src="assets/test-icon.svg" width="24" height="28" style={{ display: 'block' }} alt="Test" />
+        <img src="assets/mat_interaktivny.svg" style={{ width: 30, height: 30, objectFit: 'contain', display: 'block' }} alt="Test" />
       </button>
 
       {/* name */}
@@ -151,12 +152,12 @@ function TestListRow({ test, dark, speakerColor = '#00A8B5' }) {
 
       {/* right: rating only */}
       <div style={{
-        width: 40, height: 40, flexShrink: 0,
+        width: 34, height: 34, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center'
       }}>
         {ratingSrc ? (
           <img src={ratingSrc} alt={test.rating}
-            style={{ width: 38, height: 38, objectFit: 'contain' }} />
+            style={{ width: 30, height: 30, objectFit: 'contain' }} />
         ) : null}
       </div>
     </div>

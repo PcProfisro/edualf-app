@@ -85,6 +85,15 @@
     animation: sheet-slide-in .32s cubic-bezier(0.22,0.61,0.36,1) both;
     will-change: transform;
   }
+  @keyframes sheet-up {
+    from { transform: translateY(102%); }
+    to   { transform: translateY(0); }
+  }
+  .sheet-overlay { animation: backdrop-in .24s ease both; }
+  .sheet-overlay > div:first-child {
+    animation: sheet-up .34s cubic-bezier(0.22,0.61,0.36,1) both;
+    will-change: transform;
+  }
 
   /* ── Tap ripple ── */
   @keyframes tap-ripple {
@@ -197,6 +206,15 @@
   <div class="flow-pills" id="flow-pills"></div>
 </div>
 
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="400" fill="#7DB800"/>
+    <rect x="140" y="90" width="120" height="220" rx="24" fill="#fff"/>
+    <rect x="140" y="90" width="120" height="220" rx="24" fill="none" stroke="#0c1420" stroke-width="6"/>
+    <text x="200" y="225" font-family="Dosis, sans-serif" font-size="80" font-weight="900" fill="#0c1420" text-anchor="middle">A</text>
+  </svg>
+</template>
+
 <div class="stage">
   <div class="phone-wrap" id="phone-wrap">
     <div id="screen-root"></div>
@@ -216,6 +234,7 @@
 <script type="text/babel" src="screens-quiz.jsx"></script>
 <script type="text/babel" src="screens-profile.jsx"></script>
 <script type="text/babel" src="screens-testy-v2.jsx"></script>
+<script type="text/babel" src="screens-alfbook.jsx"></script>
 
 <script type="text/babel">
 // ─────────────────────────────────────────────────────────────
@@ -301,8 +320,8 @@ const FLOW = {
       { x: 14, y: 62, w: 40, h: 40, profile: true },
       // Alfík world tile
       { x: 14, y: 328, w: 362, h: 210, go: 'categories' },
-      // AlfBook world tile
-      { x: 14, y: 548, w: 362, h: 210, toast: 'AlfBook svet — pripravujeme 📚' },
+      // AlfBook world tile → ak je appka v nepodporovanom jazyku (napr. EN), otvor výber jazyka
+      { x: 14, y: 548, w: 362, h: 210, alfbook: true },
     ]
   },
 
@@ -572,11 +591,14 @@ function App() {
   const [activeCat, setActiveCat]   = React.useState('interaktivne');
   const [subscribed, setSubscribed] = React.useState(true);
   const [goingBack, setGoingBack]   = React.useState(false);
+  const [lang, setLang]             = React.useState('sk');
+  const [alfbookSheet, setAlfbookSheet] = React.useState(false);
+  const [alfbookLang, setAlfbookLang]   = React.useState('sk');
 
   const current = stack[stack.length - 1];
   const step    = FLOW[current];
 
-  const closeAll = () => { setFilterOpen(false); setProfileOpen(false); };
+  const closeAll = () => { setFilterOpen(false); setProfileOpen(false); setAlfbookSheet(false); };
 
   const go = (key, cat) => {
     closeAll();
@@ -613,6 +635,16 @@ function App() {
       if (FLOW[s[s.length - 1]].track === 'profile') return [...s.slice(0, -1), key];
       return [...s, key];
     });
+  };
+
+  // AlfBook: dostupný len SK/CZ/HU. Ak appka beží v inom jazyku (napr. EN) → ponukni výber.
+  // Samotný obsah AlfBooku zatiaľ nie je — po voľbe len potvrdíme toastom.
+  const AB_NAMES = { sk: 'slovenčine', cz: 'češtine', hu: 'maďarčine' };
+  const openAlfBook = () => {
+    setProfileOpen(false);
+    const supported = (window.ALFBOOK_LANGS || ['sk', 'cz', 'hu']).includes(lang);
+    if (supported) { setTimeout(() => showToast(`AlfBook (${lang.toUpperCase()}) — pripravujeme`), 60); }
+    else { setTimeout(() => setAlfbookSheet(true), 60); }
   };
 
   const showToast = (text) => {
@@ -662,6 +694,7 @@ function App() {
     if (spot.profile)      return setProfileOpen(true);
     if (spot.tab)          return switchTab(spot.tab);
     if (spot.closeProfile) return closeProfile();
+    if (spot.alfbook)      return openAlfBook();
     if (spot.go === 'back') return back();
     if (spot.go)           return go(spot.go, spot.cat);
     if (spot.toast)        showToast(spot.toast);
@@ -783,7 +816,7 @@ function App() {
         }}
         style={{ width: 390, height: 844, position: 'relative', borderRadius: 44, overflow: 'hidden' }}
       >
-        {step.render({ activeAge, subscribed, activeCat })}
+        {step.render({ activeAge, subscribed, activeCat, alfbookLang })}
 
         {/* HOTSPOT OVERLAY */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
@@ -851,8 +884,10 @@ function App() {
           >
             {window.ProfileDrawerV2 && <window.ProfileDrawerV2
               dark={false}
+              lang={lang}
+              onLang={(code) => setLang(code)}
               onEduAlf={() => { setProfileOpen(false); go('product'); }}
-              onAlfBook={() => { showToast('AlfBook — pripravujeme'); }}
+              onAlfBook={openAlfBook}
               onAlfik={() => { setProfileOpen(false); }}
               onHistoria={() => { showToast('História — pripravujeme'); }}
               onProfil={() => { setProfileOpen(false); go('profile-zakladne'); }}
@@ -860,6 +895,24 @@ function App() {
               onPodpora={() => { showToast('Podpora — pripravujeme'); }}
               onAbout={() => { showToast('O EduAlf — pripravujeme'); }}
               onLogout={() => { restart(); }}
+            />}
+          </div>
+        )}
+
+        {/* ALFBOOK — VÝBER JAZYKA (appka beží v angličtine) */}
+        {alfbookSheet && (
+          <div
+            className="sheet-overlay"
+            onClick={() => setAlfbookSheet(false)}
+            style={{
+              position: 'absolute', top: 50, left: 0, right: 0, bottom: 0,
+              zIndex: 200,
+              background: 'rgba(15,30,55,0.42)',
+            }}
+          >
+            {window.AlfBookLangSheet && <window.AlfBookLangSheet
+              onPick={(code) => { setAlfbookSheet(false); setTimeout(() => showToast(`AlfBook v ${AB_NAMES[code] || code} — pripravujeme`), 80); }}
+              onCancel={() => setAlfbookSheet(false)}
             />}
           </div>
         )}
@@ -883,7 +936,8 @@ const start = () => {
     window.GrafomotorikaScreen && window.PracovnyListOpenScreen &&
     window.ProfileZakladneScreen && window.ProfileHesloScreen &&
     window.ProfileUcitelScreen && window.ProfileZiakScreen &&
-    window.ProfileGdprScreen && window.CategoryHero && window.SubTile;
+    window.ProfileGdprScreen && window.CategoryHero && window.SubTile &&
+    window.AlfBookLangSheet;
 
   if (!ok) return setTimeout(start, 40);
   ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);
@@ -891,5 +945,35 @@ const start = () => {
 start();
 </script>
 
+<script>
+/* Fallback inline logo for offline/bundled export */
+(function(){
+  var LOGO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NSIgaGVpZ2h0PSI2OSIgdmlld0JveD0iMCAwIDc1IDY5IiBmaWxsPSJub25lIj48ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfNl82NDQpIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyLjQxIDM1LjIzQzEyLjE5IDM1Ljg1IDEyLjM0IDM2LjQ2IDEzLjE5IDM2LjQ2SDIwLjM0QzIwLjg4IDM2LjQ1IDIxLjIgMzUuOTcgMjAuOTkgMzUuMzhDMTkuOTIgMzIuMjIgMTguMyAyNy40OCAxNy41NyAyNS41MUMxNy4xNSAyNC4zOCAxNi4zNSAyNC40MyAxNS45NSAyNS41NkMxNS45NSAyNS41NiAxMi42OCAzNC40NCAxMi40IDM1LjIzSDEyLjQxWk03Ljg4MDAxIDQ3LjY3SDMuMjEwMDFDMy4yMTAwMSA0Ny42NyAxMi4zOSAyMy4zOCAxNS43NCAxNC41M0MxNS45MyAxNC4wNCAxNi40IDEzLjcxIDE2LjkzIDEzLjcyQzE3LjQ2IDEzLjcyIDE3LjkzIDE0LjA1IDE4LjExIDE0LjU1QzIxLjM1IDIzLjQxIDMwLjI0IDQ3LjY3IDMwLjI0IDQ3LjY3SDI1LjVMMjIuOTIgNDAuODRIMTAuNDZMNy44ODAwMSA0Ny42N1oiIGZpbGw9ImJsYWNrIj48L3BhdGg+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik01Mi4zNyA2OC42NkM1Mi40NSA2OC42NiA1Mi41MyA2OC42NiA1Mi42IDY4LjY0QzUzLjE4IDY4LjE4IDUzLjIxIDY3LjU2IDUyLjg4IDY2Ljg4QzUxLjUzIDY0LjEgNDkuNzggNjEuMyA1MC45IDU4LjJDNTIuMzUgNTQuMjIgNTUuMjQgNTAuODQgNTcuOTYgNDcuNjdDNjQuNDYgNDAuMDggNzIuMDQgMzIuNTMgNzMuNzYgMjIuMzlDNzQuMzUgMTguOTUgNzQuNDMgMTUuNzEgNzMuMzUgMTIuMzlDNzEuNDQgNi41MiA2Ni4xOSAyLjk4IDYwLjUxIDEuNEM1NC44NCAtMC4xODAwMDIgNDkuMTYgLTAuNDgwMDAyIDQyLjgyIDAuNzk5OTk4QzM5LjI5IDEuNTIgMzMuMjUgMy43OSAzMi4xNSA1LjlDMzEuNDEgNy4zMiAzMS43MiAxMC40NyAzMS43MiAxMC40N0gzNS44N0MzNS44NyAxMC40NyAzOC4xMSA1LjY5IDQ3LjI1IDUuMjNDNTAuNjIgNS4wNyA1NC4zOSA2LjI5IDU2Ljc2IDguNjlDNTkuMzYgMTEuMzMgNjAuNDEgMTUuMyA2MC41NCAxOC44OUM2MC45MyAyOS41NCA1NC40NSAzOC43OCA0OC4xNSA0Ni45OEM0Ni4xMyA0OS42MSA0My40OSA1Mi4yMyA0Mi40IDU1LjM2QzQxLjMgNTguNTMgNDIuNTYgNjEuMjcgNDQuOSA2My40N0M0Ni4zNyA2NC44NSA1MC40MSA2OC43MyA1Mi4zNyA2OC42NloiIGZpbGw9IiM3MkI2MDAiPjwvcGF0aD48cGF0aCBkPSJNMzUuNzcgMTIuNzVIMzEuNzJWNDcuNjdIMzUuNzdWMTIuNzVaIiBmaWxsPSJibGFjayI+PC9wYXRoPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzcuMjcgMjkuMjlWMjUuNzdIMzkuNjNDNDAuNDkgMjUuNzcgNDEuMDUgMjUuMzggNDEuMzIgMjQuNkM0MS40NiAyNC4yIDQxLjUyIDIzLjQ1IDQxLjUyIDIyLjM0QzQxLjUyIDE5LjQ5IDQyLjkxIDE2LjU2IDQ1LjY3IDE0LjQ3QzQ3LjY1IDEyLjk2IDUwLjYgMTIuMTEgNTEuNzIgMTEuOThMNTEuNjcgMTUuNTZDNDkuNzggMTYuMDIgNDguMjcgMTcuMDMgNDcuMTMgMTguNThDNDYgMjAuMTQgNDUuNDMgMjEuODggNDUuNDMgMjMuODFDNDUuNDMgMjUuMTIgNDYuMzQgMjUuNzcgNDguMTYgMjUuNzdINTEuODZWMjkuMjlINDguNDlDNDcuNDMgMjkuMjkgNDYuNjkgMjkuMzggNDYuMjUgMjkuNTRDNDUuNTQgMjkuOCA0NS4xOCAzMC4zNiA0NS4xOCAzMS4yMVY0Ny42Nkw0MS4xNCA0Ny43MVYzMS4zQzQxLjE0IDMwLjM1IDQwLjc0IDI5Ljc0IDM5LjkzIDI5LjQ0QzM5LjUgMjkuMzQgMzkuMDQgMjkuMjkgMzguNTcgMjkuMjlIMzcuMzZDMzcuMTIgMjkuMjkgMzcuMDkgMjkuMjkgMzcuMjYgMjkuMjlIMzcuMjdaIiBmaWxsPSJibGFjayI+PC9wYXRoPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzIuMjIgNjIuODhDMzMuMjIgNjIuODggMzQuMDkgNjIuNjEgMzQuODUgNjIuMDZDMzUuNzUgNjEuNDMgMzYuMTkgNjAuNiAzNi4xOSA1OS41OFY1NC4xOUMzNi4xOSA1My45NCAzNS45OSA1My43NCAzNS43NCA1My43NEgzNC4zMkMzNC4wNyA1My43NCAzMy44NyA1My45NCAzMy44NyA1NC4xOVY1OC45M0MzMy44NyA1OS40MSAzMy43MSA1OS44MSAzMy4zOCA2MC4xM0MzMy4wNSA2MC40NiAzMi42NSA2MC42MiAzMi4xOCA2MC42MkMzMS43MSA2MC42MiAzMS4zMyA2MC40NyAzMC45OSA2MC4xNkMzMC42NiA1OS44NyAzMC40OSA1OS41MSAzMC40OSA1OS4wOFY1NC4xOUMzMC40OSA1My45NCAzMC4yOSA1My43NCAzMC4wNCA1My43NEgyOC42MkMyOC4zNyA1My43NCAyOC4xNyA1My45NCAyOC4xNyA1NC4xOVY1OS41OEMyOC4xNyA2MC42MiAyOC42MiA2MS40NSAyOS41MyA2Mi4wOEMzMC4yOSA2Mi42MSAzMS4xOCA2Mi44OCAzMi4yMSA2Mi44OEgzMi4yMlpNMzIuMTggNTAuNzdDMzYuMzQgNTAuNzcgMzkuNzIgNTQuMTUgMzkuNzIgNTguMzFDMzkuNzIgNjIuNDcgMzYuMzQgNjUuODUgMzIuMTggNjUuODVDMjguMDIgNjUuODUgMjQuNjQgNjIuNDggMjQuNjQgNTguMzFDMjQuNjQgNTQuMTQgMjguMDIgNTAuNzcgMzIuMTggNTAuNzdaIiBmaWxsPSIjRkZBRTBEIj48L3BhdGg+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNy40NyA1OC4zOEMxNy40NyA1Ny43MSAxNy42OSA1Ny4xNCAxOC4xMyA1Ni42NkMxOC41NiA1Ni4yIDE5LjExIDU1Ljk3IDE5Ljc3IDU1Ljk3QzIwLjQzIDU1Ljk3IDIwLjk4IDU2LjE5IDIxLjQyIDU2LjY1QzIxLjg2IDU3LjEgMjIuMDggNTcuNjcgMjIuMDggNTguMzRDMjIuMDggNTkuMDEgMjEuODYgNTkuNTkgMjEuNDEgNjAuMDVDMjAuOTYgNjAuNTEgMjAuNDEgNjAuNzMgMTkuNzUgNjAuNzNDMTkuMDkgNjAuNzMgMTguNTcgNjAuNSAxOC4xMyA2MC4wNEMxNy42OSA1OS41OCAxNy40NiA1OS4wMiAxNy40NiA1OC4zOEgxNy40N1pNMjQuNDIgNTIuMzFDMjYuMjMgNTMuNjggMjcuNDEgNTUuODYgMjcuNDEgNTguMzJDMjcuNDEgNjIuNDggMjQuMDMgNjUuODUgMTkuODcgNjUuODVDMTUuNzEgNjUuODUgMTIuMzMgNjIuNDggMTIuMzMgNTguMzJDMTIuMzMgNTQuMTUgMTUuNzEgNTAuNzggMTkuODcgNTAuNzhDMjAuNjUgNTAuNzggMjEuNCA1MC45IDIyLjExIDUxLjExVjU0LjM0QzIxLjg3IDU0LjIgMjEuNTcgNTQuMDggMjEuMjEgNTMuOThDMjAuNzEgNTMuODMgMjAuMjYgNTMuNzYgMTkuODUgNTMuNzZDMTguNTUgNTMuNzYgMTcuNDcgNTQuMjIgMTYuNjEgNTUuMTFDMTUuNzYgNTYuMDEgMTUuMzMgNTcuMTEgMTUuMzMgNTguNDFDMTUuMzMgNTkuNzEgMTUuNzYgNjAuNzUgMTYuNjIgNjEuNjNDMTcuNDggNjIuNTEgMTguNTQgNjIuOTYgMTkuODEgNjIuOTZDMjEuMDggNjIuOTYgMjIuMjEgNjIuNTEgMjMuMSA2MS42MUMyMy45OSA2MC43MiAyNC40NCA1OS42MiAyNC40NCA1OC4zMlY1Mi4zMUgyNC40MloiIGZpbGw9IiM3MkI2MDAiPjwvcGF0aD48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTkuNTcgNTcuMTNDOS41NyA1Ny4xMyA5LjUyIDU3LjEzIDkuNDkgNTcuMTNINS42QzUuNjUgNTYuOTggNS43NiA1Ni44MSA1LjkxIDU2LjZDNi4wOSA1Ni4zNiA2LjMzIDU2LjE2IDYuNjUgNTZDNi45NyA1NS44NSA3LjI5IDU1Ljc2IDcuNTkgNTUuNzZDOC4yNSA1NS43NiA4LjggNTYuMDQgOS4yMyA1Ni42QzkuMzYgNTYuNzcgOS40NyA1Ni45MiA5LjUzIDU3LjA1QzkuNTQgNTcuMDggOS41NiA1Ny4xIDkuNTcgNTcuMTJWNTcuMTNaTTUuNDQgNTkuMzdDNS40NCA1OS4zNyA1LjQ5IDU5LjM1IDUuNTIgNTkuMzRDNS42MiA1OS4zMiA1LjczIDU5LjMxIDUuODcgNTkuMzFIMTEuNjRDMTEuODggNTkuMzEgMTIuMDggNTkuMTIgMTIuMDkgNTguODhMMTIuMTEgNTguNDdDMTIuMTYgNTcuMTggMTEuNzMgNTYuMDYgMTAuODEgNTUuMUM5Ljg5IDU0LjE1IDguNzggNTMuNjcgNy41IDUzLjY3QzYuMjIgNTMuNjcgNS4xMSA1NC4xMyA0LjI2IDU1LjA1QzMuNDIgNTUuOTcgMi45OSA1Ny4wNyAyLjk5IDU4LjM2QzIuOTkgNTkuNjUgMy40MyA2MC43MyA0LjMxIDYxLjYyQzUuMTkgNjIuNTEgNi4yOCA2Mi45NiA3LjU3IDYyLjk2QzguODYgNjIuOTYgOS44NCA2Mi41MiAxMC43MSA2MS42NkMxMC44OCA2MS40OSAxMC44OSA2MS4yMyAxMC43MyA2MS4wNUw5LjkgNjAuMDhDOS43NCA1OS45IDkuNDcgNTkuODcgOS4yOCA2MC4wMkM4LjY1IDYwLjUgOC4wNyA2MC43NyA3LjU0IDYwLjc3QzYuOTggNjAuNzcgNi41MSA2MC41OSA2LjEyIDYwLjIyQzUuODcgNTkuOTkgNS42OSA1OS43OSA1LjU3IDU5LjYxQzUuNTEgNTkuNTEgNS40NiA1OS40NCA1LjQ0IDU5LjM3Wk03LjU0IDUwLjc4QzExLjcgNTAuNzggMTUuMDggNTQuMTUgMTUuMDggNTguMzFDMTUuMDggNjIuNDcgMTEuNyA2NS44NSA3LjU0IDY1Ljg1QzMuMzggNjUuODUgMCA2Mi40OCAwIDU4LjMxQzAgNTQuMTQgMy4zOCA1MC43OCA3LjU0IDUwLjc4WiIgZmlsbD0iIzAwQUFFRCI+PC9wYXRoPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImNsaXAwXzZfNjQ0Ij48cmVjdCB3aWR0aD0iNzQuMTkiIGhlaWdodD0iNjguNjYiIGZpbGw9IndoaXRlIj48L3JlY3Q+PC9jbGlwUGF0aD48L2RlZnM+PC9zdmc+";
+  function fix(root){
+    try {
+      var ims = (root.querySelectorAll ? root.querySelectorAll('img') : []);
+      ims.forEach && ims.forEach(function(im){
+        var s = im.getAttribute('src') || '';
+        if (s.indexOf('logo_edu_alf.svg') > -1) im.src = LOGO;
+      });
+    } catch(e){}
+  }
+  function start(){
+    fix(document);
+    if (document.body) {
+      new MutationObserver(function(muts){
+        muts.forEach(function(m){ m.addedNodes.forEach(function(n){
+          if (n.nodeType===1){
+            if (n.tagName==='IMG'){ var s=n.getAttribute('src')||''; if(s.indexOf('logo_edu_alf.svg')>-1) n.src=LOGO; }
+            fix(n);
+          }
+        }); });
+      }).observe(document.body, {childList:true, subtree:true});
+    }
+    [200,600,1500,3000].forEach(function(t){ setTimeout(function(){ fix(document); }, t); });
+  }
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+</script>
 </body>
 </html>

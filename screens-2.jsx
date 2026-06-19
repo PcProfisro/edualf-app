@@ -1,6 +1,36 @@
 // Alfík — category, subcategory and test list screens
 
 // ─────────────────────────────────────────────────────────────
+// Optické vyváženie ikon — rovnaký box klame, lebo ikony majú
+// rôzne proporcie. Naškálujeme podľa plochy (perceived area),
+// aby vysoké-úzke dokumenty mali rovnakú hmotnosť ako široký
+// medvedík/kniha. base = veľkosť, akú by mala štvorcová ikona.
+// ─────────────────────────────────────────────────────────────
+window.ICON_VB = {
+  'assets/age_3_4.svg': [37, 36],
+  'assets/age_4_5.svg': [27, 34],
+  'assets/age_5_6.svg': [36, 31],
+  'assets/age_all_new.svg': [29, 34],
+  'assets/rating_great.svg': [44, 44],
+  'assets/rating_good.svg': [44, 44],
+  'assets/rating_ok.svg': [44, 44],
+  'assets/mat_audio.svg': [33, 41],
+  'assets/mat_pdf.svg': [33, 41],
+  'assets/mat_interaktivny.svg': [33, 41],
+  'assets/mat_obrazok.svg': [33, 41],
+  'assets/mat_video.svg': [33, 41]
+};
+window.opticalSize = function (src, base) {
+  const vb = window.ICON_VB[src];
+  if (!vb) return { w: base, h: base };
+  const a = vb[0] / vb[1];
+  const B = a >= 1 ? base * Math.sqrt(a) : base / Math.sqrt(a);
+  const w = a >= 1 ? B : B * a;
+  const h = a >= 1 ? B / a : B;
+  return { w: Math.round(w * 10) / 10, h: Math.round(h * 10) / 10 };
+};
+
+// ─────────────────────────────────────────────────────────────
 // ScrollFade — wrapper s dynamickým fade hore aj dole
 // ─────────────────────────────────────────────────────────────
 function ScrollFade({ children, style, ...rest }) {
@@ -8,10 +38,10 @@ function ScrollFade({ children, style, ...rest }) {
   const updateMask = React.useCallback(() => {
     const el = ref.current;
     if (!el) return;
-    const atTop    = el.scrollTop < 6;
+    const atTop = el.scrollTop < 6;
     const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 6;
-    const top = atTop    ? '#000 0%'                    : 'transparent 0px, #000 28px';
-    const bot = atBottom ? '#000 100%'                  : '#000 calc(100% - 32px), transparent 100%';
+    const top = atTop ? '#000 0%' : 'transparent 0px, #000 28px';
+    const bot = atBottom ? '#000 100%' : '#000 calc(100% - 32px), transparent 100%';
     const mask = `linear-gradient(180deg, ${top}, ${bot})`;
     el.style.WebkitMaskImage = mask;
     el.style.maskImage = mask;
@@ -24,13 +54,13 @@ function ScrollFade({ children, style, ...rest }) {
     // tiež observer pre prípad že sa obsah zmení
     const ro = new ResizeObserver(updateMask);
     ro.observe(el);
-    return () => { el.removeEventListener('scroll', updateMask); ro.disconnect(); };
+    return () => {el.removeEventListener('scroll', updateMask);ro.disconnect();};
   }, [updateMask]);
   return (
     <div ref={ref} data-scroll-area style={style} {...rest}>
       {children}
-    </div>
-  );
+    </div>);
+
 }
 
 // Brand teal-mint — zladené s blobom z produktovej stránky
@@ -44,7 +74,7 @@ const ALF_CATEGORIES = [
 { id: 'cudzie', name: 'Cudzie jazyky', emoji: '🌍', img: 'uploads/Bez názvu - kópia (800 x 800 px) (35).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
 { id: 'rozpravky', name: 'Rozprávky', emoji: '📚', img: 'uploads/Bez názvu - kópia (800 x 800 px) (34).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
 { id: 'pracovne', name: 'Pracovné listy', emoji: '✏️', img: 'uploads/Bez názvu - kópia (800 x 800 px) (39).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
-{ id: 'interaktivne', name: 'Interaktívne cvičenia', emoji: '🎯', img: 'uploads/Bez názvu - kópia (800 x 800 px) (32).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, smallLabel: true },
+{ id: 'interaktivne', name: 'Interaktívne cvičenia', emoji: '🎯', img: 'uploads/Bez názvu - kópia (800 x 800 px) (32).webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, smallLabel: true },
 { id: 'malovanky', name: 'Maľovanky', emoji: '🎨', img: 'uploads/Bez názvu - kópia (800 x 800 px) (38).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, nove: true },
 { id: 'hadanky', name: 'Hádanky', emoji: '❓', img: 'uploads/Bez názvu - kópia (800 x 800 px) (33).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
 { id: 'ukazky', name: 'Ukážky úloh', emoji: '🍂', img: 'uploads/Bez názvu - kópia (800 x 800 px) (37).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT }];
@@ -202,7 +232,7 @@ function HeroBackButton() {
 
 }
 
-function AgeAvatar({ age, dark, active }) {
+function AgeAvatar({ age, dark, active, showLabel = false }) {
   const p = ALFIK_PALETTE;
   const palette = {
     '3-4': { stroke: '#FF8A65', bg: '#FFE3D6' },
@@ -217,16 +247,30 @@ function AgeAvatar({ age, dark, active }) {
     '5-6': 'assets/age_5_6.svg',
     'all': 'assets/age_all_new.svg'
   }[age] || 'assets/age_all_new.svg';
+  const label = {
+    '3-4': '3–4 r.',
+    '4-5': '4–5 r.',
+    '5-6': '5–6 r.',
+    'all': 'Všetky'
+  }[age] || 'Všetky';
   return (
     <button style={{
-      width: 38, height: 38, borderRadius: 14, border: 'none',
+      width: 38, minHeight: 38, borderRadius: 14, border: 'none',
       background: 'transparent',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: showLabel ? 1 : 0,
       boxShadow: active ? `0 6px 14px -4px ${stroke}AA` : 'none',
       padding: 0, flexShrink: 0
     }}>
       <img src={iconSrc}
-      style={{ width: 34, height: 34, objectFit: 'contain' }} alt="filter veku" />
+      style={{ width: showLabel ? 28 : 34, height: showLabel ? 28 : 34, objectFit: 'contain' }} alt="filter veku" />
+      {showLabel &&
+      <div style={{
+        fontSize: 12, fontWeight: 800,
+        color: dark ? '#FFFFFF' : '#3FA9E0',
+        letterSpacing: '-0.2px', fontFamily: '"Dosis", sans-serif',
+        lineHeight: 1
+      }}>{label}</div>}
     </button>);
 
 }
@@ -267,7 +311,7 @@ function CategoryTreeContent({ dark = false, columns = 2 }) {
         showAgeAvatar={false}
         profile="Timo" />
 
-      <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
+      <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{
         flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px',
         display: 'grid',
         gridTemplateColumns: columns === 3 ? 'repeat(3, 99px)' : 'repeat(2, 154px)',
@@ -319,7 +363,7 @@ function CategoryTile({ cat, dark, compact, nove }) {
         top: compact ? 8 : 9,
         left: compact ? 8 : 9,
         zIndex: 5,
-        display: 'inline-flex', alignItems: 'center', gap: 3,
+        display: 'inline-flex', alignItems: 'center', gap: 5,
         background: 'linear-gradient(135deg, #FF6B5E 0%, #E0463A 100%)',
         color: '#fff',
         fontSize: compact ? 8 : 9, fontWeight: 800, letterSpacing: '0.6px',
@@ -328,7 +372,6 @@ function CategoryTile({ cat, dark, compact, nove }) {
         boxShadow: '0 4px 12px -2px rgba(224,70,58,0.45), inset 0 1px 0 rgba(255,255,255,0.35)',
         textTransform: 'uppercase'
       }}>
-          <span style={{ width: compact ? 4 : 4, height: compact ? 4 : 4, borderRadius: '50%', background: '#fff', boxShadow: '0 0 0 2px rgba(255,255,255,0.35)', flexShrink: 0 }}></span>
           NOVÉ
         </div>
       }
@@ -353,7 +396,7 @@ function CategoryTile({ cat, dark, compact, nove }) {
         cat.emoji}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: cat.smallLabel ? "0px 4px 6px" : compact ? "2px 4px 5px" : "3px 4px 6px" }}>
+      <div style={{ ...{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: cat.smallLabel ? "0px 4px 6px" : compact ? "2px 4px 5px" : "3px 4px 6px" }, padding: "6px 4px" }}>
         <div style={{
           fontSize: labelSize, fontWeight: 700,
           fontFamily: '"Dosis", sans-serif',
@@ -435,7 +478,7 @@ function SpeakerIcon({ size = 46, dotFill = BRAND_TEAL, shadow = true, circleBor
 function CategoryHero({
   dark, title, icon, img, gradient, gradientDark, shadowColor,
   showSpeaker = true, speakerDot = '#0A3D33',
-  ageIcon = 'all', ageActive = false, showAgeAvatar = true, profile = 'Timo', accent = '#4FB36A',
+  ageIcon = 'all', ageActive = false, showAgeAvatar = true, showAgeLabel = false, profile = 'Timo', accent = '#4FB36A',
   crumbs = null, imgNoBg = false
 }) {
   const p = ALFIK_PALETTE;
@@ -470,7 +513,7 @@ function CategoryHero({
           </span>
         </div>
         <div style={{ flex: 1 }} />
-        {showAgeAvatar && <AgeAvatar age={ageIcon} dark={dark} active={ageActive} />}
+        {showAgeAvatar && <AgeAvatar age={ageIcon} dark={dark} active={ageActive} showLabel={showAgeLabel} />}
       </div>
 
       {/* Farebný hero pruh — plávajúca karta s rohmi všade */}
@@ -594,8 +637,8 @@ function Breadcrumbs({ dark, crumbs }) {
 function SubcategoryScreen({ dark = false, columns = 2, categoryId = 'interaktivne' }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const cat = ALF_CATEGORIES.find(c => c.id === categoryId) ||
-              ALF_CATEGORIES.find(c => c.id === 'interaktivne');
+  const cat = ALF_CATEGORIES.find((c) => c.id === categoryId) ||
+  ALF_CATEGORIES.find((c) => c.id === 'interaktivne');
 
   return (
     <PhoneFrame dark={dark} label="04 Interaktívne cvičenia">
@@ -624,7 +667,7 @@ function SubcategoryScreen({ dark = false, columns = 2, categoryId = 'interaktiv
 
 
 
-                <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
+                <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{
           flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px',
           display: 'grid',
           gridTemplateColumns: columns === 3 ? 'repeat(3, 99px)' : 'repeat(2, 154px)',
@@ -676,7 +719,7 @@ function PrirodaScreen({ dark = false, columns = 2 }) {
 
 
 
-        <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
+        <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{
           flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px',
           display: 'grid',
           gridTemplateColumns: columns === 3 ? 'repeat(3, 99px)' : 'repeat(2, 154px)',
@@ -728,9 +771,9 @@ function SubTile({ sub, dark, compact, active }) {
         lineHeight: 1,
         height: compact ? '70px' : '83px'
       }}>
-        {sub.img
-          ? <img src={sub.img} alt={sub.name} style={{ width: '84%', height: '84%', objectFit: 'contain', display: 'block' }} />
-          : sub.emoji}
+        {sub.img ?
+        <img src={sub.img} alt={sub.name} style={{ width: '84%', height: '84%', objectFit: 'contain', display: 'block' }} /> :
+        sub.emoji}
       </div>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: "0px 4px 4px", margin: "-4px 0px 0px" }}>
@@ -782,7 +825,7 @@ function TestListScreen({ dark = false, expanded = false, columns = 2, age = 'al
           crumbs={['Alfík', 'Interaktívne cvičenia', 'Príroda', 'Živočíchy']} />
         
 
-      <div data-scroll-area onWheel={e => e.stopPropagation()} style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 18px 0', position: 'relative' }}>
+      <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 18px 0', position: 'relative' }}>
         <div style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${columns}, 1fr)`,
@@ -828,8 +871,11 @@ function AgeFilter({ age, active, dark, all }) {
     alt: age
   };
 
-  const { stroke, bg, srcActive, srcInactive, label, alt } = config;
-  const src = active ? srcActive : srcInactive;
+  const { srcActive, srcInactive, label, alt } = config;
+  // Jednotná modrá farba pre všetky možnosti (ako pri "Všetky")
+  const stroke = '#3FA9E0';
+  const bg = '#D6ECF8';
+  const src = srcActive;
 
   return (
     <div style={{
@@ -870,7 +916,7 @@ function AgeFilter({ age, active, dark, all }) {
 
       <img
         src={src}
-        style={{ width: 44, height: 44, objectFit: 'contain' }}
+        style={{ width: 44, height: 44, objectFit: 'contain', filter: active ? 'none' : 'grayscale(1)', opacity: active ? 1 : 0.5, transition: 'filter .18s ease, opacity .18s ease' }}
         alt={alt} />
       <div style={{
         fontSize: 14, fontWeight: 800,
@@ -927,6 +973,7 @@ function RatingIcon({ rating }) {
     // empty space when not yet rated
     return <div style={{ width: 40, height: 40, flexShrink: 0 }} />;
   }
+  const d = window.opticalSize(map[rating], 38);
   return (
     <div style={{ flexShrink: 0, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <img src={map[rating]} style={{ width: 38, height: 38, objectFit: 'contain' }} alt={rating} />
@@ -1157,7 +1204,7 @@ function ProfileDrawer({ dark = false }) {
         borderBottom: `1px solid ${line}`
       }}>
         <img src="assets/logo_edu_alf.svg" alt="AlfEdu"
-          style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0 }} />
+        style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0 }} />
         <div>
           <div style={{ fontSize: 20, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', letterSpacing: '-0.3px', lineHeight: 1.1 }}>EduAlf</div>
           <div style={{ fontSize: 13, fontWeight: 600, color: inkSoft, marginTop: 2 }}>Učím sa hrou</div>
@@ -1167,45 +1214,45 @@ function ProfileDrawer({ dark = false }) {
       {/* ── Menu položky ── */}
       <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 8, flex: 1 }}>
         <MenuRow dark={dark}
-          icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />}
-          label="AlfBook" />
+        icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />}
+        label="AlfBook" />
         <MenuRow dark={dark}
-          icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />}
-          label="Alfík" />
+        icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />}
+        label="Alfík" />
         <div style={{ height: 1, background: line, margin: '6px 20px' }} />
         <MenuRow dark={dark}
-          icon={
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+        icon={
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
             </svg>}
-          label="Môj profil" />
+        label="Môj profil" />
         <MenuRow dark={dark}
-          icon={
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1-.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        icon={
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1-.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
             </svg>}
-          label="Nastavenia" />
+        label="Nastavenia" />
         <MenuRow dark={dark}
-          icon={
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+        icon={
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
             </svg>}
-          label="O aplikácii" />
+        label="O aplikácii" />
       </div>
 
       {/* ── Odhlásiť sa ── */}
       <div style={{ borderTop: `1px solid ${line}`, paddingBottom: 80 }}>
         <MenuRow dark={dark} danger
-          icon={
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={neg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+        icon={
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={neg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <path d="M16 17l5-5-5-5" /><path d="M21 12H9" />
             </svg>}
-          label="Odhlásiť sa" />
+        label="Odhlásiť sa" />
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 window.ProfileDrawer = ProfileDrawer;
@@ -1214,21 +1261,21 @@ window.ProfileDrawer = ProfileDrawer;
 // PROFILE DRAWER V2 — interaktívne bočné menu (Alfík kontext)
 // ─────────────────────────────────────────────────────────────
 const DRAWER_LANGS = [
-  { code: 'sk', name: 'Slovenčina' },
-  { code: 'cz', name: 'Čeština' },
-  { code: 'en', name: 'Angličtina' },
-  { code: 'de', name: 'Nemčina' },
-  { code: 'hu', name: 'Maďarčina' },
-  { code: 'ua', name: 'Ukrajčina' },
-];
+{ code: 'sk', name: 'Slovenčina' },
+{ code: 'cz', name: 'Čeština' },
+{ code: 'en', name: 'Angličtina' },
+{ code: 'de', name: 'Nemčina' },
+{ code: 'hu', name: 'Maďarčina' },
+{ code: 'ua', name: 'Ukrajčina' }];
+
 
 function LangFlag({ code }) {
   const base = { width: 24, height: 16, borderRadius: 3, overflow: 'hidden', position: 'relative', flexShrink: 0, boxShadow: '0 0 0 1px rgba(15,30,55,0.10)' };
-  const stripes = (cols) => (
-    <div style={{ ...base }}>
-      {cols.map((c, i) => <div key={i} style={{ height: (100 / cols.length) + '%', background: c }} />)}
-    </div>
-  );
+  const stripes = (cols) =>
+  <div style={{ ...base }}>
+      {cols.map((c, i) => <div key={i} style={{ height: 100 / cols.length + '%', background: c }} />)}
+    </div>;
+
   if (code === 'sk') return (
     <div style={base}>
       <div style={{ position: 'absolute', inset: 0 }}>
@@ -1242,8 +1289,8 @@ function LangFlag({ code }) {
         <rect x="6.1" y="5.1" width="2.3" height="0.7" fill="#FFFFFF" />
         <rect x="5.7" y="6.5" width="3.1" height="0.7" fill="#FFFFFF" />
       </svg>
-    </div>
-  );
+    </div>);
+
   if (code === 'de') return stripes(['#000000', '#DD0000', '#FFCE00']);
   if (code === 'hu') return stripes(['#CD2A3E', '#FFFFFF', '#436F4D']);
   if (code === 'ua') return stripes(['#0057B7', '#FFD700']);
@@ -1253,8 +1300,8 @@ function LangFlag({ code }) {
         <div style={{ height: '50%', background: '#FFFFFF' }} /><div style={{ height: '50%', background: '#D7141A' }} />
       </div>
       <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderLeft: '12px solid #11457E' }} />
-    </div>
-  );
+    </div>);
+
   if (code === 'en') return (
     <div style={base}>
       <svg viewBox="0 0 24 16" width="24" height="16" style={{ display: 'block' }}>
@@ -1266,8 +1313,8 @@ function LangFlag({ code }) {
         <rect x="10.2" y="0" width="3.6" height="16" fill="#C8102E" />
         <rect x="0" y="6.2" width="24" height="3.6" fill="#C8102E" />
       </svg>
-    </div>
-  );
+    </div>);
+
   return null;
 }
 
@@ -1280,19 +1327,20 @@ function DrawerRowV2({ icon, label, danger, active, onClick, dark }) {
     <div onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: 18,
       padding: '11px 22px', cursor: 'pointer', position: 'relative',
-      background: active ? 'rgba(63,169,224,0.12)' : 'transparent',
+      background: active ? 'rgba(63,169,224,0.12)' : 'transparent'
     }}>
       {active && <div style={{ position: 'absolute', left: 0, top: 7, bottom: 7, width: 4, borderRadius: '0 4px 4px 0', background: ACCENT }} />}
       <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</div>
       <div style={{ fontSize: 16, fontWeight: danger ? 700 : 600, color: danger ? NEG : INK, flex: 1 }}>{label}</div>
-    </div>
-  );
+    </div>);
+
 }
 
 function ProfileDrawerV2({
   dark = false,
   onEduAlf, onAlfBook, onAlfik, onHistoria,
   onProfil, onAdmin, onPodpora, onAbout, onLogout,
+  lang: langProp, onLang
 }) {
   const p = ALFIK_PALETTE;
   const INK = dark ? p.darkInk : '#1A2B3D';
@@ -1304,18 +1352,20 @@ function ProfileDrawerV2({
   const ACCENT = '#3FA9E0';
   const NEG = (window.QUASAR || {}).negative || '#E5484D';
   const [openLang, setOpenLang] = React.useState(false);
-  const [lang, setLang] = React.useState('sk');
+  const [langState, setLangState] = React.useState('sk');
+  const lang = langProp != null ? langProp : langState;
+  const setLang = (code) => { if (onLang) onLang(code); else setLangState(code); };
 
   return (
     <div onClick={(e) => e.stopPropagation()} style={{
       position: 'absolute', top: 0, left: 0, bottom: 0, width: 256,
       background: SURF, boxShadow: '14px 0 36px -12px rgba(15,30,55,0.32)',
-      display: 'flex', flexDirection: 'column',
+      display: 'flex', flexDirection: 'column'
     }}>
       {/* EduAlf header */}
       <div onClick={onEduAlf} style={{
         background: STRIP, padding: '18px 22px 16px',
-        display: 'flex', alignItems: 'center', gap: 14, borderBottom: `1px solid ${LINE}`, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 14, borderBottom: `1px solid ${LINE}`, cursor: 'pointer'
       }}>
         <img src="assets/logo_edu_alf.svg" alt="EduAlf" style={{ width: 48, height: 48, objectFit: 'contain', flexShrink: 0 }} />
         <div>
@@ -1327,9 +1377,9 @@ function ProfileDrawerV2({
       {/* Produkty */}
       <div style={{ paddingTop: 8 }}>
         <DrawerRowV2 dark={dark} label="AlfBook" onClick={onAlfBook}
-          icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
+        icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
         <DrawerRowV2 dark={dark} label="Alfík" active onClick={onAlfik}
-          icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
+        icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
         {/* História pod Alfíkom — podkategória */}
         <div onClick={onHistoria} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 9px 30px', cursor: 'pointer' }}>
           <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
@@ -1349,52 +1399,52 @@ function ProfileDrawerV2({
       {/* Spodná skupina (hneď pod vrchnou) */}
       <div style={{ paddingTop: 2 }}>
         {/* Jazyk — podkategórie pod riadkom */}
-        <div onClick={() => setOpenLang(v => !v)} style={{
-          display: 'flex', alignItems: 'center', gap: 18, padding: '11px 22px', cursor: 'pointer',
+        <div onClick={() => setOpenLang((v) => !v)} style={{
+          display: 'flex', alignItems: 'center', gap: 18, padding: '11px 22px', cursor: 'pointer'
         }}>
           <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <LangFlag code={lang} />
           </div>
           <div style={{ fontSize: 16, fontWeight: 600, color: INK, flex: 1 }}>Jazyk</div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INK_MUTE} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
-            style={{ transition: 'transform .25s ease', transform: openLang ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          style={{ transition: 'transform .25s ease', transform: openLang ? 'rotate(180deg)' : 'rotate(0deg)' }}>
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </div>
 
-        {openLang && (
-          <div style={{ paddingBottom: 4 }}>
-            {DRAWER_LANGS.map(l => {
-              const sel = l.code === lang;
-              return (
-                <div key={l.code} onClick={() => { setLang(l.code); setOpenLang(false); }} style={{
-                  display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 7px 30px', cursor: 'pointer',
-                  background: sel ? 'rgba(63,169,224,0.10)' : 'transparent',
-                }}>
+        {openLang &&
+        <div style={{ paddingBottom: 4 }}>
+            {DRAWER_LANGS.map((l) => {
+            const sel = l.code === lang;
+            return (
+              <div key={l.code} onClick={() => {setLang(l.code);setOpenLang(false);}} style={{
+                display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 7px 30px', cursor: 'pointer',
+                background: sel ? 'rgba(63,169,224,0.10)' : 'transparent'
+              }}>
                   <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
                     <div style={{ width: 2, height: 18, background: sel ? ACCENT : 'rgba(15,30,55,0.12)', borderRadius: 2 }} />
                   </div>
                   <LangFlag code={l.code} />
                   <div style={{ fontSize: 14, fontWeight: sel ? 700 : 600, letterSpacing: 0.2, color: sel ? INK : '#41526A', flex: 1 }}>{l.name}</div>
-                  {sel && (
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                  {sel &&
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                  )}
-                </div>
-              );
-            })}
+                }
+                </div>);
+
+          })}
           </div>
-        )}
+        }
 
         <DrawerRowV2 dark={dark} label="Môj profil" onClick={onProfil}
-          icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" /></svg>} />
+        icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" /></svg>} />
         <DrawerRowV2 dark={dark} label="Administrácia" onClick={onAdmin}
-          icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.3-2.9 8.2-7 9.4C7.9 19.2 5 15.3 5 11V6l7-3z" /><path d="M9.2 12l1.9 1.9 3.7-3.8" /></svg>} />
+        icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.3-2.9 8.2-7 9.4C7.9 19.2 5 15.3 5 11V6l7-3z" /><path d="M9.2 12l1.9 1.9 3.7-3.8" /></svg>} />
         <DrawerRowV2 dark={dark} label="Podpora" onClick={onPodpora}
-          icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4" /><path d="M12 17h.01" /></svg>} />
+        icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4" /><path d="M12 17h.01" /></svg>} />
         <DrawerRowV2 dark={dark} label="O EduAlf" onClick={onAbout}
-          icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>} />
+        icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>} />
       </div>
 
       {/* spacer */}
@@ -1403,10 +1453,10 @@ function ProfileDrawerV2({
       {/* Odhlásiť sa (dole) */}
       <div style={{ borderTop: `1px solid ${LINE}`, paddingBottom: 40, paddingTop: 4 }}>
         <DrawerRowV2 dark={dark} label="Odhlásiť sa" danger onClick={onLogout}
-          icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={NEG} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>} />
+        icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={NEG} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>} />
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 window.ProfileDrawerV2 = ProfileDrawerV2;

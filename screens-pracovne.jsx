@@ -155,6 +155,7 @@ function GrafomotorikaScreen({ dark = false, columns = 2 }) {
           shadowColor="rgba(0,168,181,0.45)"
           accent="#00A8B5"
           ageIcon="all"
+          showAgeLabel={true}
           showSpeaker={true}
           speakerDot="#00A8B5"
           crumbs={['Alfík', 'Pracovné listy', 'Šport', 'Grafomotorika']}
@@ -197,16 +198,16 @@ function GrafoRow({ item, dark }) {
       minHeight: 63
     }}>
       {/* vekový odznak */}
-      {window.AgeBadge && <window.AgeBadge age={item.age} size={28} />}
+      {window.AgeBadge && <window.AgeBadge age={item.age} size={30} />}
 
       {/* PDF / JPG badge */}
       <div style={{
         flexShrink: 0,
         background: 'transparent',
-        borderRadius: 8, padding: '3px 8px',
+        borderRadius: 8, padding: 0,
         display: 'flex', alignItems: 'center', gap: 3
       }}>
-        <FileBadgeIcon kind={isPdf ? 'pdf' : 'jpg'} size={24} />
+        <FileBadgeIcon kind={isPdf ? 'pdf' : 'jpg'} size={30} />
       </div>
 
       {/* Name */}
@@ -400,25 +401,16 @@ function FilterChip({ dark, active, icon, label, accent: accentProp }) {
 
 function FileBadgeIcon({ kind, size = 26 }) {
   const isPdf = kind === 'pdf';
-  const color = isPdf ? '#E53935' : '#1E62D5';
-  const fill = isPdf ? '#FFE5E3' : '#DEE9FB';
+  const src = isPdf ? 'assets/mat_pdf.svg' : 'assets/mat_obrazok.svg';
   const label = isPdf ? 'PDF' : 'JPG';
   return (
     <div style={{
-      width: size, height: size * 1.15,
+      width: size, height: size,
       position: 'relative', flexShrink: 0,
-      display: 'flex', alignItems: 'flex-end', justifyContent: 'center'
+      display: 'flex', alignItems: 'center', justifyContent: 'center'
     }}>
-      <svg viewBox="0 0 24 28" width="100%" height="100%" style={{ position: 'absolute', inset: 0 }}>
-        <path d="M4 1 H15 L20 6 V25 a2 2 0 0 1 -2 2 H4 a2 2 0 0 1 -2 -2 V3 a2 2 0 0 1 2 -2 z"
-          fill={fill} stroke={color} strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M15 1 V6 H20" fill="none" stroke={color} strokeWidth="1.6" strokeLinejoin="round" />
-        <rect x="2" y="15" width="20" height="9" rx="2" fill={color} />
-        <text x="12" y="22" textAnchor="middle"
-          style={{ fontFamily: '"Dosis", sans-serif', fontSize: 6.2, fontWeight: 900, fill: '#fff', letterSpacing: '0.3px' }}>
-          {label}
-        </text>
-      </svg>
+      <img src={src} alt={label}
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
     </div>
   );
 }
