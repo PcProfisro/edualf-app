@@ -392,12 +392,12 @@ function LoginTypingScreen({ dark = false }) {
 // ─────────────────────────────────────────────────────────────
 
 // Login field row (štýl z reálnej app — label navrchu, hodnota dole)
-function LoginField({ dark, label, value, icon, trailing }) {
+function LoginField({ dark, label, value, icon, trailing, compact }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 14px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: compact ? '9px 14px' : '13px 14px' }}>
       <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {icon}
       </div>
@@ -411,7 +411,7 @@ function LoginField({ dark, label, value, icon, trailing }) {
 }
 
 // Obal pre login polia — biely blok so separátorom
-function LoginFieldBlock({ dark, children }) {
+function LoginFieldBlock({ dark, children, outline }) {
   const p = ALFIK_PALETTE;
   const surf = dark ? p.darkSurf : 'rgba(255,255,255,0.94)';
   const sep = dark ? p.darkLine : 'rgba(200,215,230,0.7)';
@@ -419,8 +419,10 @@ function LoginFieldBlock({ dark, children }) {
   return (
     <div style={{
       background: surf, borderRadius: 14, overflow: 'hidden',
-      boxShadow: '0 2px 12px rgba(15,30,55,0.09)',
-      border: '1px solid rgba(200,215,230,0.4)'
+      boxShadow: outline ? 'none' : '0 2px 12px rgba(15,30,55,0.09)',
+      border: outline
+        ? `1px solid ${dark ? p.darkLine : 'rgba(190,206,222,0.7)'}`
+        : '1px solid rgba(200,215,230,0.4)'
     }}>
       {arr.map((child, i) =>
       <React.Fragment key={i}>

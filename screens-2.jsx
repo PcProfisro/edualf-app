@@ -106,8 +106,8 @@ const PRIRODA_SUB = [
 
 // Testy pre „Živočíchy“
 const TESTS = [
-{ age: '3-4', name: 'Kto povedal mňau?', rating: 'great', preview: 'assets/test_kitten.png' },
-{ age: '3-4', name: 'Kde je moja mamička?', rating: 'good', preview: 'assets/test_baby_animals.png' },
+{ age: '3-4', name: 'Kto povedal mňau?', rating: 'great', preview: 'assets/test_kitten.png', nove: true },
+{ age: '3-4', name: 'Kde je moja mamička?', rating: 'good', preview: 'assets/test_baby_animals.png', nove: true },
 { age: '3-4', name: 'Čím sa živia zvieratká?', rating: 'ok', preview: 'assets/test_food.png' },
 { age: '4-5', name: 'Čo sa skrýva v ZOO?', rating: null, preview: 'assets/test_zoo.png' },
 { age: '4-5', name: 'Čo sa skrýva na lúke?', rating: 'good', preview: null },
@@ -115,7 +115,7 @@ const TESTS = [
 { age: '4-5', name: 'Čo sa skrýva za plotom?', rating: 'ok', preview: 'assets/test_fence.png' },
 { age: '5-6', name: 'Čo sa skrýva za stromom?', rating: null, preview: null },
 { age: '5-6', name: 'Čo sa skrýva pod hladinou?', rating: 'good', preview: null },
-{ age: '5-6', name: 'Pomenovanie zvieracích zvukov', rating: null, preview: null },
+{ age: '5-6', name: 'Pomenovanie zvieracích zvukov', rating: null, preview: null, nove: true },
 { age: '5-6', name: 'Rozstrihané obrázky — zvieratá', rating: null, preview: null }];
 
 

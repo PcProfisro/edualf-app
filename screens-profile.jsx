@@ -212,8 +212,7 @@ function MaterialInput({ label, value, icon, dark, suffix }) {
       }}>
         {icon && (
           <span style={{
-            display: 'flex', width: 24, height: 24, borderRadius: 7,
-            background: dark ? p.darkBg : '#F2F7FB',
+            display: 'flex', width: 24, height: 24,
             alignItems: 'center', justifyContent: 'center',
             color: inkSoft, flexShrink: 0
           }}>
@@ -282,6 +281,7 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const acc = (window.QUASAR || p).accent || '#3FA9E0';
   return (
     <ProfileFrame dark={dark} label="07 Profil — Základné údaje" activeTab="zakladne">
       <SectionLabel dark={dark}>Základné údaje</SectionLabel>
@@ -314,25 +314,33 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <MaterialInput dark={dark} label="E-mail *" value="admin@betaalf.com"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>}/>
-          <MaterialInput dark={dark} label="Meno *" value="System"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>}/>
-          <MaterialInput dark={dark} label="Priezvisko *" value="Admin"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>}/>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="E-mail *" value="admin@betaalf.com"
+              icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>}/>
+          </LoginFieldBlock>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="Meno *" value="System"
+              icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>}/>
+          </LoginFieldBlock>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="Priezvisko *" value="Admin"
+              icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>}/>
+          </LoginFieldBlock>
           <div>
-            <MaterialInput dark={dark} label="Telefón" value=""
-              icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2L8 9.6a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2-.4c.9.3 1.8.5 2.7.6A2 2 0 0 1 22 16.9z"/></svg>}/>
-            <div style={{ fontSize: 11, color: inkSoft, fontFamily: '"Dosis", sans-serif', marginTop: 6, marginLeft: 12 }}>
+            <LoginFieldBlock dark={dark} outline>
+              <LoginField dark={dark} compact label="Telefón" value=""
+                icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2L8 9.6a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2-.4c.9.3 1.8.5 2.7.6A2 2 0 0 1 22 16.9z"/></svg>}/>
+            </LoginFieldBlock>
+            <div style={{ fontSize: 11, color: inkSoft, fontFamily: '"Dosis", sans-serif', marginTop: 6, marginLeft: 4 }}>
               Formát: +421 XXX XXX XXX
             </div>
           </div>
-          <MaterialInput dark={dark} label="Jazyk *" value="Slovenčina"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>}
-            suffix={
-              <svg width="14" height="14" viewBox="0 0 24 24" fill={inkSoft}><path d="M7 10l5 5 5-5z"/></svg>
-            }/>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="Jazyk *" value="Slovenčina"
+              icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>}
+              trailing={<svg width="16" height="16" viewBox="0 0 24 24" fill={inkSoft}><path d="M7 10l5 5 5-5z"/></svg>}/>
+          </LoginFieldBlock>
         </div>
 
         <div data-checkbox="subscribed" style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 18, paddingTop: 16, borderTop: `1px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.06)'}`, cursor: 'pointer' }}>
@@ -370,15 +378,23 @@ function ProfileHesloScreen({ dark = false }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
-  const lockIcon = <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>;
+  const acc = (window.QUASAR || p).accent || '#3FA9E0';
+  const lockIcon = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>;
+  const eyeIcon = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
   return (
     <ProfileFrame dark={dark} label="07b Profil — Zmena hesla" activeTab="heslo">
       <SectionLabel dark={dark}>Zmena hesla</SectionLabel>
       <ProfileCard dark={dark} style={{ marginBottom: 18 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginBottom: 22 }}>
-          <MaterialInput dark={dark} label="" value="Staré heslo" icon={lockIcon}/>
-          <MaterialInput dark={dark} label="" value="Nové heslo" icon={lockIcon}/>
-          <MaterialInput dark={dark} label="" value="Potvrdiť nové heslo" icon={lockIcon}/>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 22 }}>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="Staré heslo" value="••••••••" icon={lockIcon} trailing={eyeIcon}/>
+          </LoginFieldBlock>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="Nové heslo" value="" icon={lockIcon}/>
+          </LoginFieldBlock>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="Potvrdiť nové heslo" value="" icon={lockIcon}/>
+          </LoginFieldBlock>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -413,12 +429,21 @@ function ProfileHesloScreen({ dark = false }) {
 // ─────────────────────────────────────────────────────────────
 // Licence card
 // ─────────────────────────────────────────────────────────────
-function LicenceCard({ dark, name, logo, active, dateText, primaryAction = 'O PRODUKTE', secondaryAction = 'OBJEDNAŤ' }) {
+function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 'O PRODUKTE', secondaryAction = 'OBJEDNAŤ' }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
   const Q = window.QUASAR || p;
   const borderColor = active ? Q.primary : (dark ? p.darkLine : 'rgba(15,30,55,0.15)');
+  const urlMap = {
+    'ALFPÉDIA': { label: 'edualf.com', href: 'https://edualf.com/olt/www/sk/dtb/file/default' },
+    'DOMÁCE ÚLOHY': { label: 'edualf.com', href: 'https://edualf.com/olt/www/sk/dtb/file/default' },
+    'ALFBOOK': { label: 'alfbook.edualf.com', href: 'https://alfbook.edualf.com/index.html?lng=sk' },
+    'ALFÍK': { label: 'alfik.edualf.com', href: 'https://alfik.edualf.com/index.html?lng=sk' },
+    'ALF FAMILY': { label: 'edualf.com', href: 'https://edualf.com/sk/produkty/alf-family/' }
+  };
+  const productUrl = url || (urlMap[name] && urlMap[name].label) || '';
+  const productHref = (urlMap[name] && urlMap[name].href) || '#';
   return (
     <div style={{
       background: dark ? p.darkSurf : '#FFFFFF',
@@ -441,20 +466,28 @@ function LicenceCard({ dark, name, logo, active, dateText, primaryAction = 'O PR
         fontSize: 11, color: inkSoft, fontFamily: 'monospace'
       }}>{logo}</div>
 
-      <div style={{
-        width: 36, height: 28, margin: '0 auto',
-        borderRadius: 7,
-        background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(15,30,55,0.06)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      <a href={productHref} target="_blank" rel="noopener noreferrer" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+        width: '100%', boxSizing: 'border-box',
+        padding: '7px 13px',
+        borderRadius: 10,
+        background: dark ? 'rgba(63,169,224,0.16)' : '#D6ECF8',
+        color: '#3FA9E0',
+        textDecoration: 'none',
+        cursor: 'pointer'
       }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/>
-          <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <path d="M15 3h6v6M10 14L21 3"/>
         </svg>
-      </div>
+        <span style={{
+          fontSize: 12.5, fontWeight: 700,
+          fontFamily: '"Dosis", sans-serif', letterSpacing: '0.2px',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+        }}>{productUrl}</span>
+      </a>
 
       <div style={{
-        background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(15,30,55,0.04)',
         borderRadius: 8,
         padding: '10px 8px',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4
@@ -475,15 +508,14 @@ function LicenceCard({ dark, name, logo, active, dateText, primaryAction = 'O PR
 
       {active ? (
         <button style={{
-          background: `linear-gradient(135deg, ${Q.primary} 0%, ${Q.primaryDeep} 100%)`,
+          background: Q.primary,
           color: '#FFFFFF', border: 'none',
           borderRadius: 10, padding: '9px 0',
-          fontSize: 12, fontWeight: 800, letterSpacing: '0.6px',
+          fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
           fontFamily: '"Dosis", sans-serif',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           cursor: 'pointer',
-          textTransform: 'uppercase',
-          boxShadow: '0 3px 8px -2px rgba(114,182,0,0.55)'
+          textTransform: 'uppercase'
         }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
           Videonávody
@@ -491,24 +523,24 @@ function LicenceCard({ dark, name, logo, active, dateText, primaryAction = 'O PR
       ) : (
         <>
           <button style={{
-            background: 'transparent',
-            color: Q.primary,
-            border: `1.5px solid ${Q.primary}`,
-            borderRadius: 10, padding: '7px 0',
-            fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
-            fontFamily: '"Dosis", sans-serif',
-            cursor: 'pointer',
-            textTransform: 'uppercase'
-          }}>{primaryAction}</button>
-          <button style={{
-            background: Q.accent,
+            background: Q.primary,
             color: '#FFFFFF', border: 'none',
-            borderRadius: 10, padding: '7px 0',
+            borderRadius: 10, padding: '9px 0',
             fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
             fontFamily: '"Dosis", sans-serif',
             cursor: 'pointer',
             textTransform: 'uppercase'
           }}>{secondaryAction}</button>
+          <button style={{
+            background: 'transparent',
+            color: Q.primary,
+            border: `1.5px solid ${Q.primary}`,
+            borderRadius: 10, padding: '7.5px 0',
+            fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
+            fontFamily: '"Dosis", sans-serif',
+            cursor: 'pointer',
+            textTransform: 'uppercase'
+          }}>{primaryAction}</button>
         </>
       )}
     </div>
@@ -529,19 +561,8 @@ function BrandLogo({ name }) {
       style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain', display: 'block' }} />
   );
   if (name === 'ALF FAMILY') return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      <span style={{ fontSize: 18, fontWeight: 900, fontFamily: '"Dosis", sans-serif', color: '#1A2B3D' }}>Alf</span>
-      <svg width="12" height="16" viewBox="0 0 24 32"><path d="M6 8a6 6 0 0 1 12 0c0 4-6 5-6 9M12 24v2" stroke="#FFB400" strokeWidth="3.5" strokeLinecap="round" fill="none"/></svg>
-      <span style={{ fontSize: 11, fontWeight: 800, fontFamily: '"Dosis", sans-serif', color: '#1A2B3D', marginLeft: 1 }}>family</span>
-      <svg width="22" height="22" viewBox="0 0 32 32" style={{ marginLeft: 2 }}>
-        <circle cx="16" cy="6" r="3" fill="#3FA9E0"/>
-        <circle cx="6" cy="20" r="3" fill="#3FA9E0"/>
-        <circle cx="26" cy="20" r="3" fill="#3FA9E0"/>
-        <circle cx="11" cy="26" r="2.5" fill="#3FA9E0"/>
-        <circle cx="21" cy="26" r="2.5" fill="#3FA9E0"/>
-        <path d="M16 8L7 18M16 8l9 10M9 21l3 4M23 21l-3 4" stroke="#3FA9E0" strokeWidth="1.5"/>
-      </svg>
-    </div>
+    <img src="assets/alffamily_logo.svg" alt={name}
+      style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain', display: 'block' }} />
   );
   return name;
 }
@@ -573,7 +594,10 @@ function ProfileUcitelScreen({ dark = false }) {
         <div style={{ height: 1, background: dark ? p.darkLine : 'rgba(15,30,55,0.06)', margin: '14px 0' }} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{
+            width: 24, flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="8" r="4"/>
               <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
@@ -608,30 +632,33 @@ function AccessRow({ dark, label, sub, code, icon }) {
   const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <div style={{
+        width: 24, flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
         {icon}
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif' }}>{label}</div>
         <div style={{ fontSize: 12, fontWeight: 600, color: inkSoft, fontFamily: '"Dosis", sans-serif', marginTop: 1 }}>{sub}</div>
       </div>
-      <div style={{
+      <button style={{
+        display: 'flex', alignItems: 'center', gap: 8,
         background: '#D6ECF8',
         color: '#3FA9E0',
-        padding: '6px 12px',
+        padding: '7px 12px',
         borderRadius: 10,
-        fontFamily: 'monospace, monospace',
-        fontSize: 13, fontWeight: 700,
-        letterSpacing: '1px'
-      }}>{code}</div>
-      <button style={{
-        width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0
+        border: 'none', cursor: 'pointer'
       }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
           <rect x="9" y="9" width="13" height="13" rx="2"/>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
         </svg>
+        <span style={{
+          fontFamily: 'monospace, monospace',
+          fontSize: 13, fontWeight: 700,
+          letterSpacing: '1px'
+        }}>{code}</span>
       </button>
     </div>
   );

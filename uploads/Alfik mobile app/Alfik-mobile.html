@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alfík — Mobilná aplikácia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #F2F7FB; font-family: 'Nunito', system-ui, sans-serif; color: #1A2B3D; }
+  body.dm-dark { background: #0E1622; color: #F2F7FB; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="screens.jsx"></script>
+  <script type="text/babel" src="screens-2.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "columns": 2,
+      "dark": false
+    }/*EDITMODE-END*/;
+
+    function App() {
+      const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+      const cols = tweaks.columns;
+      const dark = tweaks.dark;
+
+      React.useEffect(() => {
+        document.body.classList.toggle('dm-dark', dark);
+      }, [dark]);
+
+      return (
+        <>
+          <window.DesignCanvas style={{ background: dark ? '#0E1622' : '#F2F7FB' }}>
+            <window.DCSection id="flow" title="Hlavný flow" subtitle="Splash → Prihlásenie → Strom kategórií → Podkategória → Zoznam testov" gap={56}>
+              <window.DCArtboard id="splash" label="01 · Splash" width={430} height={900}>
+                <SplashScreen dark={dark}/>
+              </window.DCArtboard>
+
+              <window.DCArtboard id="premenu" label="01b · Pre-menu" width={430} height={900}>
+                <PreMenuScreen dark={dark}/>
+              </window.DCArtboard>
+
+              <window.DCArtboard id="login" label="02 · Prihlásenie" width={430} height={900}>
+                <LoginScreen dark={dark}/>
+              </window.DCArtboard>
+
+              <window.DCArtboard id="categories" label="03 · Strom kategórií" width={430} height={900}>
+                <CategoryTreeScreen dark={dark} columns={cols}/>
+              </window.DCArtboard>
+
+              <window.DCArtboard id="subcategory" label="04 · Podkategória (Zvieratá)" width={430} height={900}>
+                <SubcategoryScreen dark={dark} columns={cols}/>
+              </window.DCArtboard>
+
+              <window.DCArtboard id="tests" label="05 · Zoznam testov" width={430} height={900}>
+                <TestListScreen dark={dark}/>
+              </window.DCArtboard>
+
+              <window.DCArtboard id="tests-picker" label="05b · Výber veku otvorený" width={430} height={900}>
+                <TestListScreen dark={dark} expanded={true}/>
+              </window.DCArtboard>
+            </window.DCSection>
+          </window.DesignCanvas>
+
+          <window.TweaksPanel title="Tweaks">
+            <window.TweakSection title="Vzhľad">
+              <window.TweakToggle label="Tmavý režim" value={dark} onChange={v => setTweak('dark', v)}/>
+            </window.TweakSection>
+            <window.TweakSection title="Dlaždice kategórií">
+              <window.TweakRadio
+                label="Počet stĺpcov"
+                value={cols}
+                options={[{label: '2 stĺpce', value: 2}, {label: '3 stĺpce', value: 3}]}
+                onChange={v => setTweak('columns', v)}
+              />
+            </window.TweakSection>
+          </window.TweaksPanel>
+        </>
+      );
+    }
+
+    // Wait for all scripts to load
+    const start = () => {
+      if (!window.DesignCanvas || !window.DCSection || !window.DCArtboard
+          || !window.SplashScreen || !window.PreMenuScreen || !window.LoginScreen
+          || !window.CategoryTreeScreen || !window.SubcategoryScreen || !window.TestListScreen
+          || !window.TweaksPanel || !window.useTweaks) {
+        return setTimeout(start, 30);
+      }
+      ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    };
+    start();
+  </script>
+</body>
+</html>

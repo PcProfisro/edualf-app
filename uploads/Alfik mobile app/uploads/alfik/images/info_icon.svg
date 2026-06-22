@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-2851,-14622)">
+        <g transform="matrix(0.656041,0,0,0.119338,1728.95,13980.7)">
+            <g id="info" transform="matrix(1.98796,0,0,10.9284,1711.36,5357.65)">
+                <path d="M16,21.5L16,19C16,18.719 15.781,18.5 15.5,18.5L14,18.5L14,10.5C14,10.219 13.781,10 13.5,10L8.5,10C8.219,10 8,10.219 8,10.5L8,13C8,13.281 8.219,13.5 8.5,13.5L10,13.5L10,18.5L8.5,18.5C8.219,18.5 8,18.719 8,19L8,21.5C8,21.781 8.219,22 8.5,22L15.5,22C15.781,22 16,21.781 16,21.5ZM14,7.5L14,5C14,4.719 13.781,4.5 13.5,4.5L10.5,4.5C10.219,4.5 10,4.719 10,5L10,7.5C10,7.781 10.219,8 10.5,8L13.5,8C13.781,8 14,7.781 14,7.5ZM24,14C24,20.625 18.625,26 12,26C5.375,26 0,20.625 0,14C0,7.375 5.375,2 12,2C18.625,2 24,7.375 24,14Z" style="fill:rgb(118,168,0);fill-rule:nonzero;"></path>
+            </g>
+        </g>
+    </g>
+</svg>
