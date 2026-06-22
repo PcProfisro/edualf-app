@@ -112,25 +112,16 @@ function TestListRow({ test, dark, speakerColor = '#00A8B5' }) {
     ok:    'assets/rating_ok.svg'
   }[test.rating];
 
-  // vekové skupiny slovom + farba
-  const AGE_GROUPS = {
-    '3-4': { label: '3–4 roky',  color: '#E8943A' },
-    '4-5': { label: '4–5 rokov', color: '#00A8B5' },
-    '5-6': { label: '5–6 rokov', color: '#7C6BD9' },
-    'all': { label: 'Všetky vekové skupiny', color: '#6A7A8F' }
-  };
-  const ag = AGE_GROUPS[test.age] || AGE_GROUPS.all;
-
   return (
     <div style={{
       position: 'relative',
       background: surf,
       borderRadius: 22,
-      padding: '10px 12px 10px 10px',
-      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '10px 14px 10px 10px',
+      display: 'flex', alignItems: 'center', gap: 12,
       boxShadow: dark ? 'none' : '0 2px 5px rgba(15,30,55,0.18)',
       border: dark ? `1.5px solid ${p.darkLine}` : 'none',
-      minHeight: 66
+      minHeight: 63
     }}>
       {/* NOVÉ badge — ľavý horný roh riadku */}
       {test.nove &&
@@ -144,31 +135,23 @@ function TestListRow({ test, dark, speakerColor = '#00A8B5' }) {
           textTransform: 'uppercase'
         }}>NOVÉ</span>
       }
+      {/* vekový odznak */}
+      {window.AgeBadge && <window.AgeBadge age={test.age} size={30} />}
+
       {/* typ materiálu */}
       <img src="assets/mat_interaktivny.svg"
         style={{ width: 30, height: 30, objectFit: 'contain', display: 'block', flexShrink: 0 }} alt="Interaktívny test" />
 
-      {/* dvojriadkový text: hore názov, dole veková skupina */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-        <div style={{
-          flex: 1, minWidth: 0,
-          fontSize: 16, fontWeight: 700, letterSpacing: '-0.2px',
-          color: ink, lineHeight: 1.2,
-          fontFamily: '"Dosis", sans-serif',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-        }}>
-          {test.name}
-        </div>
-        {/* veková skupina slovom, farebne, s malou ikonkou */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          fontSize: 12.5, fontWeight: 700, letterSpacing: '0.1px',
-          color: ag.color, lineHeight: 1.15,
-          fontFamily: '"Dosis", sans-serif'
-        }}>
-          {window.AgeBadge && <window.AgeBadge age={test.age} size={18} />}
-          <span>{ag.label}</span>
-        </div>
+      {/* názov — jeden riadok */}
+      <div style={{
+        flex: 1, minWidth: 0,
+        fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px',
+        color: ink, lineHeight: 1.25,
+        fontFamily: '"Dosis", sans-serif',
+        display: '-webkit-box', WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical', overflow: 'hidden'
+      }}>
+        {test.name}
       </div>
 
       {/* rating */}

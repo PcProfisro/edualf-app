@@ -1491,93 +1491,9 @@ function ProfileMenuScreen({ dark = false, columns = 2 }) {
           zIndex: 5
         }} />
 
-        {/* Drawer */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, bottom: 0,
-          width: 280,
-          background: surf,
-          boxShadow: '12px 0 32px -10px rgba(15,30,55,0.30)',
-          zIndex: 10,
-          display: 'flex', flexDirection: 'column'
-        }}>
-          {/* EduAlf header (logo + text) */}
-          <div style={{
-            background: stripBg,
-            padding: '20px 20px 18px',
-            display: 'flex', alignItems: 'center', gap: 14,
-            borderBottom: `1px solid ${line}`
-          }}>
-            <img src="assets/logo_edu_alf.svg" alt="EduAlf"
-            style={{ width: 52, height: 52, objectFit: 'contain', display: 'block', flexShrink: 0 }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-              <div style={{
-                fontSize: 22, fontWeight: 800, color: ink,
-                fontFamily: '"Dosis", sans-serif', letterSpacing: '-0.2px', lineHeight: 1
-              }}>EduAlf</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: inkSoft }}>Učím sa hrou</div>
-            </div>
-          </div>
-
-          {/* Produkty: AlfBook + Alfík */}
-          <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 6, borderBottom: `1px solid ${line}`, paddingBottom: 6 }}>
-            <MenuRow dark={dark}
-            icon={<img src="assets/alfbook_logo.svg" alt=""
-            style={{ width: 28, height: 28, objectFit: 'contain' }} />}
-            label="AlfBook" />
-
-            <MenuRow dark={dark}
-            icon={<img src="assets/alfik_logo.svg" alt=""
-            style={{ width: 28, height: 28, objectFit: 'contain' }} />}
-            label="Alfík" />
-          </div>
-
-          {/* Ostatné položky */}
-          <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 6 }}>
-            <MenuRow dark={dark}
-            icon={
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-                </svg>
-            }
-            label="Môj profil" />
-
-            <MenuRow dark={dark}
-            icon={
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
-                </svg>
-            }
-            label="Nastavenia" />
-
-
-
-            <MenuRow dark={dark}
-            icon={
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4M12 8h.01" />
-                </svg>
-            }
-            label="O aplikácii" />
-          </div>
-
-          {/* Spacer pushes logout to bottom */}
-          <div style={{ flex: 1 }} />
-
-          {/* Logout */}
-          <div style={{ borderTop: `1px solid ${line}`, marginTop: 24, paddingBottom: 40 }}>
-            <MenuRow dark={dark} danger
-            icon={
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={(window.QUASAR || { negative: '#E0463A' }).negative} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <path d="M16 17l5-5-5-5" />
-                  <path d="M21 12H9" />
-                </svg>
-            }
-            label="Odhlásiť sa" />
-          </div>
+        {/* Drawer — zjednotené s prototypom (ProfileDrawerV2) */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 10 }}>
+          <window.ProfileDrawerV2 dark={dark} />
         </div>
       </div>
     </PhoneFrame>);
