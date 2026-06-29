@@ -501,7 +501,7 @@ function LoginScreen({ dark = false }) {
 
         {/* Registrácia — secondary button */}
         <button style={{
-          marginTop: 14,
+          marginTop: 16,
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           width: '100%', padding: '13px 20px',
           background: 'transparent',
@@ -1598,4 +1598,30 @@ function WalkthroughCarousel({ dark = false }) {
 
 }
 
-Object.assign(window, { SplashScreen, PreMenuScreen, LoginScreen, LoginTypingScreen, LoginStep2Screen, LoginSchoolStep1Screen, LoginSchoolScreen, ProductChoiceScreen, ProductChoiceContent, PhoneFrame, Field, ALFIK_PALETTE, WalkthroughScreen1, WalkthroughScreen2, WalkthroughCarousel });
+// ─────────────────────────────────────────────────────────────
+// ScaleTile — dlaždica vždy ŠTVOREC a celý jej obsah (emoji, text,
+// padding, rádius…) sa škáluje PROPORCIONÁLNE podľa skutočnej šírky
+// bunky. Čisté CSS: štvorcová container-query bunka + fixný „design"
+// box 154×154 (resp. 99×99) zväčšený transformom scale(100cqw/design).
+// Žiadny JS / ResizeObserver → funguje aj v sandboxe aj v reálnom
+// prehliadači. Vnútorné rozmery (padding, výšky) zostávajú PRESNE
+// navrhnuté na `design` px — menia sa len proporcionálne cez scale.
+// ─────────────────────────────────────────────────────────────
+function ScaleTile({ design = 154, children }) {
+  return (
+    <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>
+      <div style={{ position: 'absolute', inset: 0, containerType: 'inline-size' }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0,
+          width: design, height: design,
+          transformOrigin: 'top left',
+          transform: `scale(calc(100cqw / ${design}px))`
+        }}>
+          {children}
+        </div>
+      </div>
+    </div>);
+
+}
+
+Object.assign(window, { SplashScreen, PreMenuScreen, LoginScreen, LoginTypingScreen, LoginStep2Screen, LoginSchoolStep1Screen, LoginSchoolScreen, ProductChoiceScreen, ProductChoiceContent, PhoneFrame, Field, ALFIK_PALETTE, WalkthroughScreen1, WalkthroughScreen2, WalkthroughCarousel, ScaleTile });

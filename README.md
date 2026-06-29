@@ -30,6 +30,7 @@ Repozitár má `index.html` v koreni tohto priečinka — stačí zapnúť GitHu
 | `screens-profile.jsx` | Profil, drawer menu, GDPR |
 | `screens-testy-v2.jsx` | Testy |
 | `screens-alfbook.jsx` | AlfBook — výber jazyka, domov |
+| `screens-alfbook-flow.jsx` | AlfBook — ročníky, predmety, témy, obsah |
 | `assets/` | Logá, ikony, ratingy, vlajky |
 | `uploads/` | Obrázky dlaždíc kategórií a podkategórií |
 

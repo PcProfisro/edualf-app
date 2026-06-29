@@ -753,7 +753,7 @@ function ProfileGdprScreen({ dark = false }) {
       </ProfileCard>
 
       <ProfileCard dark={dark} style={{
-        background: dark ? 'rgba(63,169,224,0.08)' : '#EAF4FB',
+        background: dark ? p.darkCard : '#FFFFFF',
         borderColor: dark ? p.darkLine : 'rgba(63,169,224,0.20)'
       }}>
         <div style={{ display: 'flex', gap: 12 }}>

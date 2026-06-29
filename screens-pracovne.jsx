@@ -71,11 +71,9 @@ function PracovneListyScreen({ dark = false, columns = 2 }) {
           alignContent: 'start'
         }}>
           {PRACOVNE_TOPICS.slice(0, columns === 3 ? 9 : 8).map((s) =>
-            <div key={s.id} style={{ position: 'relative', width: '100%', paddingTop: '100%' }}>
-              <div style={{ position: 'absolute', inset: 0 }}>
-                <window.SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'sport'} />
-              </div>
-            </div>
+            <window.ScaleTile key={s.id} design={columns === 3 ? 99 : 154}>
+              <window.SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'sport'} />
+            </window.ScaleTile>
           )}
         </div>
       </div>
@@ -119,11 +117,9 @@ function SportPracovneScreen({ dark = false, columns = 2 }) {
           alignContent: 'start'
         }}>
           {SPORT_TYPY.map((s) =>
-            <div key={s.id} style={{ position: 'relative', width: '100%', paddingTop: '100%' }}>
-              <div style={{ position: 'absolute', inset: 0 }}>
-                <window.SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'grafomotorika'} />
-              </div>
-            </div>
+            <window.ScaleTile key={s.id} design={columns === 3 ? 99 : 154}>
+              <window.SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'grafomotorika'} />
+            </window.ScaleTile>
           )}
         </div>
       </div>

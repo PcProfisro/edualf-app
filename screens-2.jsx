@@ -70,38 +70,38 @@ const BRAND_MINT = '#C2EDD4';
 const TILE_GRADIENT = `linear-gradient(180deg, #15A1A9 0%, #1DBCC4 30%, #4DD6CE 65%, #A0E5D9 100%)`;
 
 const ALF_CATEGORIES = [
-{ id: 'slovencina', name: 'Slovenský jazyk', emoji: '📖', img: 'uploads/Bez názvu - kópia (800 x 800 px) (36).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
-{ id: 'cudzie', name: 'Cudzie jazyky', emoji: '🌍', img: 'uploads/Bez názvu - kópia (800 x 800 px) (35).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
-{ id: 'rozpravky', name: 'Rozprávky', emoji: '📚', img: 'uploads/Bez názvu - kópia (800 x 800 px) (34).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
-{ id: 'pracovne', name: 'Pracovné listy', emoji: '✏️', img: 'uploads/Bez názvu - kópia (800 x 800 px) (39).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
-{ id: 'interaktivne', name: 'Interaktívne cvičenia', emoji: '🎯', img: 'uploads/Bez názvu - kópia (800 x 800 px) (32).webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, smallLabel: true },
-{ id: 'malovanky', name: 'Maľovanky', emoji: '🎨', img: 'uploads/Bez názvu - kópia (800 x 800 px) (38).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, nove: true },
-{ id: 'hadanky', name: 'Hádanky', emoji: '❓', img: 'uploads/Bez názvu - kópia (800 x 800 px) (33).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
-{ id: 'ukazky', name: 'Ukážky úloh', emoji: '🍂', img: 'uploads/Bez názvu - kópia (800 x 800 px) (37).png', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT }];
+{ id: 'slovencina', name: 'Slovenský jazyk', emoji: '📖', img: 'uploads/ilustracie/slovensky-jazyk.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
+{ id: 'cudzie', name: 'Cudzie jazyky', emoji: '🌍', img: 'uploads/ilustracie/cudzie-jazyky.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
+{ id: 'rozpravky', name: 'Rozprávky', emoji: '📚', img: 'uploads/ilustracie/rozpravky.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
+{ id: 'pracovne', name: 'Pracovné listy', emoji: '✏️', img: 'uploads/ilustracie/pracovne-listy.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
+{ id: 'interaktivne', name: 'Interaktívne cvičenia', emoji: '🎯', img: 'uploads/ilustracie/interaktivne-cvicenia.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, smallLabel: true },
+{ id: 'malovanky', name: 'Maľovanky', emoji: '🎨', img: 'uploads/ilustracie/malovanky.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT, nove: true },
+{ id: 'hadanky', name: 'Hádanky', emoji: '❓', img: 'uploads/ilustracie/hadanky.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT },
+{ id: 'ukazky', name: 'Ukážky úloh', emoji: '🍂', img: 'uploads/ilustracie/ukazky-uloh.webp', imgNoBg: true, color: BRAND_TEAL, bg: BRAND_MINT }];
 
 
 // Podkategórie pod „Interaktívne cvičenia“ — všetky tyrkysové
 const INTERAKTIVNE_SUB = [
-{ id: 'okolo', name: 'Okolo nás', emoji: '🏘️', img: 'uploads/Bez názvu - kópia (800 x 800 px) (51).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'rodina', name: 'Moja rodina a krajina', emoji: '👨\u200d👩\u200d👧', img: 'uploads/Bez názvu - kópia (800 x 800 px) (50).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'povolania', name: 'Povolania', emoji: '👷', img: 'uploads/Bez názvu - kópia (800 x 800 px) (52).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'priroda', name: 'Príroda', emoji: '🌳', img: 'uploads/Bez názvu - kópia (800 x 800 px) (41).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'cisla', name: 'Čísla', emoji: '🔢', img: 'uploads/Bez názvu - kópia (800 x 800 px) (42).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'zdravie', name: 'Zdravie', emoji: '🍎', img: 'uploads/Bez názvu - kópia (800 x 800 px) (43).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'geometria', name: 'Geometria', emoji: '🔺', img: 'uploads/Bez názvu - kópia (800 x 800 px) (49).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'doprava', name: 'Doprava', emoji: '🚌', img: 'uploads/Bez názvu - kópia (800 x 800 px) (40).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'logika', name: 'Logika', emoji: '🧩', img: 'uploads/Bez názvu - kópia (800 x 800 px) (47).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'sviatky', name: 'Sviatky', emoji: '🎄', img: 'uploads/Bez názvu - kópia (800 x 800 px) (48).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'abeceda', name: 'Abeceda', emoji: '🔤', img: 'uploads/Bez názvu - kópia (800 x 800 px) (45).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'rocne', name: 'Ročné obdobia', emoji: '🍁', img: 'uploads/Bez názvu - kópia (800 x 800 px) (46).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'farby', name: 'Farby', emoji: '🎨', img: 'uploads/ChatGPT Image 16. 6. 2026, 14_07_23 (10).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' }];
+{ id: 'okolo', name: 'Okolo nás', emoji: '🏘️', img: 'uploads/ilustracie/okolo-nas.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'rodina', name: 'Moja rodina a krajina', emoji: '👨\u200d👩\u200d👧', img: 'uploads/ilustracie/moja-rodina-a-krajina.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'povolania', name: 'Povolania', emoji: '👷', img: 'uploads/ilustracie/povolania.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'priroda', name: 'Príroda', emoji: '🌳', img: 'uploads/ilustracie/priroda.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'cisla', name: 'Čísla', emoji: '🔢', img: 'uploads/ilustracie/cisla.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'zdravie', name: 'Zdravie', emoji: '🍎', img: 'uploads/ilustracie/zdravie.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'geometria', name: 'Geometria', emoji: '🔺', img: 'uploads/ilustracie/geometria.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'doprava', name: 'Doprava', emoji: '🚌', img: 'uploads/ilustracie/doprava.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'logika', name: 'Logika', emoji: '🧩', img: 'uploads/ilustracie/logika.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'sviatky', name: 'Sviatky', emoji: '🎄', img: 'uploads/ilustracie/sviatky.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'abeceda', name: 'Abeceda', emoji: '🔤', img: 'uploads/ilustracie/abeceda.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'rocne', name: 'Ročné obdobia', emoji: '🍁', img: 'uploads/ilustracie/rocne-obdobia.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'farby', name: 'Farby', emoji: '🎨', img: 'uploads/ilustracie/farby.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' }];
 
 
 // Podkategórie pod „Príroda“ — tyrkysové
 const PRIRODA_SUB = [
-{ id: 'svet', name: 'Svet okolo nás', emoji: '🌍', img: 'uploads/Bez názvu - kópia (800 x 800 px) (51).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'rastliny', name: 'Rastliny', emoji: '🌷', img: 'uploads/Bez názvu - kópia (800 x 800 px) (54).png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
-{ id: 'zivocichy', name: 'Živočíchy', emoji: '🐾', img: 'uploads/zivocichy.png', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' }];
+{ id: 'svet', name: 'Svet okolo nás', emoji: '🌍', img: 'uploads/ilustracie/okolo-nas.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'rastliny', name: 'Rastliny', emoji: '🌷', img: 'uploads/ilustracie/rastliny.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' },
+{ id: 'zivocichy', name: 'Živočíchy', emoji: '🐾', img: 'uploads/ilustracie/zivocichy.webp', imgNoBg: true, color: '#00A8B5', bg: '#7BDDE6' }];
 
 
 // Testy pre „Živočíchy“
@@ -311,21 +311,50 @@ function CategoryTreeContent({ dark = false, columns = 2 }) {
         showAgeAvatar={false}
         profile="Timo" />
 
-      <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{
-        flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px',
-        display: 'grid',
-        gridTemplateColumns: columns === 3 ? 'repeat(3, 99px)' : 'repeat(2, 154px)',
-        justifyContent: 'center',
-        gap: columns === 3 ? 14 : 20,
-        alignContent: 'start'
-      }}>
-        {ALF_CATEGORIES.slice(0, columns === 3 ? 9 : 8).map((c) =>
-        <div key={c.id} style={{ position: 'relative', width: '100%', paddingTop: '100%' }}>
-          <div style={{ position: 'absolute', inset: 0 }}>
+      {/* D — počet stĺpcov podľa šírky (container queries), dlaždica zastropovaná
+           na 154px → štvorec, pomer aj padding ostanú konštantné, dlaždica nikdy
+           neballoní. Telefón 2 → tablet 4 → veľký displej 6 stĺpcov, vycentrované. */}
+      {columns === 'auto' &&
+      <style>{`
+        .alf-cat-host { container-type: inline-size; }
+        .alf-cat-grid {
+          display: grid;
+          justify-content: center;
+          gap: 20px;
+          padding: 0 20px;
+          align-content: start;
+          grid-template-columns: repeat(2, minmax(0, 154px));
+        }
+        /* Len veľmi úzky displej (iPhone SE ~320px): zmenšia sa okraje a medzery,
+           aby dlaždica ostala veľká. Malý telefón (360px+) má pôvodné paddingy. */
+        @container (max-width: 325px) { .alf-cat-grid { gap: 8px; padding: 0 6px; } }
+        @container (min-width: 560px) { .alf-cat-grid { grid-template-columns: repeat(3, minmax(0, 154px)); } }
+        @container (min-width: 740px) { .alf-cat-grid { grid-template-columns: repeat(4, minmax(0, 154px)); } }
+        @container (min-width: 1100px){ .alf-cat-grid { grid-template-columns: repeat(6, minmax(0, 154px)); } }
+      `}</style>
+      }
+
+      <div
+        data-scroll-area
+        onWheel={(e) => e.stopPropagation()}
+        className={columns === 'auto' ? 'alf-cat-host' : undefined}
+        style={columns === 'auto' ? {
+          flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px'
+        } : {
+          flex: 1, minHeight: 0, overflowY: 'auto',
+          padding: columns === 3 ? '10px 32px 26px' : '10px 31px 26px',
+          display: 'grid',
+          gridTemplateColumns: columns === 3 ? 'repeat(3, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))',
+          gap: columns === 3 ? 14 : 20,
+          alignContent: 'start'
+        }}>
+        <div className={columns === 'auto' ? 'alf-cat-grid' : undefined} style={columns === 'auto' ? undefined : { display: 'contents' }}>
+          {ALF_CATEGORIES.slice(0, columns === 3 ? 9 : 8).map((c) =>
+          <window.ScaleTile key={c.id} design={columns === 3 ? 99 : 154}>
             <CategoryTile cat={c} dark={dark} compact={columns === 3} nove={c.nove} />
-          </div>
+          </window.ScaleTile>
+          )}
         </div>
-        )}
       </div>
     </div>);
 
@@ -388,15 +417,14 @@ function CategoryTile({ cat, dark, compact, nove }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: compact ? 36 : 54,
           boxShadow: dark ? 'none' : `0 3px 8px ${tileAccent}22`,
-          height: compact ? 66 : 83,
           lineHeight: 1
-        }, height: compact ? '70px' : '83px' }}>
+        }, aspectRatio: '3 / 2', minHeight: 0 }}>
         {cat.img ?
         <img src={cat.img} alt={cat.name} style={{ width: '84%', height: '84%', objectFit: 'contain', display: 'block' }} /> :
         cat.emoji}
       </div>
 
-      <div style={{ ...{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: cat.smallLabel ? "0px 4px 6px" : compact ? "2px 4px 5px" : "3px 4px 6px" }, padding: "6px 4px" }}>
+      <div style={{ ...{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: cat.smallLabel ? "0px 4px 6px" : compact ? "2px 4px 5px" : "3px 4px 6px" }, padding: "0px 4px 6px" }}>
         <div style={{
           fontSize: labelSize, fontWeight: 700,
           fontFamily: '"Dosis", sans-serif',
@@ -668,19 +696,16 @@ function SubcategoryScreen({ dark = false, columns = 2, categoryId = 'interaktiv
 
 
                 <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{
-          flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px',
+          flex: 1, minHeight: 0, overflowY: 'auto', padding: columns === 3 ? '10px 32px 26px' : '10px 31px 26px',
           display: 'grid',
-          gridTemplateColumns: columns === 3 ? 'repeat(3, 99px)' : 'repeat(2, 154px)',
-          justifyContent: 'center',
+          gridTemplateColumns: columns === 3 ? 'repeat(3, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))',
           gap: columns === 3 ? 14 : 20,
           alignContent: 'start'
         }}>
           {INTERAKTIVNE_SUB.map((s) =>
-          <div key={s.id} style={{ position: 'relative', width: '100%', paddingTop: '100%' }}>
-            <div style={{ position: 'absolute', inset: 0 }}>
-              <SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'priroda'} />
-            </div>
-          </div>
+          <window.ScaleTile key={s.id} design={columns === 3 ? 99 : 154}>
+            <SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'priroda'} />
+          </window.ScaleTile>
           )}
         </div>
       </div>
@@ -720,20 +745,17 @@ function PrirodaScreen({ dark = false, columns = 2 }) {
 
 
         <div data-scroll-area onWheel={(e) => e.stopPropagation()} style={{
-          flex: 1, minHeight: 0, overflowY: 'auto', padding: '10px 0 26px',
+          flex: 1, minHeight: 0, overflowY: 'auto', padding: columns === 3 ? '10px 32px 26px' : '10px 31px 26px',
           display: 'grid',
-          gridTemplateColumns: columns === 3 ? 'repeat(3, 99px)' : 'repeat(2, 154px)',
-          justifyContent: 'center',
+          gridTemplateColumns: columns === 3 ? 'repeat(3, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))',
           gap: columns === 3 ? 14 : 20,
           alignContent: 'start',
           overflowY: 'auto'
         }}>
           {PRIRODA_SUB.map((s) =>
-          <div key={s.id} style={{ position: 'relative', width: '100%', paddingTop: '100%' }}>
-            <div style={{ position: 'absolute', inset: 0 }}>
-              <SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'zivocichy'} />
-            </div>
-          </div>
+          <window.ScaleTile key={s.id} design={columns === 3 ? 99 : 154}>
+            <SubTile sub={s} dark={dark} compact={columns === 3} active={s.id === 'zivocichy'} />
+          </window.ScaleTile>
           )}
         </div>
       </div>
@@ -769,7 +791,8 @@ function SubTile({ sub, dark, compact, active }) {
         fontSize: compact ? 36 : 44,
         boxShadow: dark ? 'none' : `0 3px 8px ${tileAccent}22`,
         lineHeight: 1,
-        height: compact ? '70px' : '83px'
+        aspectRatio: '3 / 2',
+        minHeight: 0
       }}>
         {sub.img ?
         <img src={sub.img} alt={sub.name} style={{ width: '84%', height: '84%', objectFit: 'contain', display: 'block' }} /> :
@@ -1340,7 +1363,7 @@ function ProfileDrawerV2({
   dark = false,
   onEduAlf, onAlfBook, onAlfik, onHistoria,
   onProfil, onAdmin, onPodpora, onAbout, onLogout,
-  lang: langProp, onLang
+  lang: langProp, onLang, product = 'alfik'
 }) {
   const p = ALFIK_PALETTE;
   const INK = dark ? p.darkInk : '#1A2B3D';
@@ -1354,7 +1377,7 @@ function ProfileDrawerV2({
   const [openLang, setOpenLang] = React.useState(false);
   const [langState, setLangState] = React.useState('sk');
   const lang = langProp != null ? langProp : langState;
-  const setLang = (code) => { if (onLang) onLang(code); else setLangState(code); };
+  const setLang = (code) => {if (onLang) onLang(code);else setLangState(code);};
 
   return (
     <div onClick={(e) => e.stopPropagation()} style={{
@@ -1376,22 +1399,32 @@ function ProfileDrawerV2({
 
       {/* Produkty */}
       <div style={{ paddingTop: 8 }}>
-        <DrawerRowV2 dark={dark} label="AlfBook" onClick={onAlfBook}
-        icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
-        <DrawerRowV2 dark={dark} label="Alfík" active onClick={onAlfik}
-        icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
-        {/* História pod Alfíkom — podkategória */}
-        <div onClick={onHistoria} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 9px 30px', cursor: 'pointer' }}>
-          <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-            <div style={{ width: 2, height: 20, background: 'rgba(15,30,55,0.12)', borderRadius: 2 }} />
-          </div>
-          <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l3 2" />
-            </svg>
-          </div>
-          <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 0.2, color: '#41526A', flex: 1 }}>História</div>
-        </div>
+        {(() => {
+          const HistoriaRow = (
+            <div onClick={onHistoria} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 9px 30px', cursor: 'pointer' }}>
+              <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 2, height: 20, background: 'rgba(15,30,55,0.12)', borderRadius: 2 }} />
+              </div>
+              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l3 2" />
+                </svg>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 0.2, color: '#41526A', flex: 1 }}>História</div>
+            </div>
+          );
+          const isAlfBook = product === 'alfbook';
+          return (
+            <React.Fragment>
+              <DrawerRowV2 dark={dark} label="AlfBook" active={isAlfBook} onClick={onAlfBook}
+              icon={<img src="assets/alfbook_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
+              {isAlfBook && HistoriaRow}
+              <DrawerRowV2 dark={dark} label="Alfík" active={!isAlfBook} onClick={onAlfik}
+              icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
+              {!isAlfBook && HistoriaRow}
+            </React.Fragment>
+          );
+        })()}
       </div>
 
       <div style={{ height: 1, background: LINE, margin: '6px 22px' }} />

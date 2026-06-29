@@ -190,6 +190,18 @@
   }
   .debug-toggle:hover { color: #FFD750; border-color: rgba(255,215,80,.4); }
 </style>
+<template id="__bundler_thumbnail">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 56">
+    <rect width="80" height="56" fill="#1a2d4a"/>
+    <rect x="27" y="6" width="26" height="44" rx="4" fill="#2a4a7f"/>
+    <rect x="30" y="10" width="20" height="3" rx="1.5" fill="#4a9eff"/>
+    <rect x="30" y="15" width="20" height="16" rx="2" fill="#0f1f35"/>
+    <rect x="30" y="33" width="9" height="9" rx="1.5" fill="#3a6abf"/>
+    <rect x="41" y="33" width="9" height="9" rx="1.5" fill="#3a6abf"/>
+    <rect x="30" y="44" width="20" height="2" rx="1" fill="#2a4a7f"/>
+    <circle cx="40" cy="23" r="4" fill="#4a9eff"/>
+  </svg>
+</template>
 </head>
 <body>
 
@@ -235,6 +247,7 @@
 <script type="text/babel" src="screens-profile.jsx"></script>
 <script type="text/babel" src="screens-testy-v2.jsx"></script>
 <script type="text/babel" src="screens-alfbook.jsx"></script>
+<script type="text/babel" src="screens-alfbook-flow.jsx"></script>
 
 <script type="text/babel">
 // ─────────────────────────────────────────────────────────────
@@ -502,6 +515,96 @@ const FLOW = {
     ]
   },
 
+  // ── ALFBOOK FLOW (Ročníky → Predmety → Témy → Obsah) ────────
+  'ab-rocniky': {
+    label: 'AlfBook — Ročníky',
+    track: 'alfbook',
+    render: () => <window.AbRocnikyScreen compact={false}/>,
+    spots: [
+      // hamburger v AbTopBar → profil
+      { x: 14, y: 56, w: 42, h: 42, profile: true },
+      // Mriežka ročníkov (rovnaká ako kategórie): col0 x=31, col1 x=205; rows 118/292/466/640/814
+      { x: 31,  y: 118, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 205, y: 118, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 31,  y: 292, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 205, y: 292, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 31,  y: 466, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 205, y: 466, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 31,  y: 640, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 205, y: 640, w: 154, h: 154, go: 'ab-predmety' },
+      { x: 31,  y: 814, w: 154, h: 154, go: 'ab-predmety' },
+    ]
+  },
+
+  'ab-predmety': {
+    label: 'AlfBook — Predmety',
+    track: 'alfbook',
+    render: () => <window.AbPredmetyScreen compact={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 42, h: 42, profile: true },
+      // "AlfBook" v hlavičke (centrované logo) → koreň
+      { x: 150, y: 60, w: 92, h: 30, go: 'ab-rocniky' },
+      // Breadcrumb "AlfBook" → koreň
+      { x: 28, y: 112, w: 50, h: 24, go: 'ab-rocniky' },
+      // Späť (AbHero back button)
+      { x: 28, y: 140, w: 40, h: 36, go: 'back' },
+      // Mriežka predmetov: col0 x=31, col1 x=205; rows 204/378/552/726
+      { x: 31,  y: 204, w: 154, h: 154, go: 'ab-temy' },
+      { x: 205, y: 204, w: 154, h: 154, go: 'ab-temy' },
+      { x: 31,  y: 378, w: 154, h: 154, go: 'ab-temy' },
+      { x: 205, y: 378, w: 154, h: 154, go: 'ab-temy' },
+      { x: 31,  y: 552, w: 154, h: 154, go: 'ab-temy' },
+      { x: 205, y: 552, w: 154, h: 154, go: 'ab-temy' },
+      { x: 31,  y: 726, w: 154, h: 154, go: 'ab-temy' },
+      { x: 205, y: 726, w: 154, h: 154, go: 'ab-temy' },
+    ]
+  },
+
+  'ab-temy': {
+    label: 'AlfBook — Témy',
+    track: 'alfbook',
+    render: () => <window.AbTemyScreen compact={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 42, h: 42, profile: true },
+      // "AlfBook" v hlavičke → koreň
+      { x: 150, y: 60, w: 92, h: 30, go: 'ab-rocniky' },
+      // Breadcrumbs: AlfBook → koreň, 5.ročník → predmety
+      { x: 28, y: 112, w: 50, h: 24, go: 'ab-rocniky' },
+      { x: 82, y: 112, w: 52, h: 24, go: 'ab-predmety' },
+      { x: 28, y: 140, w: 40, h: 36, go: 'back' },
+      { x: 31,  y: 204, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 205, y: 204, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 31,  y: 378, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 205, y: 378, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 31,  y: 552, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 205, y: 552, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 31,  y: 726, w: 154, h: 154, go: 'ab-obsah' },
+      { x: 205, y: 726, w: 154, h: 154, go: 'ab-obsah' },
+    ]
+  },
+
+  'ab-obsah': {
+    label: 'AlfBook — Obsah',
+    track: 'alfbook',
+    render: () => <window.AbObsahScreen compact={false}/>,
+    spots: [
+      { x: 14, y: 56, w: 42, h: 42, profile: true },
+      // "AlfBook" v hlavičke → koreň
+      { x: 150, y: 60, w: 92, h: 30, go: 'ab-rocniky' },
+      // Breadcrumbs: AlfBook → koreň, 5.ročník → predmety, Geografia → témy
+      { x: 28, y: 112, w: 50, h: 24, go: 'ab-rocniky' },
+      { x: 82, y: 112, w: 52, h: 24, go: 'ab-predmety' },
+      { x: 137, y: 112, w: 56, h: 24, go: 'ab-temy' },
+      // Späť (AbHero back button)
+      { x: 28, y: 140, w: 40, h: 36, go: 'back' },
+      // Riadky obsahu → ukážkový toast
+      { x: 14, y: 232, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
+      { x: 14, y: 307, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
+      { x: 14, y: 382, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
+      { x: 14, y: 457, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
+    ]
+  },
+
   // ── PROFIL (5 tabov) ────────────────────────────────────────
   'profile-zakladne': {
     label: 'Profil — Základné',
@@ -579,11 +682,15 @@ const FLOW = {
 const TRACKS = {
   main:     ['onboarding', 'onboarding-2', 'login', 'login-heslo', 'product', 'categories', 'interaktivne', 'priroda', 'tests', 'test-open'],
   pracovne: ['categories', 'pracovne-listy', 'pracovne-sport', 'grafomotorika', 'pracovny-list-open'],
+  alfbook:  ['ab-rocniky', 'ab-predmety', 'ab-temy', 'ab-obsah'],
   profile:  ['profile-zakladne', 'profile-heslo', 'profile-ucitel', 'profile-ziak', 'profile-gdpr'],
 };
 
 function App() {
-  const [stack, setStack]           = React.useState(['onboarding']);
+  const [stack, setStack]           = React.useState(() => {
+    const s = new URLSearchParams(location.search).get('screen');
+    return (s && FLOW[s]) ? [s] : ['onboarding'];
+  });
   const [toast, setToast]           = React.useState(null);
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [profileOpen, setProfileOpen] = React.useState(false);
@@ -637,14 +744,11 @@ function App() {
     });
   };
 
-  // AlfBook: dostupný len SK/CZ/HU. Ak appka beží v inom jazyku (napr. EN) → ponukni výber.
-  // Samotný obsah AlfBooku zatiaľ nie je — po voľbe len potvrdíme toastom.
+  // AlfBook: klik na dlaždicu otvorí AlfBook flow (Ročníky → Predmety → Témy → Obsah)
   const AB_NAMES = { sk: 'slovenčine', cz: 'češtine', hu: 'maďarčine' };
   const openAlfBook = () => {
     setProfileOpen(false);
-    const supported = (window.ALFBOOK_LANGS || ['sk', 'cz', 'hu']).includes(lang);
-    if (supported) { setTimeout(() => showToast(`AlfBook (${lang.toUpperCase()}) — pripravujeme`), 60); }
-    else { setTimeout(() => setAlfbookSheet(true), 60); }
+    go('ab-rocniky');
   };
 
   const showToast = (text) => {
@@ -885,10 +989,11 @@ function App() {
             {window.ProfileDrawerV2 && <window.ProfileDrawerV2
               dark={false}
               lang={lang}
+              product={FLOW[current].track === 'alfbook' ? 'alfbook' : 'alfik'}
               onLang={(code) => setLang(code)}
               onEduAlf={() => { setProfileOpen(false); go('product'); }}
               onAlfBook={openAlfBook}
-              onAlfik={() => { setProfileOpen(false); }}
+              onAlfik={() => { setProfileOpen(false); if (FLOW[current].track === 'alfbook') go('categories'); }}
               onHistoria={() => { showToast('História — pripravujeme'); }}
               onProfil={() => { setProfileOpen(false); go('profile-zakladne'); }}
               onAdmin={() => { showToast('Administrácia — pripravujeme'); }}
@@ -937,7 +1042,9 @@ const start = () => {
     window.ProfileZakladneScreen && window.ProfileHesloScreen &&
     window.ProfileUcitelScreen && window.ProfileZiakScreen &&
     window.ProfileGdprScreen && window.CategoryHero && window.SubTile &&
-    window.AlfBookLangSheet;
+    window.AlfBookLangSheet &&
+    window.AbRocnikyScreen && window.AbPredmetyScreen &&
+    window.AbTemyScreen && window.AbObsahScreen;
 
   if (!ok) return setTimeout(start, 40);
   ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);
