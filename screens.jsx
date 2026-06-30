@@ -491,6 +491,13 @@ function LoginScreen({ dark = false }) {
           </LoginFieldBlock>
         </div>
 
+        {/* Zabudnuté heslo */}
+        <div style={{ textAlign: 'right', marginTop: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: QUASAR.accent, cursor: 'pointer', letterSpacing: '0.1px' }}>
+            Zabudol si heslo?
+          </span>
+        </div>
+
         {/* Ďalej button */}
         <button style={{ ...loginBtnStyle(), marginTop: 20 }}>
           Ďalej
@@ -596,6 +603,319 @@ function LoginStep2Screen({ dark = false }) {
         <div style={{ fontSize: 13, fontWeight: 700, color: inkSoft, position: 'relative', zIndex: 1 }}>
           ← SPÄŤ
         </div>
+      </div>
+    </PhoneFrame>);
+
+}
+
+// ─────────────────────────────────────────────────────────────
+// 2e. LOGIN — zabudnuté heslo
+// ─────────────────────────────────────────────────────────────
+function ForgotPasswordScreen({ dark = false }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
+  const bgTop = dark ? '#16335A' : '#D1EBF9';
+  const bgMid = dark ? '#1F4570' : '#E6F5FD';
+  const bgBot = dark ? '#0E1622' : '#F9FCFE';
+
+  return (
+    <PhoneFrame dark={dark} label="02e Prihlásenie — zabudnuté heslo">
+      <div style={{
+        flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column',
+        background: `linear-gradient(180deg, ${bgTop} 0%, ${bgMid} 55%, ${bgBot} 100%)`,
+        position: 'relative', overflow: 'hidden'
+      }}>
+        {/* ← Späť (hore) */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, marginBottom: 6,
+          fontSize: 14, fontWeight: 700, color: inkSoft, cursor: 'pointer',
+          position: 'relative', zIndex: 1, alignSelf: 'flex-start'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Späť
+        </div>
+
+        {/* Logo */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 6, marginBottom: 20 }}>
+          <img src="assets/logo_edu_alf.svg" style={{ width: 140, height: 'auto', filter: dark ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))' : 'drop-shadow(0 4px 10px rgba(15,30,55,0.12))' }} alt="Alfík" />
+        </div>
+
+        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.3px', textAlign: 'center' }}>
+          Zabudol si heslo? 🔑
+        </h1>
+        <p style={{ margin: '8px 0 24px', textAlign: 'center', color: inkSoft, fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
+          Nič sa nedeje! Zadaj svoj e-mail a my ti pošleme odkaz na obnovenie hesla.
+        </p>
+
+        {/* Pole: E-mail */}
+        <div>
+          <LoginFieldBlock dark={dark}>
+            <LoginField dark={dark} label="E-mail" value="admin@betaalf.com"
+            icon={
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={QUASAR.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="5" width="18" height="14" rx="3" />
+                  <path d="M3 7l9 6 9-6" />
+                </svg>
+            } />
+            
+          </LoginFieldBlock>
+        </div>
+
+        {/* Odoslať button */}
+        <button style={{ ...loginBtnStyle(), marginTop: 20 }}>
+          Odoslať kód
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />
+          </svg>
+        </button>
+
+        <div style={{ flex: 1 }} />
+
+        {/* Spomenul si si? */}
+        <p style={{ margin: 0, textAlign: 'center', color: inkSoft, fontSize: 13, fontWeight: 600 }}>
+          Spomenul si si na heslo?{' '}
+          <span style={{ color: QUASAR.accent, fontWeight: 800, cursor: 'pointer' }}>Prihlás sa</span>
+        </p>
+      </div>
+    </PhoneFrame>);
+
+}
+
+// ─────────────────────────────────────────────────────────────
+// 2e-1. LOGIN — overenie kódu (OTP)
+// ─────────────────────────────────────────────────────────────
+function VerifyCodeScreen({ dark = false }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
+  const bgTop = dark ? '#16335A' : '#D1EBF9';
+  const bgMid = dark ? '#1F4570' : '#E6F5FD';
+  const bgBot = dark ? '#0E1622' : '#F9FCFE';
+  const surf = dark ? p.darkSurf : 'rgba(255,255,255,0.94)';
+  const line = dark ? p.darkLine : 'rgba(190,206,222,0.8)';
+  const code = ['5', '2', '8', '', '', ''];
+
+  return (
+    <PhoneFrame dark={dark} label="02e-1 Prihlásenie — overenie kódu">
+      <div style={{
+        flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column',
+        background: `linear-gradient(180deg, ${bgTop} 0%, ${bgMid} 55%, ${bgBot} 100%)`,
+        position: 'relative', overflow: 'hidden'
+      }}>
+        {/* ← Späť */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, marginBottom: 6,
+          fontSize: 14, fontWeight: 700, color: inkSoft, cursor: 'pointer',
+          position: 'relative', zIndex: 1, alignSelf: 'flex-start'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Späť
+        </div>
+
+        {/* Ikona obálky v kruhu */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 18, marginBottom: 18 }}>
+          <div style={{
+            width: 84, height: 84, borderRadius: '50%',
+            background: dark ? p.darkSurf : '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke={QUASAR.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="3" />
+              <path d="M2 7l10 6 10-6" />
+            </svg>
+          </div>
+        </div>
+
+        <h1 style={{ margin: 0, fontSize: 25, fontWeight: 800, letterSpacing: '-0.3px', textAlign: 'center' }}>
+          Skontroluj si e-mail 📬
+        </h1>
+        <p style={{ margin: '8px 0 26px', textAlign: 'center', color: inkSoft, fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
+          Zadaj 6-miestny kód, ktorý sme poslali na<br />
+          <strong style={{ color: ink }}>admin@betaalf.com</strong>
+        </p>
+
+        {/* OTP boxy */}
+        <div style={{ display: 'flex', gap: 9, justifyContent: 'center', marginBottom: 24 }}>
+          {code.map((d, i) => {
+            const filled = d !== '';
+            const active = i === 3; // ďalšie políčko na zadanie
+            return (
+              <div key={i} style={{
+                width: 46, height: 56, borderRadius: 13,
+                background: surf,
+                border: `2px solid ${active ? QUASAR.primary : (filled ? line : line)}`,
+                boxShadow: active ? `0 0 0 3px ${dark ? 'rgba(125,184,0,0.28)' : 'rgba(125,184,0,0.20)'}` : '0 1px 4px rgba(15,30,55,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 24, fontWeight: 800, color: ink, position: 'relative'
+              }}>
+                {d}
+                {active && <span style={{
+                  position: 'absolute', width: 2, height: 26, background: QUASAR.primary, borderRadius: 1
+                }} />}
+              </div>);
+          })}
+        </div>
+
+        {/* Overiť button */}
+        <button style={{ ...loginBtnStyle() }}>
+          Overiť kód
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        </button>
+
+        <div style={{ flex: 1 }} />
+
+        {/* Resend */}
+        <p style={{ margin: 0, textAlign: 'center', color: inkSoft, fontSize: 13, fontWeight: 600 }}>
+          Neprišiel kód?{' '}
+          <span style={{ color: inkSoft, fontWeight: 700, opacity: 0.55 }}>Poslať znova (0:42)</span>
+        </p>
+      </div>
+    </PhoneFrame>);
+
+}
+
+// ─────────────────────────────────────────────────────────────
+// 2e-2. LOGIN — nové heslo
+// ─────────────────────────────────────────────────────────────
+function NewPasswordScreen({ dark = false }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
+  const bgTop = dark ? '#16335A' : '#D1EBF9';
+  const bgMid = dark ? '#1F4570' : '#E6F5FD';
+  const bgBot = dark ? '#0E1622' : '#F9FCFE';
+
+  const lockIcon = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={QUASAR.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="11" width="16" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </svg>);
+  const eyeIcon = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>);
+
+  return (
+    <PhoneFrame dark={dark} label="02e-2 Prihlásenie — nové heslo">
+      <div style={{
+        flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column',
+        background: `linear-gradient(180deg, ${bgTop} 0%, ${bgMid} 55%, ${bgBot} 100%)`,
+        position: 'relative', overflow: 'hidden'
+      }}>
+        {/* ← Späť */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, marginBottom: 6,
+          fontSize: 14, fontWeight: 700, color: inkSoft, cursor: 'pointer',
+          position: 'relative', zIndex: 1, alignSelf: 'flex-start'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Späť
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14, marginBottom: 16 }}>
+          <div style={{
+            width: 84, height: 84, borderRadius: '50%',
+            background: dark ? p.darkSurf : '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={QUASAR.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="4" y="11" width="16" height="10" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
+          </div>
+        </div>
+
+        <h1 style={{ margin: 0, fontSize: 25, fontWeight: 800, letterSpacing: '-0.3px', textAlign: 'center' }}>
+          Vytvor si nové heslo 🔒
+        </h1>
+        <p style={{ margin: '8px 0 22px', textAlign: 'center', color: inkSoft, fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
+          Zvoľ si nové heslo, ktoré si ľahko zapamätáš.
+        </p>
+
+        <LoginFieldBlock dark={dark}>
+          <LoginField dark={dark} label="Nové heslo" value="••••••••" icon={lockIcon} trailing={eyeIcon} />
+          <LoginField dark={dark} label="Zopakuj nové heslo" value="••••••••" icon={lockIcon} trailing={eyeIcon} />
+        </LoginFieldBlock>
+
+        {/* Sila hesla */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14 }}>
+          <div style={{ display: 'flex', gap: 5, flex: 1 }}>
+            {[QUASAR.primary, QUASAR.primary, QUASAR.primary, 'rgba(150,165,180,0.3)'].map((c, i) =>
+              <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: c }} />
+            )}
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 800, color: QUASAR.primary }}>Silné</span>
+        </div>
+        <p style={{ margin: '8px 2px 0', fontSize: 12, fontWeight: 500, color: inkSoft, lineHeight: 1.4 }}>
+          Aspoň 8 znakov, jedno veľké písmeno a číslo.
+        </p>
+
+        {/* Uložiť button */}
+        <button style={{ ...loginBtnStyle(), marginTop: 22 }}>
+          Uložiť heslo
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </button>
+      </div>
+    </PhoneFrame>);
+
+}
+
+// ─────────────────────────────────────────────────────────────
+// 2e-3. LOGIN — heslo zmenené (potvrdenie)
+// ─────────────────────────────────────────────────────────────
+function PasswordChangedScreen({ dark = false }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
+  const bgTop = dark ? '#16335A' : '#D1EBF9';
+  const bgMid = dark ? '#1F4570' : '#E6F5FD';
+  const bgBot = dark ? '#0E1622' : '#F9FCFE';
+
+  return (
+    <PhoneFrame dark={dark} label="02e-3 Prihlásenie — heslo zmenené">
+      <div style={{
+        flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+        background: `linear-gradient(180deg, ${bgTop} 0%, ${bgMid} 55%, ${bgBot} 100%)`,
+        position: 'relative', overflow: 'hidden'
+      }}>
+        <div style={{
+          width: 110, height: 110, borderRadius: '50%',
+          background: `linear-gradient(135deg, ${QUASAR.primary} 0%, ${QUASAR.primaryDeep} 100%)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: 28
+        }}>
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        </div>
+
+        <h1 style={{ margin: 0, fontSize: 27, fontWeight: 800, letterSpacing: '-0.3px' }}>
+          Hotovo! 🎉
+        </h1>
+        <p style={{ margin: '10px 0 0', color: inkSoft, fontSize: 15, fontWeight: 500, lineHeight: 1.5, maxWidth: 280 }}>
+          Tvoje heslo bolo úspešne zmenené. Teraz sa môžeš prihlásiť s novým heslom.
+        </p>
+
+        <button style={{ ...loginBtnStyle(), marginTop: 36, alignSelf: 'stretch' }}>
+          Prejsť na prihlásenie
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </button>
       </div>
     </PhoneFrame>);
 
@@ -1624,4 +1944,4 @@ function ScaleTile({ design = 154, children }) {
 
 }
 
-Object.assign(window, { SplashScreen, PreMenuScreen, LoginScreen, LoginTypingScreen, LoginStep2Screen, LoginSchoolStep1Screen, LoginSchoolScreen, ProductChoiceScreen, ProductChoiceContent, PhoneFrame, Field, ALFIK_PALETTE, WalkthroughScreen1, WalkthroughScreen2, WalkthroughCarousel, ScaleTile });
+Object.assign(window, { SplashScreen, PreMenuScreen, LoginScreen, LoginTypingScreen, LoginStep2Screen, ForgotPasswordScreen, VerifyCodeScreen, NewPasswordScreen, PasswordChangedScreen, LoginSchoolStep1Screen, LoginSchoolScreen, ProductChoiceScreen, ProductChoiceContent, PhoneFrame, Field, ALFIK_PALETTE, WalkthroughScreen1, WalkthroughScreen2, WalkthroughCarousel, ScaleTile });

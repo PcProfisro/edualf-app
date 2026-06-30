@@ -303,10 +303,75 @@ const FLOW = {
     track: 'main',
     render: () => <window.LoginScreen dark={false}/>,
     spots: [
-      // Dalej → (logo 129px + margins → button y≈376)
-      { x: 22, y: 368, w: 346, h: 74, go: 'login-heslo' },
-      // Registruj sa (y≈448)
-      { x: 22, y: 442, w: 346, h: 58, toast: 'Registracia — zatial neimplementovana' },
+      // Zabudol si heslo? → reset hesla
+      { x: 256, y: 368, w: 112, h: 34, go: 'login-reset' },
+      // Dalej → (button y≈414)
+      { x: 22, y: 410, w: 346, h: 66, go: 'login-heslo' },
+      // Registruj sa (y≈488)
+      { x: 22, y: 484, w: 346, h: 58, toast: 'Registracia — zatial neimplementovana' },
+    ]
+  },
+
+  // ── 01z ZABUDNUTÉ HESLO ─────────────────────────────────────
+  'login-reset': {
+    label: 'Zabudnuté heslo',
+    track: 'main',
+    render: () => <window.ForgotPasswordScreen dark={false}/>,
+    spots: [
+      // ← Späť (hore vľavo)
+      { x: 14, y: 60, w: 110, h: 36, go: 'back' },
+      // Odoslať kód (y≈435) → overenie kódu
+      { x: 22, y: 431, w: 346, h: 66, go: 'login-reset-code' },
+      // Prihlás sa (dole)
+      { x: 22, y: 760, w: 346, h: 40, go: 'back' },
+    ]
+  },
+
+  // ── 01z-1 OVERENIE KÓDU (OTP) ───────────────────────────────
+  'login-reset-code': {
+    label: 'Overenie kódu',
+    track: 'main',
+    render: () => <window.VerifyCodeScreen dark={false}/>,
+    spots: [
+      // ← Späť (hore vľavo)
+      { x: 14, y: 30, w: 110, h: 36, go: 'back' },
+      // Overiť kód (y≈401) → nové heslo
+      { x: 22, y: 397, w: 346, h: 66, go: 'login-new-pass' },
+    ]
+  },
+
+  // ── 01z-2 NOVÉ HESLO ────────────────────────────────────────
+  'login-new-pass': {
+    label: 'Nové heslo',
+    track: 'main',
+    render: () => <window.NewPasswordScreen dark={false}/>,
+    spots: [
+      // ← Späť (hore vľavo)
+      { x: 14, y: 30, w: 110, h: 36, go: 'back' },
+      // Uložiť heslo (y≈485) → potvrdenie
+      { x: 22, y: 481, w: 346, h: 66, go: 'login-pass-done' },
+    ]
+  },
+
+  // ── 01z-3 HESLO ZMENENÉ ─────────────────────────────────────
+  'login-pass-done': {
+    label: 'Heslo zmenené',
+    track: 'main',
+    render: () => <window.PasswordChangedScreen dark={false}/>,
+    spots: [
+      // Prejsť na prihlásenie (y≈528) → login
+      { x: 22, y: 524, w: 346, h: 66, go: 'login' },
+    ]
+  },
+
+  // ── NASTAVENIA (samostatný screen) ──────────────────────────
+  nastavenia: {
+    label: 'Nastavenia',
+    track: 'main',
+    render: (ctx) => <window.NastaveniaScreen dark={false} lang={ctx.lang} onLang={ctx.onLang}/>,
+    spots: [
+      // ← Späť (hore vľavo)
+      { x: 8, y: 50, w: 84, h: 54, go: 'back' },
     ]
   },
 
@@ -920,7 +985,7 @@ function App() {
         }}
         style={{ width: 390, height: 844, position: 'relative', borderRadius: 44, overflow: 'hidden' }}
       >
-        {step.render({ activeAge, subscribed, activeCat, alfbookLang })}
+        {step.render({ activeAge, subscribed, activeCat, alfbookLang, lang, onLang: setLang })}
 
         {/* HOTSPOT OVERLAY */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
@@ -996,6 +1061,7 @@ function App() {
               onAlfik={() => { setProfileOpen(false); if (FLOW[current].track === 'alfbook') go('categories'); }}
               onHistoria={() => { showToast('História — pripravujeme'); }}
               onProfil={() => { setProfileOpen(false); go('profile-zakladne'); }}
+              onNastavenia={() => { setProfileOpen(false); go('nastavenia'); }}
               onAdmin={() => { showToast('Administrácia — pripravujeme'); }}
               onPodpora={() => { showToast('Podpora — pripravujeme'); }}
               onAbout={() => { showToast('O EduAlf — pripravujeme'); }}
@@ -1033,7 +1099,9 @@ const start = () => {
   const ok =
     window.WalkthroughScreen1 && window.WalkthroughScreen2 &&
     window.LoginStep2Screen &&
-    window.LoginScreen && window.ProductChoiceScreen &&
+    window.LoginScreen && window.ForgotPasswordScreen &&
+    window.VerifyCodeScreen && window.NewPasswordScreen &&
+    window.PasswordChangedScreen && window.ProductChoiceScreen &&
     window.CategoryTreeScreen && window.SubcategoryScreen &&
     window.PrirodaScreen && window.TestListV2Screen &&
     window.TestOpenScreen && window.AgePickerSheet &&
@@ -1042,7 +1110,7 @@ const start = () => {
     window.ProfileZakladneScreen && window.ProfileHesloScreen &&
     window.ProfileUcitelScreen && window.ProfileZiakScreen &&
     window.ProfileGdprScreen && window.CategoryHero && window.SubTile &&
-    window.AlfBookLangSheet &&
+    window.AlfBookLangSheet && window.NastaveniaScreen &&
     window.AbRocnikyScreen && window.AbPredmetyScreen &&
     window.AbTemyScreen && window.AbObsahScreen;
 

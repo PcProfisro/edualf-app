@@ -67,11 +67,11 @@ const AB_OBSAH_ZEM = [
   { id: 'o4', name: 'Hviezdy a súhvezdia',                   pct: 0,  count: 0,    diamonds: 12 },
 ];
 
-const AB_DIAMONDS_CURRENT = 8;
+const AB_DIAMONDS_CURRENT = 200;
 const AB_MEDALS = [
-  { id: 'bronze', label: 'Bronz',  threshold: 155,  color: '#C47D3A', colorDark: '#8B5020', bg: 'linear-gradient(135deg, #F0A855 0%, #C47D3A 100%)' },
-  { id: 'silver', label: 'Striebro', threshold: 310, color: '#909AAD', colorDark: '#5A6478', bg: 'linear-gradient(135deg, #C8D0DC 0%, #909AAD 100%)' },
-  { id: 'gold',   label: 'Zlato',  threshold: 500,  color: '#D4A017', colorDark: '#9A7000', bg: 'linear-gradient(135deg, #FFD84D 0%, #D4A017 100%)' },
+  { id: 'bronze', label: 'Bronz',  accus: 'bronzovú',   gen: 'bronzu',   threshold: 155,  color: '#C47D3A', colorDark: '#8B5020', bg: 'linear-gradient(135deg, #F0A855 0%, #C47D3A 100%)' },
+  { id: 'silver', label: 'Striebro', accus: 'striebornú', gen: 'striebra', threshold: 310, color: '#909AAD', colorDark: '#5A6478', bg: 'linear-gradient(135deg, #C8D0DC 0%, #909AAD 100%)' },
+  { id: 'gold',   label: 'Zlato',  accus: 'zlatú',       gen: 'zlata',    threshold: 500,  color: '#D4A017', colorDark: '#9A7000', bg: 'linear-gradient(135deg, #FFD84D 0%, #D4A017 100%)' },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -191,10 +191,16 @@ function AbTopBar() {
 // AbHero — červený hero banner s titulkom + breadcrumbs
 // ─────────────────────────────────────────────────────────────
 function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
+  const [openMedal, setOpenMedal] = React.useState(null);
   return (
     <div>
       <AbTopBar />
-      <div style={{ padding: '0 14px 12px' }}>
+      <div style={{ padding: '0 14px 12px', position: 'relative' }}>
+        {/* Cieľová medaila — len na poslednom baneri (s diamantmi), jemne prečnieva za horný okraj */}
+        {diamonds !== null && (
+          <img src="uploads/madaila bronzova.png" alt="Medaila"
+            style={{ position: 'absolute', right: 4, top: -14, width: 96, height: 'auto', zIndex: 2, pointerEvents: 'none', transform: 'rotate(9deg)', filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.28))' }} />
+        )}
         <div style={{
           background: AB.heroGrad,
           borderRadius: 18,
@@ -260,29 +266,75 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
 
           {/* Diamond progress — len ak je zadaný */}
           {diamonds !== null && (() => {
+            const goldT = AB_MEDALS[AB_MEDALS.length - 1].threshold;
             const nextMedal = AB_MEDALS.find(m => diamonds < m.threshold) || AB_MEDALS[AB_MEDALS.length - 1];
-            const prevThreshold = AB_MEDALS[AB_MEDALS.indexOf(nextMedal) - 1]?.threshold || 0;
-            const pct = Math.min(100, ((diamonds - prevThreshold) / (nextMedal.threshold - prevThreshold)) * 100);
-            const toNext = nextMedal.threshold - diamonds;
+            const toNext = Math.max(0, nextMedal.threshold - diamonds);
+            const fillFrac = Math.min(1, diamonds / goldT);
+            const MedalCoin = ({ size, bg, state }) => (
+              <div style={{ width: size, height: size, borderRadius: '50%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: state === 'future' ? 0.4 : 0.95 }}>
+                {state === 'reached' ? (
+                  <svg width={size * 0.58} height={size * 0.58} viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12.5l4.5 4.5L19 7"/>
+                  </svg>
+                ) : (
+                  <svg width={size * 0.56} height={size * 0.56} viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="11" fill="rgba(255,255,255,0.24)" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6"/>
+                    <path d="M16 9.5l4.5 3.5-1.8 6.5h-5.4L11.5 13z" fill="rgba(255,255,255,0.85)"/>
+                  </svg>
+                )}
+              </div>
+            );
             return (
-              <div style={{ position: 'relative', zIndex: 1, marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                  <DiamondIcon size={12} color="rgba(255,255,255,0.90)" />
-                  <span style={{ fontSize: 12, fontWeight: 800, color: '#FFFFFF', fontFamily: '"Dosis", sans-serif' }}>{diamonds}</span>
-                </div>
-                <div style={{ flex: 1, height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.25)', overflow: 'hidden' }}>
-                  <div style={{ width: `${pct}%`, height: '100%', background: '#FFFFFF', borderRadius: 99, opacity: 0.9 }} />
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 6, background: nextMedal.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="11" height="11" viewBox="0 0 32 32" fill="none">
-                      <circle cx="16" cy="20" r="9" fill="rgba(255,255,255,0.30)" stroke="rgba(255,255,255,0.70)" strokeWidth="1.5"/>
-                      <path d="M11 7h10l2 6H9z" fill="rgba(255,255,255,0.50)"/>
-                      <path d="M13.5 20l2 2.5L18.5 17" stroke="rgba(255,255,255,0.95)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+              <div style={{ position: 'relative', zIndex: 1, marginTop: 11, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.16)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                    <DiamondIcon size={11} color="rgba(255,255,255,0.85)" />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.92)', fontFamily: '"Dosis", sans-serif' }}>{diamonds}</span>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.80)', fontFamily: '"Dosis", sans-serif', whiteSpace: 'nowrap' }}>ešte <strong style={{ color: '#FFFFFF' }}>{toNext}</strong></span>
+                  <div style={{ position: 'relative', flex: 1, height: 16 }}>
+                    <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 0, right: 0, height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.20)' }} />
+                    <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 0, width: `calc(7px + (100% - 14px) * ${fillFrac})`, height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.8)' }} />
+                    {AB_MEDALS.map(m => {
+                      const frac = m.threshold / goldT;
+                      const reached = diamonds >= m.threshold;
+                      const isNext = m.id === nextMedal.id;
+                      const state = reached ? 'reached' : (isNext ? 'next' : 'future');
+                      const sz = isNext ? 15 : 13;
+                      return (
+                        <button key={m.id} onClick={() => setOpenMedal(openMedal === m.id ? null : m.id)}
+                          style={{ position: 'absolute', top: '50%', left: `calc(7px + (100% - 14px) * ${frac})`, transform: 'translate(-50%,-50%)', zIndex: openMedal === m.id ? 3 : (isNext ? 2 : 1), padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '50%', boxShadow: openMedal === m.id ? '0 0 0 3px rgba(255,255,255,0.45)' : 'none' }}>
+                          <div style={{ borderRadius: '50%', border: `1.5px solid ${isNext || openMedal === m.id ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}` }}>
+                            <MedalCoin size={sz} bg={m.bg} state={state} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0, fontSize: 10.5, fontWeight: 700, color: 'rgba(255,255,255,0.7)', fontFamily: '"Dosis", sans-serif', whiteSpace: 'nowrap' }}>
+                    <DiamondIcon size={10} color="rgba(255,255,255,0.6)" />
+                    <span>{goldT}</span>
+                  </div>
                 </div>
+                {/* Hláška po kliknutí na míľnik */}
+                {openMedal && (() => {
+                  const m = AB_MEDALS.find(x => x.id === openMedal);
+                  const has = diamonds >= m.threshold;
+                  const rem = m.threshold - diamonds;
+                  return (
+                    <div style={{ marginTop: 9, background: '#FFFFFF', borderRadius: 12, padding: '7px 11px', boxShadow: '0 3px 8px rgba(0,0,0,0.18)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#1A2B3D', fontFamily: '"Dosis", sans-serif', lineHeight: 1.25 }}>
+                      {has ? (
+                        <span>{m.accus.charAt(0).toUpperCase() + m.accus.slice(1)} medailu už máš 🎉</span>
+                      ) : (
+                        <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
+                          <span>Získaj ešte</span>
+                          <strong style={{ color: '#A61B1D' }}>{rem}</strong>
+                          <DiamondIcon size={12} color="#A61B1D" />
+                          <span>a dosiahneš {m.accus} medailu</span>
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             );
           })()}
@@ -411,8 +463,8 @@ function AbObsahRow({ item }) {
       <div style={{ width: 52, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
         {item.diamonds && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#A61B1D', fontFamily: '"Dosis", sans-serif' }}>{item.diamonds}</span>
             <DiamondIcon size={11} color="#A61B1D" />
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#1A2B3D', fontFamily: '"Dosis", sans-serif' }}>+{item.diamonds}</span>
           </div>
         )}
         {hasProgress && (

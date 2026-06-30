@@ -38,7 +38,7 @@ function TestListV2Screen({ dark = false, expanded = false, age = 'all' }) {
           shadowColor="rgba(0,168,181,0.45)"
           ageIcon={age}
           ageActive={expanded}
-          showAgeLabel={true}
+          showAgeLabel={false}
           showSpeaker={true}
           speakerDot="#00A8B5"
           crumbs={['Alfík', 'Interaktívne cvičenia', 'Príroda', 'Živočíchy']}

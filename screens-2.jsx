@@ -263,7 +263,7 @@ function AgeAvatar({ age, dark, active, showLabel = false }) {
       padding: 0, flexShrink: 0
     }}>
       <img src={iconSrc}
-      style={{ width: showLabel ? 28 : 34, height: showLabel ? 28 : 34, objectFit: 'contain' }} alt="filter veku" />
+      style={{ width: showLabel ? 28 : 20, height: showLabel ? 28 : 20, objectFit: 'contain' }} alt="filter veku" />
       {showLabel &&
       <div style={{
         fontSize: 12, fontWeight: 800,
@@ -1362,7 +1362,7 @@ function DrawerRowV2({ icon, label, danger, active, onClick, dark }) {
 function ProfileDrawerV2({
   dark = false,
   onEduAlf, onAlfBook, onAlfik, onHistoria,
-  onProfil, onAdmin, onPodpora, onAbout, onLogout,
+  onProfil, onAdmin, onPodpora, onAbout, onLogout, onNastavenia,
   lang: langProp, onLang, product = 'alfik'
 }) {
   const p = ALFIK_PALETTE;
@@ -1431,47 +1431,10 @@ function ProfileDrawerV2({
 
       {/* Spodná skupina (hneď pod vrchnou) */}
       <div style={{ paddingTop: 2 }}>
-        {/* Jazyk — podkategórie pod riadkom */}
-        <div onClick={() => setOpenLang((v) => !v)} style={{
-          display: 'flex', alignItems: 'center', gap: 18, padding: '11px 22px', cursor: 'pointer'
-        }}>
-          <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <LangFlag code={lang} />
-          </div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: INK, flex: 1 }}>Jazyk</div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INK_MUTE} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
-          style={{ transition: 'transform .25s ease', transform: openLang ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-
-        {openLang &&
-        <div style={{ paddingBottom: 4 }}>
-            {DRAWER_LANGS.map((l) => {
-            const sel = l.code === lang;
-            return (
-              <div key={l.code} onClick={() => {setLang(l.code);setOpenLang(false);}} style={{
-                display: 'flex', alignItems: 'center', gap: 12, padding: '7px 22px 7px 30px', cursor: 'pointer',
-                background: sel ? 'rgba(63,169,224,0.10)' : 'transparent'
-              }}>
-                  <div style={{ width: 14, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-                    <div style={{ width: 2, height: 18, background: sel ? ACCENT : 'rgba(15,30,55,0.12)', borderRadius: 2 }} />
-                  </div>
-                  <LangFlag code={l.code} />
-                  <div style={{ fontSize: 14, fontWeight: sel ? 700 : 600, letterSpacing: 0.2, color: sel ? INK : '#41526A', flex: 1 }}>{l.name}</div>
-                  {sel &&
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                }
-                </div>);
-
-          })}
-          </div>
-        }
-
         <DrawerRowV2 dark={dark} label="Môj profil" onClick={onProfil}
         icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" /></svg>} />
+        <DrawerRowV2 dark={dark} label="Nastavenia" onClick={onNastavenia}
+        icon={<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>} />
         <DrawerRowV2 dark={dark} label="Administrácia" onClick={onAdmin}
         icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={INK_SOFT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.3-2.9 8.2-7 9.4C7.9 19.2 5 15.3 5 11V6l7-3z" /><path d="M9.2 12l1.9 1.9 3.7-3.8" /></svg>} />
         <DrawerRowV2 dark={dark} label="Podpora" onClick={onPodpora}
@@ -1493,6 +1456,130 @@ function ProfileDrawerV2({
 }
 
 window.ProfileDrawerV2 = ProfileDrawerV2;
+
+
+// ─────────────────────────────────────────────────────────────
+// NASTAVENIA — samostatný screen (výber jazyka)
+// ─────────────────────────────────────────────────────────────
+function NastaveniaScreen({ dark = false, lang = 'sk', onLang }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : '#1A2B3D';
+  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const LINE = dark ? p.darkLine : 'rgba(15,30,55,0.08)';
+  const SURF = dark ? p.darkSurf : '#FFFFFF';
+  const accent = (window.QUASAR && window.QUASAR.primary) || '#8FD400';
+  const ACTIVE_BLUE = '#3FA9E0';
+  const [open, setOpen] = React.useState(false);
+  const selected = DRAWER_LANGS.find(l => l.code === lang) || DRAWER_LANGS[0];
+
+  return (
+    <PhoneFrame dark={dark} label="Nastavenia">
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        background: dark
+          ? 'linear-gradient(180deg, #16335A 0%, #1F4570 55%, #0E1622 100%)'
+          : 'linear-gradient(180deg, #D1EBF9 0%, #E6F5FD 55%, #F9FCFE 100%)',
+        overflow: 'hidden'
+      }}>
+        {/* Topbar: späť + centrovaný titulok */}
+        <div style={{
+          position: 'relative', display: 'flex', alignItems: 'center',
+          padding: '6px 18px 14px', minHeight: 58
+        }}>
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: 6, bottom: 14,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none', fontSize: 19, fontWeight: 800,
+            letterSpacing: '-0.2px', fontFamily: '"Dosis", sans-serif', color: ink
+          }}>Nastavenia</div>
+          <div style={{ display: 'flex', alignItems: 'center', zIndex: 1 }}>
+            <button title="Späť" style={{
+              width: 38, height: 38, borderRadius: 14, border: 'none',
+              background: 'transparent', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', padding: 0, flexShrink: 0, cursor: 'pointer'
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke={dark ? '#F2F7FB' : '#1A2B3D'} strokeWidth="3"
+                strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+          </div>
+          <div style={{ flex: 1 }} />
+        </div>
+
+        <div data-scroll-area style={{ flex: 1, overflowY: 'auto', padding: '6px 16px 24px' }}>
+          {/* Sekcia: Jazyk */}
+          <div style={{
+            fontSize: 19, fontWeight: 800, color: ink,
+            fontFamily: '"Dosis", sans-serif', letterSpacing: '-0.2px', marginBottom: 10
+          }}>Jazyk aplikácie</div>
+
+          {/* Dropdown */}
+          <div style={{ position: 'relative' }}>
+            <div
+              data-lang-trigger
+              onClick={() => setOpen(o => !o)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 14,
+                background: SURF, borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+                border: `1.5px solid ${open ? ACTIVE_BLUE : LINE}`,
+                boxShadow: dark ? 'none' : '0 2px 4px 0 rgba(15,30,55,0.06)'
+              }}>
+              <LangFlag code={selected.code} />
+              <div style={{
+                flex: 1, fontSize: 15, fontWeight: 800, color: ink,
+                fontFamily: '"Dosis", sans-serif'
+              }}>{selected.name}</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke={inkSoft} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s' }}>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+
+            {open && (
+              <div style={{
+                marginTop: 8, background: SURF, borderRadius: 14, overflow: 'hidden',
+                border: dark ? `1px solid ${p.darkLine}` : 'none',
+                boxShadow: '0 8px 24px -6px rgba(15,30,55,0.22)'
+              }}>
+                {DRAWER_LANGS.map((l, i) => {
+                  const active = l.code === lang;
+                  return (
+                    <div key={l.code}
+                      data-lang-row={l.code}
+                      onClick={() => { onLang && onLang(l.code); setOpen(false); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 14,
+                        padding: '13px 16px', cursor: 'pointer',
+                        borderTop: i === 0 ? 'none' : `1px solid ${LINE}`,
+                        background: active ? '#FFFFFF' : 'transparent'
+                      }}>
+                      <LangFlag code={l.code} />
+                      <div style={{
+                        flex: 1, fontSize: 15, fontWeight: active ? 800 : 600,
+                        color: active ? ink : inkSoft, fontFamily: '"Dosis", sans-serif'
+                      }}>{l.name}</div>
+                      {active && (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                          stroke={ACTIVE_BLUE} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </PhoneFrame>);
+
+}
+
+window.NastaveniaScreen = NastaveniaScreen;
 
 
 // ─────────────────────────────────────────────────────────────
