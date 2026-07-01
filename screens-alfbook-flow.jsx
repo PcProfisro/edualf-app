@@ -16,7 +16,7 @@ const AB = {
   ink:        '#1A4040',
   inkSoft:    '#6A7A8F',
   inkMute:    '#9AA8B8',
-  tileBorder: '#A61B1D',
+  tileBorder: '#FFFFFF',
   heroGrad:   'linear-gradient(155deg, #141F5E 0%, #253B8C 45%, #4468C8 100%)',
   modalBg:    '#FFFFFF',
   surf:       '#FFFFFF',
@@ -62,9 +62,9 @@ const AB_TEMY_GEO = [
 
 const AB_OBSAH_ZEM = [
   { id: 'o1', name: 'Pohyby Zeme',                           pct: 59, count: 2570, diamonds: 18 },
-  { id: 'o2', name: 'Vesmír, pohyby a objavitelia Zeme',     pct: 70, count: 1835, diamonds: 24 },
+  { id: 'o2', name: 'Vesmír, pohyby a objavitelia Zeme',     pct: 70, count: 1835, diamonds: 24, nove: true },
   { id: 'o3', name: 'Slnečná sústava',                       pct: 45, count: 980,  diamonds: 15 },
-  { id: 'o4', name: 'Hviezdy a súhvezdia',                   pct: 0,  count: 0,    diamonds: 12 },
+  { id: 'o4', name: 'Hviezdy a súhvezdia',                   pct: 0,  count: 0,    diamonds: 0 },
 ];
 
 const AB_DIAMONDS_CURRENT = 200;
@@ -220,7 +220,11 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
             position: 'relative', zIndex: 1,
             minHeight: 16,
           }}>
-            <span style={{ fontFamily: '"Dosis", sans-serif', fontWeight: 700, fontSize: 12 }}>AlfBook</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="rgba(255,255,255,0.90)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+              style={{ display: 'block' }}>
+              <path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2v-9z"/>
+            </svg>
             {crumbs.map((c, i) => (
               <React.Fragment key={i}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
@@ -321,15 +325,17 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
                   const has = diamonds >= m.threshold;
                   const rem = m.threshold - diamonds;
                   return (
-                    <div style={{ marginTop: 9, background: '#FFFFFF', borderRadius: 12, padding: '7px 11px', boxShadow: '0 3px 8px rgba(0,0,0,0.18)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#1A2B3D', fontFamily: '"Dosis", sans-serif', lineHeight: 1.25 }}>
+                    <div style={{ marginTop: 9, background: '#FFFFFF', borderRadius: 12, padding: '7px 11px', boxShadow: '0 3px 8px rgba(0,0,0,0.18)', fontSize: 12, fontWeight: 700, color: '#1A2B3D', fontFamily: '"Dosis", sans-serif', lineHeight: 1.35, textAlign: 'center', textWrap: 'balance' }}>
                       {has ? (
                         <span>{m.accus.charAt(0).toUpperCase() + m.accus.slice(1)} medailu už máš 🎉</span>
                       ) : (
-                        <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
-                          <span>Získaj ešte</span>
-                          <strong style={{ color: '#A61B1D' }}>{rem}</strong>
-                          <DiamondIcon size={12} color="#A61B1D" />
-                          <span>a dosiahneš {m.accus} medailu</span>
+                        <span>
+                          Získaj ešte <strong style={{ color: '#A61B1D' }}>{rem}</strong>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="#A61B1D" style={{ display: 'inline-block', verticalAlign: '-2px', margin: '0 3px' }}>
+                            <path d="M6 3h12l4 6-10 13L2 9z"/>
+                            <path d="M2 9h20M6 3l4 6m4 0l4-6m-8 0v6" fill="none" stroke="#A61B1D" strokeWidth="1.5" strokeLinejoin="round"/>
+                          </svg>
+                          a dosiahneš {m.accus} medailu
                         </span>
                       )}
                     </div>
@@ -428,46 +434,51 @@ function AbGrid({ items, compact = false }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// AbObsahRow — jeden riadok obsahu, štýl ako TestListRow
+// fade masku aplikuj podľa scrollu — hore len keď je zascrolované
+function abFadeMask(el) {
+  if (!el) return;
+  const atTop = el.scrollTop <= 2;
+  const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 2;
+  const top = atTop ? '0px' : '22px';
+  const bot = atBottom ? '100%' : 'calc(100% - 26px)';
+  const g = 'linear-gradient(to bottom, transparent 0, #000 ' + top + ', #000 ' + bot + ', transparent 100%)';
+  el.style.webkitMaskImage = g;
+  el.style.maskImage = g;
+}
+
+// AbObsahRow — plochý zoznam testov (štýl ako učiteľský zoznam v Alfíkovi)
+//   materiálová ikona · názov + meta · progress
 // ─────────────────────────────────────────────────────────────
-function AbObsahRow({ item }) {
-  const hasProgress = item.count > 0;
+function AbObsahRow({ item, alt, isLast }) {
   return (
     <div style={{
-      background: AB.surf,
-      borderRadius: 22,
-      padding: '10px 14px 10px 10px',
+      position: 'relative', overflow: 'hidden',
       display: 'flex', alignItems: 'center', gap: 12,
-      boxShadow: '0 2px 5px rgba(15,30,55,0.18)',
-      border: 'none',
-      minHeight: 63,
+      minHeight: 62, paddingTop: 8, paddingBottom: 8, paddingRight: 14,
+      paddingLeft: 26,
+      background: alt ? 'rgba(246,249,252,0.9)' : '#FFFFFF',
+      borderBottom: isLast ? 'none' : '1px solid #EBEFF3',
     }}>
-      {/* Ikona typu dokumentu — test */}
-      <img src="assets/mat_interaktivny.svg"
-        style={{ width: 28, height: 28, objectFit: 'contain', display: 'block', flexShrink: 0 }} alt="Test" />
+      {/* Typ materiálu — interaktívny test */}
+      <div style={{ width: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <img src="assets/mat_interaktivny.svg" alt="Interaktívny test" title="Interaktívny test"
+          style={{ height: 27, width: 'auto', display: 'block' }} />
+      </div>
 
-      {/* Názov */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      {/* Stred: názov */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 8 }}>
         <div style={{
-          fontSize: 15, fontWeight: 700, letterSpacing: '-0.2px',
-          color: '#1A2B3D', lineHeight: 1.25,
-          display: '-webkit-box', WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          fontFamily: '"Dosis", sans-serif',
+          fontFamily: '"Dosis", sans-serif', fontWeight: 600, fontSize: 14,
+          color: '#1A2B3D', letterSpacing: '-0.1px', lineHeight: 1.2, minWidth: 0,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
           {item.name}
         </div>
       </div>
 
-      {/* Diamond + Progress badge */}
-      <div style={{ width: 52, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
-        {item.diamonds && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#A61B1D', fontFamily: '"Dosis", sans-serif' }}>{item.diamonds}</span>
-            <DiamondIcon size={11} color="#A61B1D" />
-          </div>
-        )}
-        {hasProgress && (
+      {/* Pravá strana: percentá + diamanty pod sebou */}
+      <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minWidth: 52 }}>
+        {item.count > 0 && (
           <div style={{
             background: AB.tileBg,
             borderRadius: 8, padding: '3px 7px',
@@ -478,6 +489,15 @@ function AbObsahRow({ item }) {
           }}>
             {item.pct}%
           </div>
+        )}
+        {item.diamonds > 0 && (
+          <span style={{
+            display: 'flex', alignItems: 'center', gap: 3,
+            fontFamily: '"Dosis", sans-serif', fontWeight: 700, fontSize: 11.5,
+            color: '#7A1315', whiteSpace: 'nowrap',
+          }}>
+            <DiamondIcon size={12} color="#A61B1D" />{item.diamonds}
+          </span>
         )}
       </div>
     </div>
@@ -535,19 +555,145 @@ function AbObsahScreen({ compact = false }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, background: AB.bg }}>
         <AbHero title="Zem vo vesmíre" emoji="🌍" crumbs={['5.ročník', 'Geografia']} diamonds={AB_DIAMONDS_CURRENT} />
 
-        {/* Zoznam — Alfík-štýl */}
+        {/* Zoznam testov — plochý, ako učiteľský zoznam */}
         <div
           data-scroll-area
+          ref={abFadeMask}
+          onScroll={e => abFadeMask(e.currentTarget)}
           onWheel={e => e.stopPropagation()}
           style={{
             flex: 1, minHeight: 0, overflowY: 'auto',
-            padding: '4px 18px 26px',
-            display: 'flex', flexDirection: 'column', gap: 12,
+            padding: '10px 14px 26px',
           }}
         >
-          {AB_OBSAH_ZEM.map(item => (
-            <AbObsahRow key={item.id} item={item} />
-          ))}
+          <div style={{
+            background: '#FFFFFF', borderRadius: 16, overflow: 'hidden',
+            boxShadow: '0 2px 6px rgba(15,30,55,0.10)', border: '1px solid #E4EBF2',
+          }}>
+            {AB_OBSAH_ZEM.map((item, i) => (
+              <AbObsahRow key={item.id} item={item} alt={i % 2 === 1} isLast={i === AB_OBSAH_ZEM.length - 1} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </PhoneFrame>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Screen AB-04B: Obsah — bez medaily a progres baru na hero baneri
+// ─────────────────────────────────────────────────────────────
+function AbObsahScreenNoMedal({ compact = false }) {
+  return (
+    <PhoneFrame dark={false} label="AB-04B Obsah">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, background: AB.bg }}>
+        <AbHero title="Zem vo vesmíre" emoji="🌍" crumbs={['5.ročník', 'Geografia']} />
+
+        {/* Zoznam testov — plochý, ako učiteľský zoznam */}
+        <div
+          data-scroll-area
+          ref={abFadeMask}
+          onScroll={e => abFadeMask(e.currentTarget)}
+          onWheel={e => e.stopPropagation()}
+          style={{
+            flex: 1, minHeight: 0, overflowY: 'auto',
+            padding: '10px 14px 26px',
+          }}
+        >
+          <div style={{
+            background: '#FFFFFF', borderRadius: 16, overflow: 'hidden',
+            boxShadow: '0 2px 6px rgba(15,30,55,0.10)', border: '1px solid #E4EBF2',
+          }}>
+            {AB_OBSAH_ZEM.map((item, i) => (
+              <AbObsahRow key={item.id} item={item} alt={i % 2 === 1} isLast={i === AB_OBSAH_ZEM.length - 1} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </PhoneFrame>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// AbObsahTeacherRow — učiteľská verzia riadku:
+//   materiálová ikona · názov · Nové · (bez diamantov) · button História
+// ─────────────────────────────────────────────────────────────
+function AbObsahTeacherRow({ item, alt, isLast }) {
+  return (
+    <div style={{
+      position: 'relative', overflow: 'hidden',
+      display: 'flex', alignItems: 'center', gap: 12,
+      minHeight: 62, paddingTop: 8, paddingBottom: 8, paddingRight: 14,
+      paddingLeft: 26,
+      background: alt ? 'rgba(246,249,252,0.9)' : '#FFFFFF',
+      borderBottom: isLast ? 'none' : '1px solid #EBEFF3',
+    }}>
+      {/* Typ materiálu — interaktívny test */}
+      <div style={{ width: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <img src="assets/mat_interaktivny.svg" alt="Interaktívny test" title="Interaktívny test"
+          style={{ height: 27, width: 'auto', display: 'block' }} />
+      </div>
+
+      {/* Stred: názov */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 8 }}>
+        <div style={{
+          fontFamily: '"Dosis", sans-serif', fontWeight: 600, fontSize: 14,
+          color: '#1A2B3D', letterSpacing: '-0.1px', lineHeight: 1.2, minWidth: 0,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        }}>
+          {item.name}
+        </div>
+      </div>
+
+      {/* Pravá strana: button História (ako na Alfíkovi) */}
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', minWidth: 44 }}>
+        <button title="Výsledky" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: AB.redDeep, background: 'transparent',
+          border: 'none', padding: 0, cursor: 'pointer', lineHeight: 1,
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={AB.redDeep} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 16v5" />
+            <path d="M16 14v7" />
+            <path d="M20 10v11" />
+            <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" />
+            <path d="M4 18v3" />
+            <path d="M8 14v7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Screen AB-04T: Obsah — učiteľská verzia
+// ─────────────────────────────────────────────────────────────
+function AbObsahTeacherScreen({ compact = false }) {
+  return (
+    <PhoneFrame dark={false} label="AB-04T Obsah — učiteľ">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, background: AB.bg }}>
+        <AbHero title="Zem vo vesmíre" emoji="🌍" crumbs={['5.ročník', 'Geografia']} />
+
+        {/* Zoznam testov — učiteľská verzia */}
+        <div
+          data-scroll-area
+          ref={abFadeMask}
+          onScroll={e => abFadeMask(e.currentTarget)}
+          onWheel={e => e.stopPropagation()}
+          style={{
+            flex: 1, minHeight: 0, overflowY: 'auto',
+            padding: '10px 14px 26px',
+          }}
+        >
+          <div style={{
+            background: '#FFFFFF', borderRadius: 16, overflow: 'hidden',
+            boxShadow: '0 2px 6px rgba(15,30,55,0.10)', border: '1px solid #E4EBF2',
+          }}>
+            {AB_OBSAH_ZEM.map((item, i) => (
+              <AbObsahTeacherRow key={item.id} item={item} alt={i % 2 === 1} isLast={i === AB_OBSAH_ZEM.length - 1} />
+            ))}
+          </div>
         </div>
       </div>
     </PhoneFrame>
@@ -561,5 +707,7 @@ window.AbRocnikyScreen = AbRocnikyScreen;
 window.AbPredmetyScreen = AbPredmetyScreen;
 window.AbTemyScreen = AbTemyScreen;
 window.AbObsahScreen = AbObsahScreen;
+window.AbObsahScreenNoMedal = AbObsahScreenNoMedal;
+window.AbObsahTeacherScreen = AbObsahTeacherScreen;
 
 })();

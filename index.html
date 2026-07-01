@@ -189,6 +189,29 @@
     border: 1px solid rgba(255,255,255,.1);
   }
   .debug-toggle:hover { color: #FFD750; border-color: rgba(255,215,80,.4); }
+
+  /* Interný prepínač vzhľadu (žiak / učiteľ) — nie je súčasť dizajnu */
+  .mode-toggle {
+    position: fixed; bottom: 14px; left: 14px;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12.5px; font-weight: 800; color: #fff;
+    cursor: pointer; z-index: 400;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1.5px solid #7DB800;
+    background: #0c1420;
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,.6);
+    font-family: inherit;
+    transition: border-color .14s, transform .1s;
+  }
+  .mode-toggle:hover { transform: translateY(-1px); }
+  .mode-toggle:active { transform: scale(.97); }
+  .mode-toggle.ucitel { border-color: #00A8B5; }
+  .mode-toggle .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #7DB800;
+    box-shadow: 0 0 0 3px rgba(125,184,0,.25);
+  }
+  .mode-toggle.ucitel .dot { background: #00A8B5; box-shadow: 0 0 0 3px rgba(0,168,181,.25); }
 </style>
 <template id="__bundler_thumbnail">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 56">
@@ -246,6 +269,7 @@
 <script type="text/babel" src="screens-quiz.jsx"></script>
 <script type="text/babel" src="screens-profile.jsx"></script>
 <script type="text/babel" src="screens-testy-v2.jsx"></script>
+<script type="text/babel" src="screens-testy-ucitel-pro.jsx"></script>
 <script type="text/babel" src="screens-alfbook.jsx"></script>
 <script type="text/babel" src="screens-alfbook-flow.jsx"></script>
 
@@ -472,7 +496,9 @@ const FLOW = {
   tests: {
     label: 'Živočíchy — testy',
     track: 'main',
-    render: (ctx) => <window.TestListV2Screen dark={false} age={ctx.activeAge}/>,
+    render: (ctx) => ctx.viewMode === 'ucitel'
+      ? <window.TestListTeacherProScreen dark={false} age={ctx.activeAge}/>
+      : <window.TestListV2Screen dark={false} age={ctx.activeAge}/>,
     spots: [
       { x: 14, y: 56, w: 40, h: 40, profile: true },
       // Alfik title v TopBare → categories
@@ -651,7 +677,9 @@ const FLOW = {
   'ab-obsah': {
     label: 'AlfBook — Obsah',
     track: 'alfbook',
-    render: () => <window.AbObsahScreen compact={false}/>,
+    render: (ctx) => ctx.viewMode === 'ucitel'
+      ? <window.AbObsahTeacherScreen compact={false}/>
+      : <window.AbObsahScreen compact={false}/>,
     spots: [
       { x: 14, y: 56, w: 42, h: 42, profile: true },
       // "AlfBook" v hlavičke → koreň
@@ -765,6 +793,7 @@ function App() {
   const [goingBack, setGoingBack]   = React.useState(false);
   const [lang, setLang]             = React.useState('sk');
   const [alfbookSheet, setAlfbookSheet] = React.useState(false);
+  const [viewMode, setViewMode]     = React.useState('ziak'); // 'ziak' | 'ucitel' — interný prepínač vzhľadu
   const [alfbookLang, setAlfbookLang]   = React.useState('sk');
 
   const current = stack[stack.length - 1];
@@ -971,6 +1000,23 @@ function App() {
     if (location.search.includes('debug')) document.body.classList.add('debug-hotspots');
   }, []);
 
+  // Interný prepínač vzhľadu (žiak/učiteľ) — aj klávesa "v"
+  React.useEffect(() => {
+    const onKey = (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      if (e.key === 'v' || e.key === 'V') {
+        setViewMode(m => {
+          const next = m === 'ziak' ? 'ucitel' : 'ziak';
+          showToast(next === 'ucitel' ? 'Učiteľský vzhľad' : 'Žiacky vzhľad');
+          return next;
+        });
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const animClass = goingBack ? 'screen-back' : 'screen-in';
 
   return (
@@ -985,7 +1031,7 @@ function App() {
         }}
         style={{ width: 390, height: 844, position: 'relative', borderRadius: 44, overflow: 'hidden' }}
       >
-        {step.render({ activeAge, subscribed, activeCat, alfbookLang, lang, onLang: setLang })}
+        {step.render({ activeAge, subscribed, activeCat, alfbookLang, lang, viewMode, onLang: setLang })}
 
         {/* HOTSPOT OVERLAY */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
@@ -1090,6 +1136,16 @@ function App() {
       </div>
 
       {toast && <div key={toast.key} className="toast">{toast.text}</div>}
+
+      {/* Interný prepínač vzhľadu — žiak / učiteľ (ovplyvňuje zoznam testov) */}
+      <button
+        className={'mode-toggle' + (viewMode === 'ucitel' ? ' ucitel' : '')}
+        onClick={() => setViewMode(m => m === 'ziak' ? 'ucitel' : 'ziak')}
+        title="Interné: prepnúť vzhľad žiak / učiteľ"
+      >
+        <span className="dot"></span>
+        {viewMode === 'ucitel' ? 'Učiteľský vzhľad' : 'Žiacky vzhľad'}
+      </button>
     </>
   );
 }
@@ -1105,6 +1161,7 @@ const start = () => {
     window.CategoryTreeScreen && window.SubcategoryScreen &&
     window.PrirodaScreen && window.TestListV2Screen &&
     window.TestOpenScreen && window.AgePickerSheet &&
+    window.TestListTeacherProScreen &&
     window.PracovneListyScreen && window.SportPracovneScreen &&
     window.GrafomotorikaScreen && window.PracovnyListOpenScreen &&
     window.ProfileZakladneScreen && window.ProfileHesloScreen &&
@@ -1112,7 +1169,7 @@ const start = () => {
     window.ProfileGdprScreen && window.CategoryHero && window.SubTile &&
     window.AlfBookLangSheet && window.NastaveniaScreen &&
     window.AbRocnikyScreen && window.AbPredmetyScreen &&
-    window.AbTemyScreen && window.AbObsahScreen;
+    window.AbTemyScreen && window.AbObsahScreen && window.AbObsahTeacherScreen;
 
   if (!ok) return setTimeout(start, 40);
   ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);

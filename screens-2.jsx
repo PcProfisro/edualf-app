@@ -106,17 +106,17 @@ const PRIRODA_SUB = [
 
 // Testy pre „Živočíchy“
 const TESTS = [
-{ age: '3-4', name: 'Kto povedal mňau?', rating: 'great', preview: 'assets/test_kitten.png', nove: true },
-{ age: '3-4', name: 'Kde je moja mamička?', rating: 'good', preview: 'assets/test_baby_animals.png', nove: true },
+{ age: '3-6', name: 'Kto povedal mňau?', rating: 'great', preview: 'assets/test_macik.png' },
+{ age: '3-4', name: 'Kde je moja mamička?', rating: 'good', preview: 'assets/test_baby_animals.png' },
 { age: '3-4', name: 'Čím sa živia zvieratká?', rating: 'ok', preview: 'assets/test_food.png' },
-{ age: '4-5', name: 'Čo sa skrýva v ZOO?', rating: null, preview: 'assets/test_zoo.png' },
-{ age: '4-5', name: 'Čo sa skrýva na lúke?', rating: 'good', preview: null },
-{ age: '4-5', name: 'Čo sa skrýva pri vode?', rating: null, preview: 'assets/test_water.png' },
+{ age: '4-5', name: 'Čo sa skrýva v ZOO?', rating: null, preview: 'assets/test_zoo_brana.png' },
+{ age: '4-5', name: 'Čo sa skrýva na lúke?', rating: 'good', preview: 'assets/test_luka.png' },
+{ age: '4-5', name: 'Čo sa skrýva pri vode?', rating: null, preview: 'assets/test_voda.png' },
 { age: '4-5', name: 'Čo sa skrýva za plotom?', rating: 'ok', preview: 'assets/test_fence.png' },
-{ age: '5-6', name: 'Čo sa skrýva za stromom?', rating: null, preview: null },
-{ age: '5-6', name: 'Čo sa skrýva pod hladinou?', rating: 'good', preview: null },
-{ age: '5-6', name: 'Pomenovanie zvieracích zvukov', rating: null, preview: null, nove: true },
-{ age: '5-6', name: 'Rozstrihané obrázky — zvieratá', rating: null, preview: null }];
+{ age: '5-6', name: 'Čo sa skrýva za stromom?', rating: null, preview: 'assets/test_zoo2.png' },
+{ age: '3-6', name: 'Čo sa skrýva pod hladinou?', rating: 'good', preview: 'assets/test_hladina.png' },
+{ age: '5-6', name: 'Pomenovanie zvieracích zvukov', rating: null, preview: 'assets/test_plot.png' },
+{ age: '5-6', name: 'Rozstrihané obrázky — zvieratá', rating: null, preview: 'assets/test_strom.png' }];
 
 
 // ─────────────────────────────────────────────────────────────
@@ -576,19 +576,20 @@ function CategoryHero({
               }}>
               {visibleCrumbs.map((c, i) => {
                   const last = i === visibleCrumbs.length - 1;
-                  return (
-                    <React.Fragment key={i}>
-                    {i === 0 &&
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={dark ? 'rgba(255,255,255,0.92)' : '#000000'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 2 }}>
+                  // Prvý crumb (koreň) reprezentuje iba domček — text sa nezobrazuje
+                  if (i === 0) {
+                    return (
+                      <svg key={i} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={dark ? 'rgba(255,255,255,0.92)' : '#000000'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2v-9z" />
                       </svg>
-                      }
-                    <span style={{ opacity: last ? 1 : 0.75 }}>{c}</span>
-                    {!last &&
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    );
+                  }
+                  return (
+                    <React.Fragment key={i}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 2px' }}>
                         <path d="M9 6l6 6-6 6" />
                       </svg>
-                      }
+                      <span style={{ opacity: last ? 1 : 0.75 }}>{c}</span>
                   </React.Fragment>);
                 })}
             </div>);
