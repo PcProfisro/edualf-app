@@ -18,6 +18,9 @@
   }
   * { box-sizing: border-box; }
 
+  /* Zjednotená farba vodiacich ikon v textových poliach */
+  .lf-lead-icon svg { stroke: #3FA9E0 !important; }
+
   .stage {
     position: fixed; inset: 0;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -270,6 +273,8 @@
 <script type="text/babel" src="screens-profile.jsx"></script>
 <script type="text/babel" src="screens-testy-v2.jsx"></script>
 <script type="text/babel" src="screens-testy-ucitel-pro.jsx"></script>
+<script type="text/babel" src="screens-historia-ucitel.jsx"></script>
+<script type="text/babel" src="screens-test-vysledky.jsx"></script>
 <script type="text/babel" src="screens-alfbook.jsx"></script>
 <script type="text/babel" src="screens-alfbook-flow.jsx"></script>
 
@@ -517,6 +522,13 @@ const FLOW = {
       { x: 14, y: 421, w: 362, h: 73, go: 'test-open' },
       { x: 14, y: 494, w: 362, h: 73, go: 'test-open' },
       { x: 14, y: 567, w: 362, h: 73, go: 'test-open' },
+      // Učiteľský vzhľad: ikona Výsledky v pravom stĺpci riadku → výsledky testu
+      { x: 322, y: 202, w: 54, h: 64, vysledky: true },
+      { x: 322, y: 266, w: 54, h: 64, vysledky: true },
+      { x: 322, y: 330, w: 54, h: 64, vysledky: true },
+      { x: 322, y: 394, w: 54, h: 64, vysledky: true },
+      { x: 322, y: 458, w: 54, h: 64, vysledky: true },
+      { x: 322, y: 522, w: 54, h: 64, vysledky: true },
     ]
   },
 
@@ -528,6 +540,25 @@ const FLOW = {
     spots: [
       { x: 14, y: 58, w: 56, h: 56, go: 'back' },
       { x: 320, y: 58, w: 56, h: 56, go: 'back' },
+    ]
+  },
+
+  // ── UČITEĽ: HISTÓRIA + VÝSLEDKY TESTU ───────────────────────
+  'historia-ucitel': {
+    label: 'História',
+    track: 'ucitel',
+    render: () => <window.HistoriaUcitelScreen dark={false}/>,
+    spots: [
+      // ← Späť (hore vľavo) — dropdowny a vyhľadávanie sú živé React prvky
+      { x: 14, y: 52, w: 44, h: 44, go: 'back' },
+    ]
+  },
+  'test-vysledky': {
+    label: 'Výsledky testu',
+    track: 'ucitel',
+    render: () => <window.TestVysledkyScreen dark={false}/>,
+    spots: [
+      { x: 14, y: 52, w: 44, h: 44, go: 'back' },
     ]
   },
 
@@ -777,6 +808,7 @@ const TRACKS = {
   pracovne: ['categories', 'pracovne-listy', 'pracovne-sport', 'grafomotorika', 'pracovny-list-open'],
   alfbook:  ['ab-rocniky', 'ab-predmety', 'ab-temy', 'ab-obsah'],
   profile:  ['profile-zakladne', 'profile-heslo', 'profile-ucitel', 'profile-ziak', 'profile-gdpr'],
+  ucitel:   ['historia-ucitel', 'test-vysledky'],
 };
 
 function App() {
@@ -893,6 +925,7 @@ function App() {
     if (spot.tab)          return switchTab(spot.tab);
     if (spot.closeProfile) return closeProfile();
     if (spot.alfbook)      return openAlfBook();
+    if (spot.vysledky)     return viewMode === 'ucitel' ? go('test-vysledky') : go('test-open');
     if (spot.go === 'back') return back();
     if (spot.go)           return go(spot.go, spot.cat);
     if (spot.toast)        showToast(spot.toast);
@@ -1105,7 +1138,7 @@ function App() {
               onEduAlf={() => { setProfileOpen(false); go('product'); }}
               onAlfBook={openAlfBook}
               onAlfik={() => { setProfileOpen(false); if (FLOW[current].track === 'alfbook') go('categories'); }}
-              onHistoria={() => { showToast('História — pripravujeme'); }}
+              onHistoria={() => { setProfileOpen(false); go('historia-ucitel'); }}
               onProfil={() => { setProfileOpen(false); go('profile-zakladne'); }}
               onNastavenia={() => { setProfileOpen(false); go('nastavenia'); }}
               onAdmin={() => { showToast('Administrácia — pripravujeme'); }}
@@ -1169,7 +1202,8 @@ const start = () => {
     window.ProfileGdprScreen && window.CategoryHero && window.SubTile &&
     window.AlfBookLangSheet && window.NastaveniaScreen &&
     window.AbRocnikyScreen && window.AbPredmetyScreen &&
-    window.AbTemyScreen && window.AbObsahScreen && window.AbObsahTeacherScreen;
+    window.AbTemyScreen && window.AbObsahScreen && window.AbObsahTeacherScreen &&
+    window.HistoriaUcitelScreen && window.TestVysledkyScreen;
 
   if (!ok) return setTimeout(start, 40);
   ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);

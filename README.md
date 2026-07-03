@@ -15,6 +15,9 @@ npx serve .
 
 Potom otvor `http://localhost:8000`.
 
+### Učiteľský režim
+Prepínač vpravo dole (alebo klávesa `V`) prepne žiacky / učiteľský vzhľad. V učiteľskom režime má zoznam testov ikonu grafu → výsledky testu; História sa otvára z bočného menu.
+
 ### GitHub Pages
 Repozitár má `index.html` v koreni tohto priečinka — stačí zapnúť GitHub Pages nad týmto adresárom (`/release`) a prototyp pobeží online.
 
@@ -29,6 +32,9 @@ Repozitár má `index.html` v koreni tohto priečinka — stačí zapnúť GitHu
 | `screens-quiz.jsx` | Kvízy / cvičenia |
 | `screens-profile.jsx` | Profil, drawer menu, GDPR |
 | `screens-testy-v2.jsx` | Testy |
+| `screens-testy-ucitel-pro.jsx` | Testy — učiteľský vzhľad |
+| `screens-historia-ucitel.jsx` | História — učiteľ (bočné menu) |
+| `screens-test-vysledky.jsx` | Výsledky konkrétneho testu — všetci žiaci |
 | `screens-alfbook.jsx` | AlfBook — výber jazyka, domov |
 | `screens-alfbook-flow.jsx` | AlfBook — ročníky, predmety, témy, obsah |
 | `assets/` | Logá, ikony, ratingy, vlajky |

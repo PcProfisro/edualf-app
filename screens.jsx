@@ -392,17 +392,18 @@ function LoginTypingScreen({ dark = false }) {
 // ─────────────────────────────────────────────────────────────
 
 // Login field row (štýl z reálnej app — label navrchu, hodnota dole)
-function LoginField({ dark, label, value, icon, trailing, compact }) {
+function LoginField({ dark, label, value, icon, trailing, compact, active, onActivate }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
+  const pri = (window.QUASAR && window.QUASAR.accent) || '#3FA9E0';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: compact ? '9px 14px' : '13px 14px' }}>
-      <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+    <div onClick={onActivate} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: compact ? '9px 14px' : '13px 14px', cursor: 'pointer' }}>
+      <div className={active ? 'lf-lead-icon lf-lead-icon--active' : 'lf-lead-icon'} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: inkSoft, lineHeight: 1 }}>{label}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: active ? pri : inkSoft, lineHeight: 1, transition: 'color .15s ease' }}>{label}</div>
         {value && <div style={{ fontSize: 15, fontWeight: 700, color: ink, marginTop: 3 }}>{value}</div>}
       </div>
       {trailing && <div style={{ flexShrink: 0 }}>{trailing}</div>}
@@ -415,19 +416,34 @@ function LoginFieldBlock({ dark, children, outline }) {
   const p = ALFIK_PALETTE;
   const surf = dark ? p.darkSurf : 'rgba(255,255,255,0.94)';
   const sep = dark ? p.darkLine : 'rgba(200,215,230,0.7)';
+  const pri = (window.QUASAR && window.QUASAR.accent) || '#3FA9E0';
+  const [activeIdx, setActiveIdx] = React.useState(-1);
+  const ref = React.useRef(null);
   const arr = React.Children.toArray(children);
+  const active = activeIdx >= 0 && activeIdx < arr.length;
+
+  React.useEffect(() => {
+    if (!active) return;
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setActiveIdx(-1); };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [active]);
+
   return (
-    <div style={{
+    <div ref={ref} style={{
       background: surf, borderRadius: 14, overflow: 'hidden',
-      boxShadow: outline ? 'none' : '0 2px 12px rgba(15,30,55,0.09)',
-      border: outline
-        ? `1px solid ${dark ? p.darkLine : 'rgba(190,206,222,0.7)'}`
-        : '1px solid rgba(200,215,230,0.4)'
+      boxShadow: active
+        ? `inset 0 0 0 1px ${pri}`
+        : (outline ? 'none' : '0 2px 12px rgba(15,30,55,0.09)'),
+      border: `1px solid ${active ? pri : (outline ? (dark ? p.darkLine : 'rgba(190,206,222,0.7)') : 'rgba(200,215,230,0.4)')}`,
+      transition: 'border-color .15s ease, box-shadow .15s ease'
     }}>
       {arr.map((child, i) =>
       <React.Fragment key={i}>
           {i > 0 && <div style={{ height: 1, background: sep, marginLeft: 52 }} />}
-          {child}
+          {React.isValidElement(child)
+            ? React.cloneElement(child, { active: activeIdx === i, onActivate: () => setActiveIdx(i) })
+            : child}
         </React.Fragment>
       )}
     </div>);

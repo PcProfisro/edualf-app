@@ -9,6 +9,14 @@ const PROFILE_TABS = [
   { id: 'gdpr',     label: 'GDPR',      icon: 'shield'  }
 ];
 
+// Žiacky profil — bez záložky UČITEĽ
+const ZIAK_PROFILE_TABS = [
+  { id: 'zakladne', label: 'ZÁKLADNÉ',  icon: 'user'    },
+  { id: 'heslo',    label: 'HESLO',     icon: 'lock'    },
+  { id: 'ziak',     label: 'ŽIAK',      icon: 'cap'     },
+  { id: 'gdpr',     label: 'GDPR',      icon: 'shield'  }
+];
+
 function ProfileTabIcon({ id, color, size = 22 }) {
   const s = { fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
   if (id === 'user') return (
@@ -92,7 +100,7 @@ function ProfileTopBar({ dark }) {
 }
 
 
-function ProfileTabs({ active, dark }) {
+function ProfileTabs({ active, dark, tabs = PROFILE_TABS }) {
   const p = ALFIK_PALETTE;
   const accent = (window.QUASAR && window.QUASAR.primary) || '#8FD400';
   const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
@@ -101,11 +109,11 @@ function ProfileTabs({ active, dark }) {
       background: dark ? 'rgba(15,30,55,0.45)' : 'rgba(255,255,255,0.72)',
       backdropFilter: 'blur(8px)',
       WebkitBackdropFilter: 'blur(8px)',
-      display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
+      display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, 1fr)`,
       borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(15,30,55,0.06)'}`,
       position: 'relative'
     }}>
-      {PROFILE_TABS.map(t => {
+      {tabs.map(t => {
         const isActive = t.id === active;
         return (
           <div key={t.id} style={{
@@ -135,7 +143,7 @@ function ProfileTabs({ active, dark }) {
   );
 }
 
-function ProfileFrame({ children, dark, label, activeTab }) {
+function ProfileFrame({ children, dark, label, activeTab, tabs }) {
   return (
     <PhoneFrame dark={dark} label={label}>
       <div style={{
@@ -146,7 +154,7 @@ function ProfileFrame({ children, dark, label, activeTab }) {
         overflow: 'hidden'
       }}>
         <ProfileTopBar dark={dark}/>
-        <ProfileTabs dark={dark} active={activeTab}/>
+        <ProfileTabs dark={dark} active={activeTab} tabs={tabs}/>
         <div data-scroll-area style={{ flex: 1, overflowY: 'auto', padding: '14px 16px 24px' }}>
           {children}
         </div>
@@ -242,6 +250,7 @@ function PillButton({ children, variant = 'primary', size = 'md', dark, onClick,
     secondary: { bg: 'transparent', color: Q.accent, border: Q.accent },
     accent:    { bg: `linear-gradient(135deg, ${Q.accent} 0%, ${Q.accentDeep} 100%)`, color: '#FFFFFF', border: 'transparent' },
     negative:  { bg: 'transparent', color: Q.negative, border: Q.negative },
+    danger:    { bg: `linear-gradient(135deg, ${Q.negative} 0%, #C1272D 100%)`, color: '#FFFFFF', border: 'transparent' },
     // Legacy aliases (backward compat with older screen code)
     success:   { bg: `linear-gradient(135deg, ${Q.primary} 0%, ${Q.primaryDeep} 100%)`, color: '#FFFFFF', border: 'transparent' },
     outline:   { bg: 'transparent', color: Q.primary, border: Q.primary },
@@ -254,7 +263,7 @@ function PillButton({ children, variant = 'primary', size = 'md', dark, onClick,
   };
   const v = styles[variant];
   const s = sizes[size] || sizes.md;
-  const isFilled = variant === 'primary' || variant === 'success' || variant === 'accent';
+  const isFilled = variant === 'primary' || variant === 'success' || variant === 'accent' || variant === 'danger';
   return (
     <button onClick={onClick} style={{
       background: v.bg, color: v.color,
@@ -286,31 +295,34 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
     <ProfileFrame dark={dark} label="07 Profil — Základné údaje" activeTab="zakladne">
       <SectionLabel dark={dark}>Základné údaje</SectionLabel>
       <ProfileCard dark={dark}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: '50%',
-            overflow: 'hidden',
-            flexShrink: 0,
-            border: '3px solid #fff',
-            boxShadow: '0 6px 14px -4px rgba(139,124,246,0.5)'
-          }}>
-            <img src="assets/alfik_world_banner.png" alt="profil" style={{
-              width: '100%', height: '100%',
-              objectFit: 'cover',
-              objectPosition: '72% 10%'
-            }}/>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+          <div title="Pridať fotografiu" style={{ position: 'relative', width: 88, height: 88, flexShrink: 0, cursor: 'pointer' }}>
+            <div style={{
+              width: 88, height: 88, borderRadius: '50%',
+              overflow: 'hidden',
+              border: '3px solid #fff'
+            }}>
+              <img src="assets/alfik_world_banner.png" alt="profil" style={{
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+                objectPosition: '72% 10%'
+              }}/>
+            </div>
+            <div style={{
+              position: 'absolute', right: 0, bottom: 0,
+              width: 28, height: 28, borderRadius: '50%',
+              background: '#FFFFFF',
+              border: `2px solid ${dark ? p.darkSurf : '#FFFFFF'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: inkSoft, fontFamily: '"Dosis", sans-serif', marginBottom: 4 }}>Profilová fotka</div>
-            <PillButton dark={dark} variant="secondary" size="sm"
-              icon={
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                  <circle cx="12" cy="13" r="4"/>
-                </svg>
-              }>
-              Vybrať fotografiu
-            </PillButton>
+          <div style={{ minWidth: 0, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', letterSpacing: '-0.2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>System Admin</div>
           </div>
         </div>
 
@@ -332,21 +344,13 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
               <LoginField dark={dark} compact label="Telefón" value=""
                 icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2L8 9.6a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2-.4c.9.3 1.8.5 2.7.6A2 2 0 0 1 22 16.9z"/></svg>}/>
             </LoginFieldBlock>
-            <div style={{ fontSize: 11, color: inkSoft, fontFamily: '"Dosis", sans-serif', marginTop: 6, marginLeft: 4 }}>
-              Formát: +421 XXX XXX XXX
-            </div>
           </div>
-          <LoginFieldBlock dark={dark} outline>
-            <LoginField dark={dark} compact label="Jazyk *" value="Slovenčina"
-              icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>}
-              trailing={<svg width="16" height="16" viewBox="0 0 24 24" fill={inkSoft}><path d="M7 10l5 5 5-5z"/></svg>}/>
-          </LoginFieldBlock>
         </div>
 
         <div data-checkbox="subscribed" style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 18, paddingTop: 16, borderTop: `1px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.06)'}`, cursor: 'pointer' }}>
           <div style={{
             width: 22, height: 22, borderRadius: 4,
-            background: subscribed ? (window.QUASAR||p).accent : 'transparent',
+            background: subscribed ? ((window.QUASAR||p).accent || '#3FA9E0') : 'transparent',
             border: subscribed ? 'none' : `2px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.30)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'background .15s ease, border-color .15s ease'
@@ -360,11 +364,11 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 22 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 22 }}>
           <PillButton dark={dark} variant="primary"
             icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>}
           >Uložiť zmeny</PillButton>
-          <PillButton dark={dark} variant="secondary">Zrušiť</PillButton>
+          <PillButton dark={dark} variant="danger">Zrušiť</PillButton>
         </div>
       </ProfileCard>
     </ProfileFrame>
@@ -374,7 +378,7 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
 // ─────────────────────────────────────────────────────────────
 // 2. Zmena hesla
 // ─────────────────────────────────────────────────────────────
-function ProfileHesloScreen({ dark = false }) {
+function ProfileHesloScreen({ dark = false, tabs, frameLabel }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
@@ -382,7 +386,7 @@ function ProfileHesloScreen({ dark = false }) {
   const lockIcon = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>;
   const eyeIcon = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
   return (
-    <ProfileFrame dark={dark} label="07b Profil — Zmena hesla" activeTab="heslo">
+    <ProfileFrame dark={dark} label={frameLabel || "07b Profil — Zmena hesla"} activeTab="heslo" tabs={tabs}>
       <SectionLabel dark={dark}>Zmena hesla</SectionLabel>
       <ProfileCard dark={dark} style={{ marginBottom: 18 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 22 }}>
@@ -397,9 +401,9 @@ function ProfileHesloScreen({ dark = false }) {
           </LoginFieldBlock>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           <PillButton dark={dark} variant="primary">Zmeniť heslo</PillButton>
-          <PillButton dark={dark} variant="secondary">Zrušiť</PillButton>
+          <PillButton dark={dark} variant="danger">Zrušiť</PillButton>
         </div>
       </ProfileCard>
 
@@ -447,102 +451,99 @@ function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 
   return (
     <div style={{
       background: dark ? p.darkSurf : '#FFFFFF',
-      border: active ? `2px solid ${borderColor}` : `2px dashed ${borderColor}`,
-      borderRadius: 12,
-      padding: '14px 12px',
-      display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 10,
+      border: active ? `2px solid ${borderColor}` : `1.5px dashed ${borderColor}`,
+      borderRadius: 14,
+      padding: '12px 12px',
+      display: 'flex', alignItems: 'center', gap: 12,
       position: 'relative'
     }}>
+      {/* Left: logo */}
       <div style={{
-        fontSize: 13, fontWeight: 800, letterSpacing: '1px',
-        color: inkSoft, textTransform: 'uppercase',
-        fontFamily: '"Dosis", sans-serif',
-        textAlign: 'center'
-      }}>{name}</div>
-
-      <div style={{
-        height: 56,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, color: inkSoft, fontFamily: 'monospace'
+        width: 72, flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
       }}>{logo}</div>
 
-      <a href={productHref} target="_blank" rel="noopener noreferrer" style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-        width: '100%', boxSizing: 'border-box',
-        padding: '7px 13px',
-        borderRadius: 10,
-        background: dark ? 'rgba(63,169,224,0.16)' : '#D6ECF8',
-        color: '#3FA9E0',
-        textDecoration: 'none',
-        cursor: 'pointer'
-      }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-          <path d="M15 3h6v6M10 14L21 3"/>
-        </svg>
-        <span style={{
-          fontSize: 12.5, fontWeight: 700,
-          fontFamily: '"Dosis", sans-serif', letterSpacing: '0.2px',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-        }}>{productUrl}</span>
-      </a>
-
-      <div style={{
-        borderRadius: 8,
-        padding: '10px 8px',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4
-      }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2"/>
-          <path d="M16 2v4M8 2v4M3 10h18"/>
-        </svg>
-        <div style={{ fontSize: 10.5, color: inkSoft, fontFamily: '"Dosis", sans-serif', fontWeight: 600 }}>
-          Platnosť prístupu do
-        </div>
+      {/* Middle: name + validity + url */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div style={{
-          fontSize: 13, fontWeight: 800,
-          color: active ? ink : inkSoft,
-          fontFamily: '"Dosis", sans-serif'
-        }}>{dateText}</div>
+          fontSize: 13.5, fontWeight: 800, letterSpacing: '0.6px',
+          color: ink, textTransform: 'uppercase',
+          fontFamily: '"Dosis", sans-serif',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+        }}>{name}</div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={active ? Q.primary : inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <span style={{
+            fontSize: 12.5, fontWeight: 700,
+            color: active ? ink : inkSoft,
+            fontFamily: '"Dosis", sans-serif'
+          }}>{active ? `Platí do ${dateText}` : dateText}</span>
+        </div>
+
+        <a href={productHref} target="_blank" rel="noopener noreferrer" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          color: '#3FA9E0', textDecoration: 'none', cursor: 'pointer',
+          minWidth: 0
+        }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <path d="M15 3h6v6M10 14L21 3"/>
+          </svg>
+          <span style={{
+            fontSize: 12, fontWeight: 700,
+            fontFamily: '"Dosis", sans-serif',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+          }}>{productUrl}</span>
+        </a>
       </div>
 
-      {active ? (
-        <button style={{
-          background: Q.primary,
-          color: '#FFFFFF', border: 'none',
-          borderRadius: 10, padding: '9px 0',
-          fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
-          fontFamily: '"Dosis", sans-serif',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          cursor: 'pointer',
-          textTransform: 'uppercase'
-        }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
-          Videonávody
-        </button>
-      ) : (
-        <>
+      {/* Right: actions */}
+      <div style={{
+        flexShrink: 0, width: 96,
+        display: 'flex', flexDirection: 'column', gap: 6
+      }}>
+        {active ? (
           <button style={{
             background: Q.primary,
             color: '#FFFFFF', border: 'none',
             borderRadius: 10, padding: '9px 0',
-            fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
+            fontSize: 11, fontWeight: 800, letterSpacing: '0.4px',
             fontFamily: '"Dosis", sans-serif',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
             cursor: 'pointer',
             textTransform: 'uppercase'
-          }}>{secondaryAction}</button>
-          <button style={{
-            background: 'transparent',
-            color: Q.primary,
-            border: `1.5px solid ${Q.primary}`,
-            borderRadius: 10, padding: '7.5px 0',
-            fontSize: 11.5, fontWeight: 800, letterSpacing: '0.6px',
-            fontFamily: '"Dosis", sans-serif',
-            cursor: 'pointer',
-            textTransform: 'uppercase'
-          }}>{primaryAction}</button>
-        </>
-      )}
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+            Návody
+          </button>
+        ) : (
+          <>
+            <button style={{
+              background: Q.primary,
+              color: '#FFFFFF', border: 'none',
+              borderRadius: 10, padding: '8px 0',
+              fontSize: 11, fontWeight: 800, letterSpacing: '0.4px',
+              fontFamily: '"Dosis", sans-serif',
+              cursor: 'pointer',
+              textTransform: 'uppercase'
+            }}>{secondaryAction}</button>
+            <button style={{
+              background: 'transparent',
+              color: Q.primary,
+              border: `1.5px solid ${Q.primary}`,
+              borderRadius: 10, padding: '6.5px 0',
+              fontSize: 11, fontWeight: 800, letterSpacing: '0.4px',
+              fontFamily: '"Dosis", sans-serif',
+              cursor: 'pointer',
+              textTransform: 'uppercase'
+            }}>{primaryAction}</button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -550,19 +551,19 @@ function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 
 function BrandLogo({ name }) {
   if (name === 'ALFPÉDIA' || name === 'DOMÁCE ÚLOHY') return (
     <img src="assets/alfpedia_logo.svg" alt={name}
-      style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain', display: 'block' }} />
+      style={{ maxWidth: '100%', maxHeight: 40, objectFit: 'contain', display: 'block' }} />
   );
   if (name === 'ALFBOOK') return (
     <img src="assets/alfbook_logo.svg" alt={name}
-      style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain', display: 'block' }} />
+      style={{ maxWidth: '100%', maxHeight: 40, objectFit: 'contain', display: 'block' }} />
   );
   if (name === 'ALFÍK') return (
     <img src="assets/alfik_logo.svg" alt={name}
-      style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain', display: 'block' }} />
+      style={{ maxWidth: '100%', maxHeight: 40, objectFit: 'contain', display: 'block' }} />
   );
   if (name === 'ALF FAMILY') return (
     <img src="assets/alffamily_logo.svg" alt={name}
-      style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain', display: 'block' }} />
+      style={{ maxWidth: '100%', maxHeight: 40, objectFit: 'contain', display: 'block' }} />
   );
   return name;
 }
@@ -616,7 +617,7 @@ function ProfileUcitelScreen({ dark = false }) {
 
       <SectionLabel dark={dark}>Licencie</SectionLabel>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <LicenceCard dark={dark} name="ALFPÉDIA" active dateText="04.01.2031" logo={<BrandLogo name="ALFPÉDIA"/>} />
         <LicenceCard dark={dark} name="ALFBOOK" dateText="Neaktívne" logo={<BrandLogo name="ALFBOOK"/>} />
         <LicenceCard dark={dark} name="ALFÍK" dateText="Neaktívne" logo={<BrandLogo name="ALFÍK"/>} />
@@ -685,7 +686,7 @@ function ProfileZiakScreen({ dark = false }) {
 
       <SectionLabel dark={dark}>Licencie</SectionLabel>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <LicenceCard dark={dark} name="ALFBOOK" dateText="Neaktívne" logo={<BrandLogo name="ALFBOOK"/>} />
         <LicenceCard dark={dark} name="ALFÍK" dateText="Neaktívne" logo={<BrandLogo name="ALFÍK"/>} />
         <LicenceCard dark={dark} name="DOMÁCE ÚLOHY" dateText="Neaktívne" logo={<BrandLogo name="DOMÁCE ÚLOHY"/>} />
@@ -697,12 +698,12 @@ function ProfileZiakScreen({ dark = false }) {
 // ─────────────────────────────────────────────────────────────
 // 5. GDPR
 // ─────────────────────────────────────────────────────────────
-function ProfileGdprScreen({ dark = false }) {
+function ProfileGdprScreen({ dark = false, tabs, frameLabel }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
   return (
-    <ProfileFrame dark={dark} label="07e Profil — GDPR" activeTab="gdpr">
+    <ProfileFrame dark={dark} label={frameLabel || "07e Profil — GDPR"} activeTab="gdpr" tabs={tabs}>
       <SectionLabel dark={dark}>GDPR</SectionLabel>
 
       <ProfileCard dark={dark} style={{ marginBottom: 18 }}>
@@ -710,41 +711,49 @@ function ProfileGdprScreen({ dark = false }) {
           Ochrana osobných údajov
         </div>
 
-        <div style={{ display: 'flex', gap: 14, marginBottom: 22 }}>
-          <div style={{ width: 36, flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 2 }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>
-              <circle cx="12" cy="11" r="2.2"/>
-              <path d="M13.6 12.7L15.5 14.5"/>
-            </svg>
+        <div style={{ marginBottom: 22 }}>
+          <div style={{ display: 'flex', gap: 14 }}>
+            <div style={{ width: 36, flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 2 }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>
+                <circle cx="12" cy="11" r="2.2"/>
+                <path d="M13.6 12.7L15.5 14.5"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 6 }}>
+                Podmienky ochrany osobných údajov
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: inkSoft, fontFamily: '"Dosis", sans-serif', lineHeight: 1.45 }}>
+                Prečítajte si naše zásady ochrany osobných údajov a podmienky používania služieb.
+              </div>
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 6 }}>
-              Podmienky ochrany osobných údajov
-            </div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: inkSoft, fontFamily: '"Dosis", sans-serif', lineHeight: 1.45, marginBottom: 12 }}>
-              Prečítajte si naše zásady ochrany osobných údajov a podmienky používania služieb.
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
             <PillButton dark={dark} variant="ghost"
               icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M10 14L21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>}
             >Zobraziť podmienky</PillButton>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 14 }}>
-          <div style={{ width: 36, flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 2 }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <path d="M7 10l5 5 5-5M12 15V3"/>
-            </svg>
+        <div>
+          <div style={{ display: 'flex', gap: 14 }}>
+            <div style={{ width: 36, flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 2 }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <path d="M7 10l5 5 5-5M12 15V3"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 6 }}>
+                Stiahnite si svoje osobné údaje
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: inkSoft, fontFamily: '"Dosis", sans-serif', lineHeight: 1.45 }}>
+                Podľa GDPR máte právo získať kópiu všetkých osobných údajov, ktoré o vás spracovávame.
+              </div>
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 6 }}>
-              Stiahnite si svoje osobné údaje
-            </div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: inkSoft, fontFamily: '"Dosis", sans-serif', lineHeight: 1.45, marginBottom: 12 }}>
-              Podľa GDPR máte právo získať kópiu všetkých osobných údajov, ktoré o vás spracovávame.
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
             <PillButton dark={dark} variant="primary"
               icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>}
             >Stiahnuť údaje</PillButton>
@@ -775,10 +784,208 @@ function ProfileGdprScreen({ dark = false }) {
   );
 }
 
+// ═════════════════════════════════════════════════════════════
+// ŽIACKY PROFIL — bez záložky UČITEĽ
+// ═════════════════════════════════════════════════════════════
+
+// Zaškrtávacie políčko (riadok) — stavové
+function CheckRow({ dark, label, defaultChecked = true }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const acc = (window.QUASAR || p).accent || '#3FA9E0';
+  const [on, setOn] = React.useState(defaultChecked);
+  return (
+    <div onClick={() => setOn(v => !v)} style={{
+      display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '2px 0'
+    }}>
+      <div style={{
+        width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+        background: on ? acc : 'transparent',
+        border: on ? 'none' : `2px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.30)'}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'background .15s ease, border-color .15s ease'
+      }}>
+        {on && <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 600, color: ink, fontFamily: '"Dosis", sans-serif', lineHeight: 1.3 }}>{label}</div>
+    </div>
+  );
+}
+
+// Read-only pole (meno / priezvisko) — so zámkom, nedá sa meniť
+function LockedField({ dark, label, value }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const acc = (window.QUASAR || p).accent || '#3FA9E0';
+  return (
+    <LoginFieldBlock dark={dark} outline>
+      <LoginField dark={dark} compact label={label} value={value}
+        icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>}
+        trailing={<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>}
+      />
+    </LoginFieldBlock>
+  );
+}
+
+// Dropdown výberu ročníka
+function RocnikDropdown({ dark }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const acc = (window.QUASAR || p).accent || '#3FA9E0';
+  const surf = dark ? p.darkSurf : '#FFFFFF';
+  const line = dark ? p.darkLine : 'rgba(190,206,222,0.7)';
+  const options = ['1. ročník','2. ročník','3. ročník','4. ročník','5. ročník','6. ročník','7. ročník','8. ročník','9. ročník'];
+  const [open, setOpen] = React.useState(false);
+  const [val, setVal] = React.useState('3. ročník');
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [open]);
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div style={{
+        background: surf, borderRadius: 14, overflow: 'hidden',
+        border: `1px solid ${open ? acc : line}`,
+        boxShadow: open ? `inset 0 0 0 1px ${acc}` : 'none',
+        transition: 'border-color .15s ease, box-shadow .15s ease'
+      }}>
+        <div onClick={() => setOpen(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', cursor: 'pointer' }}>
+          <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: open ? acc : inkSoft, lineHeight: 1, transition: 'color .15s ease' }}>Ročník</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: ink, marginTop: 3 }}>{val}</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }}><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 20,
+          background: surf, borderRadius: 14, border: `1px solid ${line}`,
+          boxShadow: '0 8px 24px rgba(15,30,55,0.18)', overflow: 'hidden', maxHeight: 260, overflowY: 'auto'
+        }}>
+          {options.map((o, i) => {
+            const sel = o === val;
+            return (
+              <div key={o} onClick={() => { setVal(o); setOpen(false); }} style={{
+                padding: '11px 16px', cursor: 'pointer',
+                fontSize: 14.5, fontWeight: sel ? 800 : 600,
+                color: sel ? acc : ink, fontFamily: '"Dosis", sans-serif',
+                background: sel ? (dark ? 'rgba(63,169,224,0.12)' : 'rgba(63,169,224,0.08)') : 'transparent',
+                borderTop: i > 0 ? `1px solid ${dark ? p.darkLine : 'rgba(200,215,230,0.5)'}` : 'none'
+              }}>{o}</div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// 1. Základné údaje — žiak
+function ProfileZiakZakladneScreen({ dark = false }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const acc = (window.QUASAR || p).accent || '#3FA9E0';
+  return (
+    <ProfileFrame dark={dark} label="08 Profil žiaka — Základné údaje" activeTab="zakladne" tabs={ZIAK_PROFILE_TABS}>
+      <SectionLabel dark={dark}>Základné údaje</SectionLabel>
+      <ProfileCard dark={dark}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+          <div title="Pridať fotografiu" style={{ position: 'relative', width: 88, height: 88, flexShrink: 0, cursor: 'pointer' }}>
+            <div style={{ width: 88, height: 88, borderRadius: '50%', overflow: 'hidden', border: '3px solid #fff' }}>
+              <img src="assets/alfik_world_banner.png" alt="profil" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '72% 10%' }}/>
+            </div>
+            <div style={{ position: 'absolute', right: 0, bottom: 0, width: 28, height: 28, borderRadius: '50%', background: '#FFFFFF', border: `2px solid ${dark ? p.darkSurf : '#FFFFFF'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+          </div>
+          <div style={{ minWidth: 0, textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', letterSpacing: '-0.2px' }}>Jakub Novák</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <LoginFieldBlock dark={dark} outline>
+            <LoginField dark={dark} compact label="E-mail *" value="jakub.novak@skola.sk"
+              icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>}/>
+          </LoginFieldBlock>
+          <RocnikDropdown dark={dark}/>
+        </div>
+
+        <div style={{ marginTop: 18, paddingTop: 16, borderTop: `1px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.06)'}` }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 14 }}>Emailové notifikácie</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <CheckRow dark={dark} label="Oznam o správe od učiteľa"/>
+            <CheckRow dark={dark} label="Oznam o novej úlohe"/>
+            <CheckRow dark={dark} label="Upozornenie na úlohu deň pred ukončením"/>
+            <CheckRow dark={dark} label="Zasielať mesačný prehľad vyriešených testov"/>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 22 }}>
+          <PillButton dark={dark} variant="primary"
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>}
+          >Uložiť zmeny</PillButton>
+          <PillButton dark={dark} variant="danger">Zrušiť</PillButton>
+        </div>
+      </ProfileCard>
+    </ProfileFrame>
+  );
+}
+
+// 2. Heslo — žiak (znovupoužije obsah, iné taby)
+function ProfileZiakHesloScreen({ dark = false }) {
+  return <ProfileHesloScreen dark={dark} tabs={ZIAK_PROFILE_TABS} frameLabel="08b Profil žiaka — Zmena hesla"/>;
+}
+
+// 3. Prístup žiaka
+function ProfileZiakPristupScreen({ dark = false }) {
+  const p = ALFIK_PALETTE;
+  const ink = dark ? p.darkInk : p.ink;
+  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  return (
+    <ProfileFrame dark={dark} label="08c Profil žiaka — Prístup žiaka" activeTab="ziak" tabs={ZIAK_PROFILE_TABS}>
+      <SectionLabel dark={dark}>Prístup žiaka</SectionLabel>
+      <ProfileCard dark={dark} style={{ marginBottom: 18 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: inkSoft, fontFamily: '"Dosis", sans-serif', marginBottom: 14 }}>
+          Prístupové údaje
+        </div>
+        <AccessRow dark={dark} label="Kód školy" sub="Kód pre prihlásenie" code="adminaccount"
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>}/>
+      </ProfileCard>
+
+      <SectionLabel dark={dark}>Licencie</SectionLabel>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <LicenceCard dark={dark} name="ALFBOOK" dateText="Neaktívne" logo={<BrandLogo name="ALFBOOK"/>} />
+        <LicenceCard dark={dark} name="ALFÍK" dateText="Neaktívne" logo={<BrandLogo name="ALFÍK"/>} />
+        <LicenceCard dark={dark} name="DOMÁCE ÚLOHY" dateText="Neaktívne" logo={<BrandLogo name="DOMÁCE ÚLOHY"/>} />
+      </div>
+    </ProfileFrame>
+  );
+}
+
+// 4. GDPR — žiak
+function ProfileZiakGdprScreen({ dark = false }) {
+  return <ProfileGdprScreen dark={dark} tabs={ZIAK_PROFILE_TABS} frameLabel="08d Profil žiaka — GDPR"/>;
+}
+
 Object.assign(window, {
   ProfileZakladneScreen,
   ProfileHesloScreen,
   ProfileUcitelScreen,
   ProfileZiakScreen,
-  ProfileGdprScreen
+  ProfileGdprScreen,
+  ProfileZiakZakladneScreen,
+  ProfileZiakHesloScreen,
+  ProfileZiakPristupScreen,
+  ProfileZiakGdprScreen
 });
