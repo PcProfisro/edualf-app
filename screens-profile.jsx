@@ -80,7 +80,7 @@ function ProfileTopBar({ dark }) {
       {/* Left: back button */}
       <div style={{ display: 'flex', alignItems: 'center', zIndex: 1 }}>
         <button title="Späť" style={{
-          width: 38, height: 38, borderRadius: 14,
+          width: 38, height: 38, borderRadius: 12,
           border: 'none',
           background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -122,10 +122,10 @@ function ProfileTabs({ active, dark, tabs = PROFILE_TABS }) {
             position: 'relative',
             cursor: 'pointer'
           }}>
-            <ProfileTabIcon id={t.icon} color={isActive ? accent : (dark ? inkSoft : '#6A7A8F')} size={22}/>
+            <ProfileTabIcon id={t.icon} color={isActive ? accent : (dark ? inkSoft : '#4A5B6E')} size={22}/>
             <div style={{
               fontSize: 10.5, fontWeight: 800,
-              color: isActive ? accent : (dark ? inkSoft : '#6A7A8F'),
+              color: isActive ? accent : (dark ? inkSoft : '#4A5B6E'),
               fontFamily: '"Dosis", sans-serif',
               letterSpacing: '0.5px',
               textTransform: 'uppercase'
@@ -171,7 +171,7 @@ function ProfileCard({ children, dark, style }) {
   return (
     <div style={{
       background: dark ? p.darkSurf : '#FFFFFF',
-      borderRadius: 18,
+      borderRadius: 16,
       padding: '18px 16px',
       border: dark ? `1px solid ${p.darkLine}` : 'none',
       boxShadow: dark ? 'none' : '0 2px 4px 0 rgba(15,30,55,0.06)',
@@ -199,7 +199,7 @@ function MaterialInput({ label, value, icon, dark, suffix }) {
   const p = ALFIK_PALETTE;
   const Q = window.QUASAR || p;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const surf = dark ? p.darkSurf : p.surface || '#FFFFFF';
   const line = dark ? p.darkLine : p.line || 'rgba(15,30,55,0.08)';
   return (
@@ -213,7 +213,7 @@ function MaterialInput({ label, value, icon, dark, suffix }) {
       )}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        background: surf, height: 40, borderRadius: 10, padding: '0 10px',
+        background: surf, height: 40, borderRadius: 8, padding: '0 10px',
         border: `1.5px solid ${line}`,
         boxShadow: 'none',
         transition: 'border-color 0.15s, box-shadow 0.15s'
@@ -254,8 +254,8 @@ function PillButton({ children, variant = 'primary', size = 'md', dark, onClick,
     // Legacy aliases (backward compat with older screen code)
     success:   { bg: `linear-gradient(135deg, ${Q.primary} 0%, ${Q.primaryDeep} 100%)`, color: '#FFFFFF', border: 'transparent' },
     outline:   { bg: 'transparent', color: Q.primary, border: Q.primary },
-    ghost:     { bg: 'transparent', color: dark ? p.darkInkSoft : '#9FB1C6', border: dark ? p.darkLine : 'rgba(15,30,55,0.18)' },
-    text:      { bg: 'transparent', color: dark ? p.darkInkSoft : '#6A7A8F', border: 'transparent' }
+    ghost:     { bg: 'transparent', color: dark ? p.darkInkSoft : '#A8B6C8', border: dark ? p.darkLine : 'rgba(15,30,55,0.18)' },
+    text:      { bg: 'transparent', color: dark ? p.darkInkSoft : '#4A5B6E', border: 'transparent' }
   };
   const sizes = {
     sm: { padding: '6px 11px', fontSize: 11, gap: 6 },
@@ -271,7 +271,7 @@ function PillButton({ children, variant = 'primary', size = 'md', dark, onClick,
       padding: s.padding,
       fontSize: s.fontSize, fontWeight: 800, letterSpacing: '0.8px',
       fontFamily: '"Dosis", sans-serif',
-      borderRadius: 10,
+      borderRadius: 8,
       cursor: 'pointer',
       textTransform: 'uppercase',
       display: 'inline-flex', alignItems: 'center', gap: s.gap,
@@ -289,7 +289,7 @@ function PillButton({ children, variant = 'primary', size = 'md', dark, onClick,
 function ProfileZakladneScreen({ dark = false, subscribed = true }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const acc = (window.QUASAR || p).accent || '#3FA9E0';
   return (
     <ProfileFrame dark={dark} label="07 Profil — Základné údaje" activeTab="zakladne">
@@ -381,7 +381,7 @@ function ProfileZakladneScreen({ dark = false, subscribed = true }) {
 function ProfileHesloScreen({ dark = false, tabs, frameLabel }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const acc = (window.QUASAR || p).accent || '#3FA9E0';
   const lockIcon = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>;
   const eyeIcon = <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
@@ -436,7 +436,7 @@ function ProfileHesloScreen({ dark = false, tabs, frameLabel }) {
 function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 'O PRODUKTE', secondaryAction = 'OBJEDNAŤ' }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const Q = window.QUASAR || p;
   const borderColor = active ? Q.primary : (dark ? p.darkLine : 'rgba(15,30,55,0.15)');
   const urlMap = {
@@ -452,7 +452,7 @@ function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 
     <div style={{
       background: dark ? p.darkSurf : '#FFFFFF',
       border: active ? `2px solid ${borderColor}` : `1.5px dashed ${borderColor}`,
-      borderRadius: 14,
+      borderRadius: 12,
       padding: '12px 12px',
       display: 'flex', alignItems: 'center', gap: 12,
       position: 'relative'
@@ -510,7 +510,7 @@ function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 
           <button style={{
             background: Q.primary,
             color: '#FFFFFF', border: 'none',
-            borderRadius: 10, padding: '9px 0',
+            borderRadius: 8, padding: '9px 0',
             fontSize: 11, fontWeight: 800, letterSpacing: '0.4px',
             fontFamily: '"Dosis", sans-serif',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
@@ -525,7 +525,7 @@ function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 
             <button style={{
               background: Q.primary,
               color: '#FFFFFF', border: 'none',
-              borderRadius: 10, padding: '8px 0',
+              borderRadius: 8, padding: '8px 0',
               fontSize: 11, fontWeight: 800, letterSpacing: '0.4px',
               fontFamily: '"Dosis", sans-serif',
               cursor: 'pointer',
@@ -535,7 +535,7 @@ function LicenceCard({ dark, name, logo, active, dateText, url, primaryAction = 
               background: 'transparent',
               color: Q.primary,
               border: `1.5px solid ${Q.primary}`,
-              borderRadius: 10, padding: '6.5px 0',
+              borderRadius: 8, padding: '6.5px 0',
               fontSize: 11, fontWeight: 800, letterSpacing: '0.4px',
               fontFamily: '"Dosis", sans-serif',
               cursor: 'pointer',
@@ -574,7 +574,7 @@ function BrandLogo({ name }) {
 function ProfileUcitelScreen({ dark = false }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   return (
     <ProfileFrame dark={dark} label="07c Profil — Prístup učiteľa" activeTab="ucitel">
       <SectionLabel dark={dark}>Prístup učiteľa</SectionLabel>
@@ -630,7 +630,7 @@ function ProfileUcitelScreen({ dark = false }) {
 function AccessRow({ dark, label, sub, code, icon }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
       <div style={{
@@ -648,7 +648,7 @@ function AccessRow({ dark, label, sub, code, icon }) {
         background: '#D6ECF8',
         color: '#3FA9E0',
         padding: '7px 12px',
-        borderRadius: 10,
+        borderRadius: 8,
         border: 'none', cursor: 'pointer'
       }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FA9E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -671,7 +671,7 @@ function AccessRow({ dark, label, sub, code, icon }) {
 function ProfileZiakScreen({ dark = false }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   return (
     <ProfileFrame dark={dark} label="07d Profil — Prístup žiaka" activeTab="ziak">
       <SectionLabel dark={dark}>Prístup žiaka</SectionLabel>
@@ -701,7 +701,7 @@ function ProfileZiakScreen({ dark = false }) {
 function ProfileGdprScreen({ dark = false, tabs, frameLabel }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   return (
     <ProfileFrame dark={dark} label={frameLabel || "07e Profil — GDPR"} activeTab="gdpr" tabs={tabs}>
       <SectionLabel dark={dark}>GDPR</SectionLabel>
@@ -799,7 +799,7 @@ function CheckRow({ dark, label, defaultChecked = true }) {
       display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '2px 0'
     }}>
       <div style={{
-        width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+        width: 24, height: 24, borderRadius: 8, flexShrink: 0,
         background: on ? acc : 'transparent',
         border: on ? 'none' : `2px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.30)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -816,7 +816,7 @@ function CheckRow({ dark, label, defaultChecked = true }) {
 function LockedField({ dark, label, value }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const acc = (window.QUASAR || p).accent || '#3FA9E0';
   return (
     <LoginFieldBlock dark={dark} outline>
@@ -832,7 +832,7 @@ function LockedField({ dark, label, value }) {
 function RocnikDropdown({ dark }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const acc = (window.QUASAR || p).accent || '#3FA9E0';
   const surf = dark ? p.darkSurf : '#FFFFFF';
   const line = dark ? p.darkLine : 'rgba(190,206,222,0.7)';
@@ -849,7 +849,7 @@ function RocnikDropdown({ dark }) {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <div style={{
-        background: surf, borderRadius: 14, overflow: 'hidden',
+        background: surf, borderRadius: 12, overflow: 'hidden',
         border: `1px solid ${open ? acc : line}`,
         boxShadow: open ? `inset 0 0 0 1px ${acc}` : 'none',
         transition: 'border-color .15s ease, box-shadow .15s ease'
@@ -868,7 +868,7 @@ function RocnikDropdown({ dark }) {
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 20,
-          background: surf, borderRadius: 14, border: `1px solid ${line}`,
+          background: surf, borderRadius: 12, border: `1px solid ${line}`,
           boxShadow: '0 8px 24px rgba(15,30,55,0.18)', overflow: 'hidden', maxHeight: 260, overflowY: 'auto'
         }}>
           {options.map((o, i) => {
@@ -890,13 +890,13 @@ function RocnikDropdown({ dark }) {
 }
 
 // 1. Základné údaje — žiak
-function ProfileZiakZakladneScreen({ dark = false }) {
+function ProfileZiakZakladneScreen({ dark = false, noRocnik = false }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const acc = (window.QUASAR || p).accent || '#3FA9E0';
   return (
-    <ProfileFrame dark={dark} label="08 Profil žiaka — Základné údaje" activeTab="zakladne" tabs={ZIAK_PROFILE_TABS}>
+    <ProfileFrame dark={dark} label={noRocnik ? "08e Profil žiaka — Ročník nedefinovaný" : "08 Profil žiaka — Základné údaje"} activeTab="zakladne" tabs={ZIAK_PROFILE_TABS}>
       <SectionLabel dark={dark}>Základné údaje</SectionLabel>
       <ProfileCard dark={dark}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 18 }}>
@@ -915,14 +915,26 @@ function ProfileZiakZakladneScreen({ dark = false }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <LoginFieldBlock dark={dark} outline>
-            <LoginField dark={dark} compact label="E-mail *" value="jakub.novak@skola.sk"
+            <LoginField dark={dark} compact label="E-mail" value="jakub.novak@skola.sk"
               icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={acc} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg>}/>
           </LoginFieldBlock>
-          <RocnikDropdown dark={dark}/>
+          {noRocnik ? (
+            <div style={{
+              padding: '9px 14px', borderRadius: 12, minHeight: 52, boxSizing: 'border-box',
+              display: 'flex', alignItems: 'center',
+              background: dark ? 'rgba(229,72,77,0.14)' : 'rgba(229,72,77,0.09)',
+              border: `1px solid ${dark ? 'rgba(229,72,77,0.35)' : 'rgba(229,72,77,0.22)'}`,
+              fontSize: 13.5, fontWeight: 600, color: '#E5484D',
+              fontFamily: '"Dosis", sans-serif', lineHeight: 1.4
+            }}>Tvoj ročník nie je definovaný. Kontaktuj školského administrátora: Ján Korečko</div>
+          ) : (
+            <RocnikDropdown dark={dark}/>
+          )}
         </div>
 
         <div style={{ marginTop: 18, paddingTop: 16, borderTop: `1px solid ${dark ? p.darkLine : 'rgba(15,30,55,0.06)'}` }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 14 }}>Emailové notifikácie</div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: ink, fontFamily: '"Dosis", sans-serif', marginBottom: 6 }}>Emailové notifikácie</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#E5484D', fontFamily: '"Dosis", sans-serif', marginBottom: 14, lineHeight: 1.35 }}>Notifikácie budú funkčné po zadaní emailu</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <CheckRow dark={dark} label="Oznam o správe od učiteľa"/>
             <CheckRow dark={dark} label="Oznam o novej úlohe"/>
@@ -951,7 +963,7 @@ function ProfileZiakHesloScreen({ dark = false }) {
 function ProfileZiakPristupScreen({ dark = false }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   return (
     <ProfileFrame dark={dark} label="08c Profil žiaka — Prístup žiaka" activeTab="ziak" tabs={ZIAK_PROFILE_TABS}>
       <SectionLabel dark={dark}>Prístup žiaka</SectionLabel>

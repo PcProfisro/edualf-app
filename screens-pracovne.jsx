@@ -54,7 +54,7 @@ function PracovneListyScreen({ dark = false, columns = 2 }) {
           img="uploads/Bez názvu - kópia (800 x 800 px) (39).png"
           imgNoBg={true}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
-          gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
+          gradientDark="linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)"
           shadowColor="rgba(0,168,181,0.45)"
           accent="#00A8B5"
           ageIcon="all"
@@ -100,7 +100,7 @@ function SportPracovneScreen({ dark = false, columns = 2 }) {
           img="uploads/Bez názvu - kópia (800 x 800 px) (56).png"
           imgNoBg={true}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
-          gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
+          gradientDark="linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)"
           shadowColor="rgba(0,168,181,0.45)"
           accent="#00A8B5"
           ageIcon="all"
@@ -147,7 +147,7 @@ function GrafomotorikaScreen({ dark = false, columns = 2 }) {
           img="uploads/Bez názvu - kópia (800 x 800 px) (59).png"
           imgNoBg={true}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
-          gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
+          gradientDark="linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)"
           shadowColor="rgba(0,168,181,0.45)"
           accent="#00A8B5"
           ageIcon="all"
@@ -186,7 +186,7 @@ function GrafoRow({ item, dark }) {
   return (
     <div style={{
       background: surf,
-      borderRadius: 22,
+      borderRadius: 20,
       padding: '10px 14px 10px 10px',
       display: 'flex', alignItems: 'center', gap: 12,
       boxShadow: dark ? 'none' : '0 2px 5px rgba(15,30,55,0.18)',
@@ -246,7 +246,7 @@ function GrafoTile({ item, dark, compact }) {
   return (
     <div style={{
       background: tileBg,
-      borderRadius: compact ? 22 : 26,
+      borderRadius: compact ? 20 : 24,
       padding: compact ? '11px 10px' : '14px 13px',
       position: 'relative', overflow: 'hidden',
       boxShadow: dark ? 'none' : `0 2px 4px 0px rgba(15,30,55,0.35)`,
@@ -258,7 +258,7 @@ function GrafoTile({ item, dark, compact }) {
       <div style={{
         position: 'absolute', top: compact ? 8 : 10, left: compact ? 8 : 10, zIndex: 3,
         background: '#FFFFFF',
-        borderRadius: 10,
+        borderRadius: 8,
         padding: compact ? '2px 4px' : '3px 5px',
         boxShadow: '0 2px 5px rgba(15,30,55,0.28)',
         display: 'flex', alignItems: 'center'
@@ -327,7 +327,7 @@ function GrafoTile({ item, dark, compact }) {
           background: `linear-gradient(135deg, ${(window.QUASAR||{primary:'#8FD400'}).primary} 0%, ${(window.QUASAR||{primaryDeep:'#72B600'}).primaryDeep} 100%)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: '3px solid #FFFFFF',
-          boxShadow: `0 4px 12px -2px rgba(114,182,0,0.55), 0 0 0 2px rgba(15,30,55,0.05)`,
+          boxShadow: `0 4px 12px -2px rgba(15,30,55,0.20), 0 0 0 2px rgba(15,30,55,0.05)`,
           position: 'relative', zIndex: 1, padding: 0
         }}>
           <svg width={compact ? 24 : 30} height={compact ? 24 : 30} viewBox="0 0 24 24"
@@ -352,7 +352,7 @@ function GrafoTile({ item, dark, compact }) {
           fontWeight: 900,
           fontFamily: '"Dosis", sans-serif',
           letterSpacing: '-0.1px',
-          color: dark ? ink : '#1A4040',
+          color: dark ? ink : '#1A2B3D',
           textShadow: 'none',
           lineHeight: 1.12,
           textAlign: 'left',
@@ -437,7 +437,7 @@ function FileRow({ item, dark }) {
   return (
     <div style={{
       background: dark ? surf : '#FFFFFF',
-      borderRadius: 22, padding: '11px 12px',
+      borderRadius: 20, padding: '11px 12px',
       display: 'flex', alignItems: 'center', gap: 11,
       boxShadow: dark
         ? 'none'
@@ -491,12 +491,12 @@ function PracovnyListOpenScreen({ dark = false }) {
     <window.PhoneFrame dark={dark} label="07c Pracovný list otvorený">
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
-        background: dark ? '#0E1622' : '#ECEEF1'
+        background: dark ? '#0E1622' : '#E4EBF2'
       }}>
         {/* Top bar with back + title */}
         <div style={{
           padding: '10px 14px 10px 12px',
-          background: dark ? '#16213A' : '#FFFFFF',
+          background: dark ? '#1A2433' : '#FFFFFF',
           display: 'flex', alignItems: 'center', gap: 10,
           borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(15,30,55,0.08)'}`,
           flexShrink: 0
@@ -552,7 +552,7 @@ function PracovnyListOpenScreen({ dark = false }) {
           padding: '16px 14px 12px',
           background: dark
             ? 'linear-gradient(180deg, #0E1622 0%, #1A2433 100%)'
-            : '#ECEEF1'
+            : '#E4EBF2'
         }}>
           <div style={{
             width: '100%',

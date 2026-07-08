@@ -37,11 +37,44 @@ const TV_ROWS = [
 const TV_TRIEDY = ['Všetky', 'I.A', 'I.B', 'II.A'];
 const TV_PREDMETY = ['Všetky', 'Príroda', 'Matematika', 'Slovná zásoba SJ'];
 
+// ── Časové obdobia (zhodné s obrazovkou 09) ──
+const TV_OBDOBIA = [
+  { id: 'dnes', label: 'Dnes',                desc: '6. júl 2026' },
+  { id: '7d',   label: 'Posledných 7 dní',    desc: '30. jún – 6. júl 2026' },
+  { id: '30d',  label: 'Posledných 30 dní',   desc: '7. jún – 6. júl 2026' },
+  { id: 'rok',  label: 'Aktuálny školský rok', desc: 'od 1. sep 2025' },
+  { id: 'vlastne', label: 'Vlastné obdobie',  desc: 'vyberte dátumy' }
+];
+const TV_TODAY = new Date(2026, 6, 6);
+function tvParseDate(s) {
+  const m = s.match(/(\d+)\.(\d+)\.(\d{4})/);
+  if (!m) return null;
+  return new Date(+m[3], +m[2] - 1, +m[1]);
+}
+function tvInObdobie(datum, obId, custom) {
+  if (!obId || obId === 'rok') return true;
+  const d = tvParseDate(datum);
+  if (!d) return true;
+  if (obId === 'vlastne') {
+    const od = custom && custom.od ? new Date(custom.od) : null;
+    const doo = custom && custom.do ? new Date(custom.do) : null;
+    if (od && d < od) return false;
+    if (doo && d > doo) return false;
+    return true;
+  }
+  const diff = (TV_TODAY - d) / 86400000;
+  if (diff < 0) return false;
+  if (obId === 'dnes') return diff < 1;
+  if (obId === '7d') return diff <= 7;
+  if (obId === '30d') return diff <= 30;
+  return true;
+}
+
 // ── Dropdown pole (Trieda / Predmet) ──
 function TvDropdown({ label, value, allValue, options, open, dark, onToggle, onPick }) {
-  const ink = dark ? '#E7EEF6' : '#1C2733';
-  const inkSoft = dark ? '#8A98AA' : '#6B7888';
-  const line = dark ? '#222C39' : '#ECEFF3';
+  const ink = dark ? '#F2F7FB' : '#1A2B3D';
+  const inkSoft = dark ? '#A8B6C8' : '#4A5B6E';
+  const line = dark ? '#2A3447' : '#E4EBF2';
   const active = value !== allValue;
   return (
     <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
@@ -49,7 +82,7 @@ function TvDropdown({ label, value, allValue, options, open, dark, onToggle, onP
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6,
         width: '100%', padding: '8px 12px', borderRadius: 12, cursor: 'pointer',
         background: dark ? '#1A2433' : '#FFFFFF',
-        border: `1.5px solid ${open ? TV_ACCENT : (dark ? '#2A3447' : '#DDE5EC')}`,
+        border: `1.5px solid ${open ? TV_ACCENT : (dark ? '#2A3447' : '#E4EBF2')}`,
         boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)',
         fontFamily: '"Dosis", sans-serif', fontSize: 13.5, fontWeight: 800,
         color: active ? (dark ? '#7CC7EE' : TV_ACCENT_DEEP) : ink,
@@ -67,7 +100,7 @@ function TvDropdown({ label, value, allValue, options, open, dark, onToggle, onP
         <div style={{
           position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4, zIndex: 30,
           background: dark ? '#1A2433' : '#FFFFFF',
-          border: `1.5px solid ${dark ? '#2A3447' : '#DDE5EC'}`,
+          border: `1.5px solid ${dark ? '#2A3447' : '#E4EBF2'}`,
           borderRadius: 12,
           boxShadow: '0 10px 30px rgba(10,20,32,0.22)', overflow: 'hidden'
         }}>
@@ -98,9 +131,9 @@ function TvDropdown({ label, value, allValue, options, open, dark, onToggle, onP
 }
 
 function tvUspColor(usp, dark) {
-  if (usp >= 60) return dark ? '#7CCB6E' : '#2E7D32';
-  if (usp >= 25) return dark ? '#FFB74D' : '#E65100';
-  return dark ? '#8A98AA' : '#6B7888';
+  const green = dark ? '#8FD400' : '#5E9600';   // Quasar primary
+  const red   = dark ? '#FF6B6F' : '#E5484D';   // Quasar negative
+  return usp < 50 ? red : green;
 }
 
 function TvPlay({ size = 34, onClick }) {
@@ -119,108 +152,225 @@ function TvPlay({ size = 34, onClick }) {
 }
 
 function TvRow({ r, dark, last, alt }) {
-  const ink = dark ? '#E7EEF6' : '#1C2733';
-  const inkSoft = dark ? '#8A98AA' : '#6B7888';
-  const line = dark ? '#222C39' : '#ECEFF3';
+  const ink = dark ? '#F2F7FB' : '#1A2B3D';
+  const line = dark ? '#2A3447' : '#E4EBF2';
   const uspC = tvUspColor(r.usp, dark);
-  const hasPokusy = r.pokusy && r.pokusy.length > 1;
+  return (
+    <div style={{
+      background: alt ? (dark ? 'rgba(255,255,255,0.03)' : '#F7FCFE') : 'transparent',
+      borderBottom: last ? 'none' : `1px solid ${line}`,
+      display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px'
+    }}>
+      {/* meno žiaka + trieda */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: '"Dosis", sans-serif', fontWeight: 700, fontSize: 15.5,
+          color: ink, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+        }}>{r.ziak}</div>
+        <div style={{
+          fontFamily: '"Dosis", sans-serif', fontWeight: 700, fontSize: 12,
+          color: dark ? '#8FA0B4' : '#7A8BA0', lineHeight: 1.2, marginTop: 2
+        }}>{r.trieda}</div>
+      </div>
+      {/* úspešnosť */}
+      <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 17, fontWeight: 800, color: uspC, lineHeight: 1.1, flexShrink: 0 }}>{r.usp}<span style={{ fontSize: 12 }}> %</span></div>
+    </div>
+  );
+}
+
+const TV_ZIACI = ['Všetci', ...TV_ROWS.map(r => r.ziak)];
+
+// ── Úvodný filter (podľa obrazovky 09 História): Trieda + Žiak ──
+function TvFilterField({ valueLabel, changed, options, dark }) {
+  const ink = dark ? '#F2F7FB' : '#1A2B3D';
+  const inkSoft = dark ? '#A8B6C8' : '#4A5B6E';
+  const line = dark ? '#2A3447' : '#E4EBF2';
+  const card = dark ? '#1A2433' : '#FFFFFF';
   const [open, setOpen] = React.useState(false);
   return (
-    <div
-      onClick={hasPokusy ? () => setOpen(!open) : undefined}
-      style={{
-        background: alt ? (dark ? 'rgba(255,255,255,0.03)' : '#F7FCFE') : 'transparent',
-        borderBottom: last ? 'none' : `1px solid ${line}`,
-        cursor: hasPokusy ? 'pointer' : 'default'
+    <div style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(!open)} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        width: '100%', padding: '10px 14px', cursor: 'pointer',
+        background: card, border: 'none', borderRadius: 13,
+        fontFamily: '"Dosis", sans-serif', fontSize: 15.5, fontWeight: 600,
+        color: ink, textAlign: 'left',
+        boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)'
       }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px' }}>
-        {/* žiak + meta */}
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{
-            fontFamily: '"Dosis", sans-serif', fontWeight: 700, fontSize: 15,
-            color: ink, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-          }}>{r.ziak} <span style={{ fontWeight: 600, fontSize: 13, color: inkSoft }}>· {r.trieda}</span></div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, color: inkSoft }}>{r.datum}</span>
-            {hasPokusy &&
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 800,
-                color: dark ? '#7CC7EE' : TV_ACCENT_DEEP,
-                background: dark ? 'rgba(63,169,224,0.18)' : 'rgba(63,169,224,0.10)',
-                border: `1px solid ${dark ? 'rgba(124,199,238,0.35)' : 'rgba(63,169,224,0.30)'}`,
-                borderRadius: 8, padding: '2px 9px', whiteSpace: 'nowrap', lineHeight: 1.4
-              }}>
-                {r.pokusy.length} pokusy
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"
-                  style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s ease' }}>
-                  <path d="m6 9 6 6 6-6"></path>
-                </svg>
-              </span>}
-          </div>
-        </div>
-        {/* body + úspešnosť */}
-        <div style={{ width: 50, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-          <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 17, fontWeight: 800, color: uspC, lineHeight: 1.1 }}>{r.usp}<span style={{ fontSize: 12 }}> %</span></div>
-          <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 11.5, fontWeight: 600, color: inkSoft, lineHeight: 1.2 }}>{r.body} b.</div>
-        </div>
-        <TvPlay onClick={e => e.stopPropagation()} />
-      </div>
-
-      {/* rozbalené pokusy */}
-      {hasPokusy && open &&
-        <div style={{
-          margin: '0 14px 11px 22px',
-          borderLeft: `3px solid ${dark ? '#2A3447' : '#DDE5EC'}`,
-          paddingLeft: 12
+        {valueLabel}
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+          style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s ease' }}>
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </button>
+      {open &&
+        <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
+          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 5, zIndex: 20,
+          maxHeight: 240, overflowY: 'auto', padding: '6px 0',
+          background: card, border: `1.5px solid ${line}`, borderRadius: 13,
+          boxShadow: '0 12px 34px rgba(10,20,32,0.22)'
         }}>
-          {r.pokusy.map((p, i) => {
-            const pC = tvUspColor(p.usp, dark);
-            const best = p.usp === Math.max(...r.pokusy.map(x => x.usp));
-            return (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0',
-                borderBottom: i === r.pokusy.length - 1 ? 'none' : `1px solid ${line}`
-              }}>
-                <span style={{
-                  fontFamily: '"Dosis", sans-serif', fontSize: 12, fontWeight: 700,
-                  color: ink, width: 62, flexShrink: 0,
-                  display: 'inline-flex', alignItems: 'center', gap: 4
-                }}>{i + 1}. pokus{best &&
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill={TV_PLAY} stroke="none">
-                    <path d="M12 2l2.9 6.26L21 9.27l-4.5 4.38L17.8 20 12 16.77 6.2 20l1.3-6.35L3 9.27l6.1-1.01z"></path>
-                  </svg>}</span>
-                <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, color: inkSoft, flex: 1, whiteSpace: 'nowrap' }}>{p.datum}</span>
-                <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, color: inkSoft }}>{p.body} b.</span>
-                <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 14, fontWeight: 800, color: pC, width: 44, textAlign: 'right' }}>{p.usp} %</span>
-                <TvPlay size={24} onClick={e => e.stopPropagation()} />
-              </div>
-            );
-          })}
+          {options.map((o, i) =>
+            <button key={o.value} onClick={() => { o.onPick(); setOpen(false); }} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+              width: '100%', padding: '10px 15px', cursor: 'pointer',
+              background: o.sel ? (dark ? 'rgba(63,169,224,0.15)' : 'rgba(63,169,224,0.08)') : 'transparent',
+              border: 'none', borderTop: i === 0 ? 'none' : `1px solid ${line}`,
+              fontFamily: '"Dosis", sans-serif', fontSize: 14.5, fontWeight: 600,
+              color: ink, textAlign: 'left'
+            }}>
+              {o.label}
+              {o.sel &&
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={dark ? '#7CC7EE' : TV_ACCENT_DEEP} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M20 6 9 17l-5-5"></path>
+                </svg>}
+            </button>
+          )}
         </div>}
     </div>
   );
 }
 
-function TestVysledkyScreen({ dark = false }) {
-  const ink = dark ? '#E7EEF6' : '#1C2733';
-  const inkSoft = dark ? '#8A98AA' : '#6B7888';
-  const line = dark ? '#222C39' : '#ECEFF3';
-  const card = dark ? '#141D29' : '#FFFFFF';
+function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit }) {
+  const ink = dark ? '#F2F7FB' : '#1A2B3D';
+  const inkSoft = dark ? '#A8B6C8' : '#4A5B6E';
+  const line = dark ? '#2A3447' : '#E4EBF2';
+  const card = dark ? '#1A2433' : '#FFFFFF';
 
-  const [q, setQ] = React.useState('');
+  const [trieda, setTrieda] = React.useState(initTrieda || 'Všetky');
+  const [ziak, setZiak] = React.useState(initZiak || 'Všetci');
+  const [obdobie, setObdobie] = React.useState(initObdobie || '7d');
+  const [custom, setCustom] = React.useState(initCustom || { od: '', do: '' });
+
+  const sectionLabel = {
+    fontFamily: '"Dosis", sans-serif', fontSize: 12, fontWeight: 800,
+    color: inkSoft, textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6
+  };
+
+  return (
+    <window.PhoneFrame dark={dark} label="09b Výsledky testu — filter">
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative',
+        background: dark
+          ? 'linear-gradient(180deg, #16335A 0%, #1F4570 55%, #0E1622 100%)'
+          : 'linear-gradient(180deg, #D1EBF9 0%, #E6F5FD 55%, #F9FCFE 100%)'
+      }}>
+        {/* hlavička */}
+        <div style={{
+          position: 'relative', display: 'flex', alignItems: 'center',
+          padding: '6px 18px 10px', minHeight: 52
+        }}>
+          <div style={{
+            position: 'absolute', left: 56, right: 56, top: 6, bottom: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none',
+            fontSize: 19, fontWeight: 800, letterSpacing: '-0.2px',
+            fontFamily: '"Dosis", sans-serif', color: ink
+          }}>Filter</div>
+          <button title="Späť" style={{
+            width: 38, height: 38, borderRadius: 12, border: 'none',
+            background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 0, flexShrink: 0, cursor: 'pointer', zIndex: 1
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={dark ? '#F2F7FB' : '#1A2B3D'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div style={{ flex: 1 }}></div>
+          <div style={{ width: 38, flexShrink: 0 }}></div>
+        </div>
+
+        {/* obsah */}
+        <div data-scroll-area onWheel={e => e.stopPropagation()} style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '4px 18px 18px' }}>
+          <div style={{
+            fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 700,
+            color: inkSoft, lineHeight: 1.35, margin: '2px 2px 16px'
+          }}>Test <span style={{ fontWeight: 800, color: ink }}>{TV_TEST.nazov}</span> — vyberte obdobie (povinné), triedu a žiaka.</div>
+
+          <div style={sectionLabel}>Časové obdobie <span style={{ color: '#E5484D' }}>*</span></div>
+          <div style={{ marginBottom: 14 }}>
+            <TvFilterField
+              valueLabel={obdobie ? ((TV_OBDOBIA.find(o => o.id === obdobie) || {}).label || '') : 'Vyberte obdobie…'}
+              changed={!!obdobie} dark={dark}
+              options={TV_OBDOBIA.map(o => ({ value: o.id, label: o.label, sel: obdobie === o.id, onPick: () => setObdobie(o.id) }))} />
+          </div>
+
+          {obdobie === 'vlastne' &&
+            <div style={{ display: 'flex', gap: 10, padding: '0 2px 14px' }}>
+              {[['od', 'Od'], ['do', 'Do']].map(([k, lbl]) => (
+                <label key={k} style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'block', fontFamily: '"Dosis", sans-serif', fontSize: 11.5, fontWeight: 700, color: inkSoft, marginBottom: 5, marginLeft: 2 }}>{lbl}</span>
+                  <input type="date" value={custom[k]} onChange={e => setCustom({ ...custom, [k]: e.target.value })} style={{
+                    width: '100%', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 12,
+                    background: card, border: `1.5px solid ${line}`, outline: 'none',
+                    fontFamily: '"Dosis", sans-serif', fontSize: 14, fontWeight: 700, color: ink
+                  }} />
+                </label>
+              ))}
+            </div>}
+
+          <div style={sectionLabel}>Trieda</div>
+          <div style={{ marginBottom: 14 }}>
+            <TvFilterField
+              valueLabel={trieda} changed={trieda !== 'Všetky'} dark={dark}
+              options={TV_TRIEDY.map(o => ({ value: o, label: o, sel: trieda === o, onPick: () => setTrieda(o) }))} />
+          </div>
+
+          <div style={sectionLabel}>Žiak</div>
+          <div style={{ marginBottom: 14 }}>
+            <TvFilterField
+              valueLabel={ziak} changed={ziak !== 'Všetci'} dark={dark}
+              options={TV_ZIACI.map(o => ({ value: o, label: o, sel: ziak === o, onPick: () => setZiak(o) }))} />
+          </div>
+        </div>
+
+        {/* pätička */}
+        <div style={{ padding: '12px 18px 16px', borderTop: `1px solid ${line}` }}>
+          <button
+            disabled={!obdobie}
+            onClick={() => { if (obdobie) onSubmit({ trieda, ziak, obdobie, custom }); }}
+            style={{
+              display: 'block', width: '100%', padding: '14px 0', borderRadius: 14,
+              cursor: obdobie ? 'pointer' : 'not-allowed',
+              background: obdobie ? `linear-gradient(135deg, ${TV_PLAY} 0%, #5E9600 100%)` : (dark ? '#243040' : '#DCE7F0'),
+              border: 'none',
+              fontFamily: '"Dosis", sans-serif', fontSize: 16.5, fontWeight: 800,
+              color: obdobie ? '#FFFFFF' : (dark ? '#5A6B7E' : '#9CB0C2')
+            }}>Zobraziť výsledky</button>
+        </div>
+      </div>
+    </window.PhoneFrame>
+  );
+}
+
+function TestVysledkyScreen({ dark = false, theme = 'alfik' }) {
+  const abHero = theme === 'alfbook';
+  const ink = dark ? '#F2F7FB' : '#1A2B3D';
+  const inkSoft = dark ? '#A8B6C8' : '#4A5B6E';
+  const line = dark ? '#2A3447' : '#E4EBF2';
+  const card = dark ? '#1A2433' : '#FFFFFF';
+
+  const [stage, setStage] = React.useState('filter');   // 'filter' | 'results'
   const [trieda, setTrieda] = React.useState('Všetky');
-  const [predmet, setPredmet] = React.useState('Všetky');
-  const [openKey, setOpenKey] = React.useState(null);   // 'trieda' | 'predmet' | null
-  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [ziak, setZiak] = React.useState('Všetci');
+  const [obdobie, setObdobie] = React.useState('7d');
+  const [custom, setCustom] = React.useState({ od: '', do: '' });
+
+  // úvodný filter — najprv vyber obdobie, triedu a žiaka
+  if (stage === 'filter') {
+    return (
+      <TvIntro
+        dark={dark} initTrieda={trieda} initZiak={ziak} initObdobie={obdobie} initCustom={custom}
+        onSubmit={({ trieda, ziak, obdobie, custom }) => { setTrieda(trieda); setZiak(ziak); setObdobie(obdobie); setCustom(custom); setStage('results'); }} />
+    );
+  }
+
+  const obLabel = (TV_OBDOBIA.find(o => o.id === obdobie) || {}).label || '';
 
   const visible = TV_ROWS.filter(r =>
     (trieda === 'Všetky' || r.trieda === trieda) &&
-    r.ziak.toLowerCase().includes(q.trim().toLowerCase())
+    (ziak === 'Všetci' || r.ziak === ziak) &&
+    tvInObdobie(r.datum, obdobie, custom)
   );
-
-  const avg = visible.length ? Math.round(visible.reduce((s, r) => s + r.usp, 0) / visible.length) : 0;
 
   const tvFade = (el) => {
     if (!el) return;
@@ -255,10 +405,10 @@ function TestVysledkyScreen({ dark = false }) {
             pointerEvents: 'none',
             fontSize: 19, fontWeight: 800, letterSpacing: '-0.2px',
             fontFamily: '"Dosis", sans-serif', color: ink
-          }}>Výsledky</div>
+          }}>História</div>
 
-          <button title="Späť" style={{
-            width: 38, height: 38, borderRadius: 14, border: 'none',
+          <button onClick={() => setStage('filter')} title="Späť na filter" style={{
+            width: 38, height: 38, borderRadius: 12, border: 'none',
             background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: 0, flexShrink: 0, cursor: 'pointer', zIndex: 1
           }}>
@@ -269,106 +419,80 @@ function TestVysledkyScreen({ dark = false }) {
             </svg>
           </button>
           <div style={{ flex: 1 }}></div>
-          <div style={{ width: 38, flexShrink: 0 }}></div>
-        </div>
-
-        {/* ── Identita testu + súhrn — banner vo farbách Alfik hero ── */}
-        <div style={{ padding: '0 18px 12px' }}>
-          <div style={{
-            background: dark
-              ? 'linear-gradient(135deg, #0E7A87 0%, #053D45 100%)'
-              : 'linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)',
-            borderRadius: 16,
-            boxShadow: dark ? 'none' : '0 1px 3px rgba(0,168,181,0.15), 0 10px 26px -14px rgba(0,168,181,0.45)',
-            padding: '12px 14px',
-            display: 'flex', alignItems: 'center', gap: 12
+          {/* Right: filter button (funnel-plus, podľa 09) */}
+          <button onClick={() => setStage('filter')} title="Upraviť filtre" style={{
+            width: 38, height: 38, borderRadius: 12, border: 'none', flexShrink: 0, cursor: 'pointer',
+            background: 'transparent', zIndex: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0
           }}>
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <div style={{
-                fontFamily: '"Dosis", sans-serif', fontWeight: 800, fontSize: 16.5,
-                color: dark ? '#E7F6F4' : '#053D45', lineHeight: 1.2
-              }}>{TV_TEST.nazov}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, color: dark ? 'rgba(231,246,244,0.72)' : 'rgba(5,61,69,0.72)' }}>
-                  max. {TV_TEST.maxBody} b.
-                </span>
-              </div>
-            </div>
-            {/* súhrn */}
-            <div style={{ display: 'flex', gap: 14, flexShrink: 0, alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 17, fontWeight: 800, color: dark ? '#E7F6F4' : '#053D45', lineHeight: 1.1 }}>{visible.length}</div>
-                <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 10.5, fontWeight: 700, color: dark ? 'rgba(231,246,244,0.72)' : 'rgba(5,61,69,0.72)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>žiakov</div>
-              </div>
-              <div style={{ width: 1, height: 30, background: dark ? 'rgba(231,246,244,0.25)' : 'rgba(5,61,69,0.20)' }}></div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 17, fontWeight: 800, color: dark ? '#E7F6F4' : '#053D45', lineHeight: 1.1 }}>{avg} %</div>
-                <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 10.5, fontWeight: 700, color: dark ? 'rgba(231,246,244,0.72)' : 'rgba(5,61,69,0.72)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>priemer</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Dropdowny Trieda / Predmet + ikona vyhľadávania ── */}
-        <div style={{ padding: '0 18px', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <TvDropdown
-            label="Trieda" value={trieda} allValue="Všetky" options={TV_TRIEDY}
-            open={openKey === 'trieda'} dark={dark}
-            onToggle={() => setOpenKey(openKey === 'trieda' ? null : 'trieda')}
-            onPick={o => { setTrieda(o); setOpenKey(null); }} />
-          {/* ikona vyhľadávania vpravo */}
-          <button onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) setQ(''); }} title="Hľadať žiaka" style={{
-            width: 38, height: 38, borderRadius: 12, flexShrink: 0, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
-            color: searchOpen ? '#FFFFFF' : (dark ? '#7CC7EE' : TV_ACCENT_DEEP),
-            background: searchOpen ? TV_ACCENT : (dark ? '#1A2433' : '#FFFFFF'),
-            border: `1.5px solid ${searchOpen ? TV_ACCENT : (dark ? '#2A3447' : '#DDE5EC')}`,
-            boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)'
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="m20 20-3.5-3.5"></path>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={dark ? '#F2F7FB' : '#1A2B3D'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13.354 3H4a1 1 0 0 0-.78 1.63l5.056 6.19A2 2 0 0 1 8.73 12.07V19a1 1 0 0 0 .553.894l2 1A1 1 0 0 0 12.73 20v-7.928a2 2 0 0 1 .454-1.267l.503-.616"></path>
+              <path d="M16 6h6"></path>
+              <path d="M19 3v6"></path>
             </svg>
           </button>
         </div>
 
-        {/* ── Rozbalené pole vyhľadávania ── */}
-        {searchOpen &&
-          <div style={{ padding: '8px 18px 0' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              background: dark ? '#1A2433' : '#FFFFFF',
-              border: `1.5px solid ${dark ? '#2A3447' : '#DDE5EC'}`,
-              borderRadius: 12, padding: '8px 12px'
-            }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2.6" strokeLinecap="round">
-                <circle cx="11" cy="11" r="7"></circle>
-                <path d="m20 20-3.5-3.5"></path>
-              </svg>
-              <input
-                autoFocus
-                value={q}
-                onChange={e => setQ(e.target.value)}
-                placeholder="Hľadať žiaka…"
-                style={{
-                  flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
-                  fontFamily: '"Dosis", sans-serif', fontSize: 14.5, fontWeight: 700, color: ink
-                }} />
-              {q &&
-                <button onClick={() => setQ('')} title="Vymazať" style={{
-                  border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
-                  display: 'flex', alignItems: 'center'
+        {/* ── Identita testu — banner vo farbách hero (Alfik / AlfBook) ── */}
+        <div style={{ padding: '0 18px 12px' }}>
+          <div style={{
+            background: abHero
+              ? 'linear-gradient(155deg, #141F5E 0%, #253B8C 45%, #4468C8 100%)'
+              : (dark
+                ? 'linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)'
+                : 'linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)'),
+            borderRadius: 16,
+            boxShadow: abHero
+              ? '0 1px 3px rgba(20,31,94,0.18), 0 10px 26px -14px rgba(20,31,94,0.55)'
+              : (dark ? 'none' : '0 1px 3px rgba(0,168,181,0.15), 0 10px 26px -14px rgba(0,168,181,0.45)'),
+            padding: '14px 16px',
+            display: 'flex', alignItems: 'center', gap: 12
+          }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontFamily: '"Dosis", sans-serif', fontWeight: 800, fontSize: 16.5,
+                color: abHero ? '#FFFFFF' : (dark ? '#E7F6F4' : '#1A2B3D'), lineHeight: 1.2
+              }}>{TV_TEST.nazov}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Aktuálne výbery ako štítky so zrušením (podľa 09) ── */}
+        <div style={{ padding: '0 18px 10px', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, flex: 1, minWidth: 0 }}>
+            {[
+              { key: 'obdobie', label: 'Obdobie', text: obLabel, fixed: true },
+              trieda !== 'Všetky' && { key: 'trieda', label: 'Trieda', text: trieda, onClear: () => setTrieda('Všetky') },
+              ziak !== 'Všetci' && { key: 'ziak', label: 'Žiak', text: ziak, onClear: () => setZiak('Všetci') }
+            ].filter(Boolean).map(chip =>
+              <span key={chip.key} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, flexShrink: 0,
+                padding: chip.fixed ? '6px 14px' : '5px 6px 5px 12px', borderRadius: 999,
+                fontFamily: '"Dosis", sans-serif', fontSize: 13.5,
+                background: card,
+                border: `1px solid ${dark ? '#2A3447' : '#DCE7F0'}`,
+                boxShadow: dark ? 'none' : '0 1px 2px rgba(20,40,60,0.05)',
+                whiteSpace: 'nowrap'
+              }}>
+                <span style={{ fontWeight: 600, color: ink }}>{chip.text}</span>
+                {!chip.fixed &&
+                <button onClick={chip.onClear} title="Zrušiť filter" style={{
+                  width: 20, height: 20, borderRadius: 999, flexShrink: 0, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+                  border: 'none', background: dark ? 'rgba(255,255,255,0.06)' : '#EDF3F8'
                 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round">
                     <path d="M18 6 6 18M6 6l12 12"></path>
                   </svg>
                 </button>}
-            </div>
-          </div>}
+              </span>
+            )}
+          </div>
+        </div>
 
         {/* ── Zoznam žiakov ── */}
         <div data-scroll-area ref={tvFade} onScroll={e => tvFade(e.currentTarget)} onWheel={e => e.stopPropagation()} style={{
-          flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 14px 14px'
+          flex: 1, minHeight: 0, overflowY: 'auto', padding: '4px 14px 14px'
         }}>
           <div style={{
             background: card, borderRadius: 16, overflow: 'hidden',
@@ -382,7 +506,7 @@ function TestVysledkyScreen({ dark = false }) {
               <div style={{
                 textAlign: 'center', padding: '36px 20px',
                 fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600, color: inkSoft
-              }}>Žiadny žiak nezodpovedá hľadaniu.</div>}
+              }}>Žiadny žiak nezodpovedá filtru.</div>}
           </div>
         </div>
       </div>
@@ -390,227 +514,4 @@ function TestVysledkyScreen({ dark = false }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// TestVysledkyPopupScreen — 09c · Výsledky ako popup nad zoznamom testov
-// Druhý návrh: učiteľ klikne na ikonu „Výsledky" pri teste a výsledky
-// sa otvoria ako modálne okno priamo nad zoznamom testov (bez navigácie preč).
-// ─────────────────────────────────────────────────────────────
-
-function TvBackdropRow({ name, dark, last, alt, highlight }) {
-  const ink = dark ? '#E7EEF6' : '#1C2733';
-  const line = dark ? '#222C39' : '#ECEFF3';
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 13,
-      minHeight: 58, padding: '0 16px 0 12px',
-      background: highlight
-        ? (dark ? 'rgba(63,169,224,0.14)' : 'rgba(63,169,224,0.08)')
-        : alt ? (dark ? 'rgba(255,255,255,0.03)' : '#F7FCFE') : 'transparent',
-      borderBottom: last ? 'none' : `1px solid ${line}`
-    }}>
-      <img src="assets/mat_interaktivny.svg" alt="" style={{ height: 24, width: 'auto', flexShrink: 0 }} />
-      <div style={{
-        flex: 1, minWidth: 0,
-        fontFamily: '"Dosis", sans-serif', fontWeight: 600, fontSize: 14, color: ink,
-        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-      }}>{name}</div>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E7A87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-        <path d="M12 16v5"></path><path d="M16 14v7"></path><path d="M20 10v11"></path>
-        <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"></path>
-        <path d="M4 18v3"></path><path d="M8 14v7"></path>
-      </svg>
-    </div>
-  );
-}
-
-function TestVysledkyPopupScreen({ dark = false }) {
-  const ink = dark ? '#E7EEF6' : '#1C2733';
-  const inkSoft = dark ? '#8A98AA' : '#6B7888';
-  const line = dark ? '#222C39' : '#ECEFF3';
-  const card = dark ? '#16202E' : '#FFFFFF';
-
-  const [q, setQ] = React.useState('');
-  const [trieda, setTrieda] = React.useState('Všetky');
-  const [filterOpen, setFilterOpen] = React.useState(false);
-
-  const visible = TV_ROWS.filter(r =>
-    (trieda === 'Všetky' || r.trieda === trieda) &&
-    r.ziak.toLowerCase().includes(q.trim().toLowerCase())
-  );
-  const avg = visible.length ? Math.round(visible.reduce((s, r) => s + r.usp, 0) / visible.length) : 0;
-
-  const TESTS = window.TESTS || [];
-
-  return (
-    <window.PhoneFrame dark={dark} label="09c Výsledky testu — popup">
-      <div style={{
-        flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative',
-        background: dark
-          ? 'linear-gradient(180deg, #16335A 0%, #1F4570 55%, #0E1622 100%)'
-          : 'linear-gradient(180deg, #D1EBF9 0%, #E6F5FD 55%, #F9FCFE 100%)'
-      }}>
-
-        {/* ── Pozadie: zoznam testov (statické, pod scrimom) ── */}
-        <window.CategoryHero
-          dark={dark}
-          title="Živočíchy"
-          imgNoBg={true}
-          gradient={`linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)`}
-          gradientDark={`linear-gradient(135deg, #0E7A87 0%, #053D45 100%)`}
-          shadowColor="rgba(0,168,181,0.45)"
-          ageIcon="all"
-          ageActive={false}
-          showAgeLabel={false}
-          showSpeaker={false}
-          speakerDot="#00A8B5"
-          crumbs={['', 'Interaktívne cvičenia', 'Príroda', 'Živočíchy']}
-        />
-        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', padding: '14px' }}>
-          <div style={{
-            background: dark ? '#141D29' : '#FFFFFF', borderRadius: 16, overflow: 'hidden',
-            border: `1px solid ${line}`
-          }}>
-            {TESTS.slice(0, 9).map((t, i) =>
-              <TvBackdropRow key={i} name={t.name} dark={dark} alt={i % 2 === 1}
-                highlight={t.name === TV_TEST.nazov}
-                last={i === 8} />
-            )}
-          </div>
-        </div>
-
-        {/* ── Scrim + popup ── */}
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 60,
-          background: 'rgba(10,20,32,0.45)',
-          display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          padding: '26px 14px'
-        }}>
-          <div style={{
-            background: card, borderRadius: 22,
-            boxShadow: '0 18px 60px rgba(10,20,32,0.35)',
-            display: 'flex', flexDirection: 'column',
-            maxHeight: '100%', overflow: 'hidden'
-          }}>
-
-            {/* hlavička popupu */}
-            <div style={{
-              display: 'flex', alignItems: 'flex-start', gap: 10,
-              padding: '16px 16px 0 18px', flexShrink: 0
-            }}>
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <div style={{
-                  fontFamily: '"Dosis", sans-serif', fontSize: 12, fontWeight: 800,
-                  color: inkSoft, textTransform: 'uppercase', letterSpacing: '0.7px'
-                }}>Výsledky testu</div>
-                <div style={{
-                  fontFamily: '"Dosis", sans-serif', fontWeight: 800, fontSize: 17,
-                  color: ink, lineHeight: 1.2
-                }}>{TV_TEST.nazov}</div>
-                <div style={{ fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, color: inkSoft }}>
-                  {visible.length} žiakov · priemer <span style={{ fontWeight: 800, color: tvUspColor(avg, dark) }}>{avg} %</span> · max. {TV_TEST.maxBody} b.
-                </div>
-              </div>
-              <button title="Zavrieť" style={{
-                width: 34, height: 34, borderRadius: 12, border: 'none', flexShrink: 0,
-                background: dark ? 'rgba(255,255,255,0.06)' : '#F1F5F8',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: 0, cursor: 'pointer'
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round">
-                  <path d="M18 6 6 18M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-
-            {/* vyhľadávanie + filter */}
-            <div style={{ padding: '12px 16px 10px', display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-              <div style={{
-                flex: 1, display: 'flex', alignItems: 'center', gap: 8,
-                background: dark ? '#1A2433' : '#FFFFFF',
-                border: `1.5px solid ${dark ? '#2A3447' : '#DDE5EC'}`,
-                borderRadius: 12, padding: '8px 12px'
-              }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2.6" strokeLinecap="round">
-                  <circle cx="11" cy="11" r="7"></circle>
-                  <path d="m20 20-3.5-3.5"></path>
-                </svg>
-                <input
-                  value={q}
-                  onChange={e => setQ(e.target.value)}
-                  placeholder="Hľadať žiaka…"
-                  style={{
-                    flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
-                    fontFamily: '"Dosis", sans-serif', fontSize: 14.5, fontWeight: 700, color: ink
-                  }} />
-              </div>
-              <div style={{ position: 'relative', flexShrink: 0 }}>
-                <button onClick={() => setFilterOpen(!filterOpen)} title="Filter triedy" style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 12px', borderRadius: 12, cursor: 'pointer',
-                  fontFamily: '"Dosis", sans-serif', fontSize: 13.5, fontWeight: 800,
-                  color: trieda !== 'Všetky' ? '#FFFFFF' : ink,
-                  background: trieda !== 'Všetky' ? TV_ACCENT : (dark ? '#1A2433' : '#FFFFFF'),
-                  border: `1.5px solid ${trieda !== 'Všetky' ? TV_ACCENT : (dark ? '#2A3447' : '#DDE5EC')}`,
-                  whiteSpace: 'nowrap'
-                }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 5h18M7 12h10M10 19h4"></path>
-                  </svg>
-                  {trieda !== 'Všetky' && trieda}
-                </button>
-                {filterOpen &&
-                  <div style={{
-                    position: 'absolute', right: 0, top: '100%', marginTop: 4, zIndex: 30,
-                    minWidth: 130,
-                    background: dark ? '#1A2433' : '#FFFFFF',
-                    border: `1.5px solid ${dark ? '#2A3447' : '#DDE5EC'}`,
-                    borderRadius: 12,
-                    boxShadow: '0 10px 30px rgba(10,20,32,0.22)', overflow: 'hidden'
-                  }}>
-                    {TV_TRIEDY.map((t, i) => {
-                      const sel = trieda === t;
-                      return (
-                        <button key={t} onClick={() => { setTrieda(t); setFilterOpen(false); }} style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-                          width: '100%', padding: '10px 14px', cursor: 'pointer',
-                          background: sel ? (dark ? 'rgba(63,169,224,0.15)' : 'rgba(63,169,224,0.08)') : 'transparent',
-                          border: 'none', borderTop: i === 0 ? 'none' : `1px solid ${line}`,
-                          fontFamily: '"Dosis", sans-serif', fontSize: 14.5,
-                          fontWeight: sel ? 800 : 600,
-                          color: sel ? (dark ? '#7CC7EE' : TV_ACCENT_DEEP) : ink,
-                          textAlign: 'left'
-                        }}>
-                          {t}
-                          {sel &&
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={dark ? '#7CC7EE' : TV_ACCENT_DEEP} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M20 6 9 17l-5-5"></path>
-                            </svg>}
-                        </button>
-                      );
-                    })}
-                  </div>}
-              </div>
-            </div>
-
-            {/* zoznam žiakov */}
-            <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
-              overflowY: 'auto', minHeight: 0,
-              borderTop: `1px solid ${line}`
-            }}>
-              {visible.map((r, i) =>
-                <TvRow key={r.ziak} r={r} dark={dark} alt={i % 2 === 1} last={i === visible.length - 1} />
-              )}
-              {visible.length === 0 &&
-                <div style={{
-                  textAlign: 'center', padding: '36px 20px',
-                  fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600, color: inkSoft
-                }}>Žiadny žiak nezodpovedá hľadaniu.</div>}
-            </div>
-          </div>
-        </div>
-      </div>
-    </window.PhoneFrame>
-  );
-}
-
-Object.assign(window, { TestVysledkyScreen, TestVysledkyPopupScreen, TvDropdown });
+Object.assign(window, { TestVysledkyScreen, TvDropdown });

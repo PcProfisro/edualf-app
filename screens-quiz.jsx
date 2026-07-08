@@ -106,7 +106,7 @@ function QuizCard({ side, answered, isCorrect }) {
 
   return (
     <div style={{
-      flex: 1, borderRadius: 22, overflow: 'hidden',
+      flex: 1, borderRadius: 20, overflow: 'hidden',
       background: '#FFFFFF',
       boxShadow: '0 8px 28px -8px rgba(15,50,80,0.22)',
       position: 'relative',
@@ -183,7 +183,7 @@ function QuizScreen({ dark = false, state = 'idle' }) {
   const p      = ALFIK_PALETTE;
   const answered  = state !== 'idle';
   const isCorrect = state === 'correct';
-  const tealBg    = dark ? '#1A3A40' : '#6BC9C3';
+  const tealBg    = dark ? '#1A2B3D' : '#6BC9C3';
   const screenBg  = dark
     ? 'linear-gradient(180deg, #16335A 0%, #1F4570 55%, #0E1622 100%)'
     : 'linear-gradient(180deg, #D1EBF9 0%, #E6F5FD 55%, #F9FCFE 100%)';
@@ -262,7 +262,7 @@ function QuizScreen({ dark = false, state = 'idle' }) {
         {/* ── Teal karta s obrazkami + tlačidlami ── */}
         <div style={{
           margin: '0 14px',
-          borderRadius: 34,
+          borderRadius: 32,
           background: tealBg,
           padding: '18px 15px 16px',
           display: 'flex', flexDirection: 'column', gap: 14,
@@ -344,7 +344,7 @@ function QuizScreen({ dark = false, state = 'idle' }) {
             fontFamily: '"Dosis", sans-serif',
             fontSize: 22, fontWeight: 700, letterSpacing: '0.4px',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            boxShadow: answered ? '0 8px 26px -6px rgba(63,169,224,0.55)' : 'none',
+            boxShadow: answered ? '0 3px 10px -2px rgba(15,30,55,0.20)' : 'none',
             transition: 'all 0.3s',
           }}>
             Ďalej

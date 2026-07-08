@@ -196,7 +196,7 @@ function BackButton({ dark, accent, onHero = false }) {
   const stroke = onHero ? '#FFFFFF' : accent;
   return (
     <button style={{
-      width: 38, height: 38, borderRadius: 14,
+      width: 38, height: 38, borderRadius: 12,
       border: 'none',
       background: 'transparent',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -215,7 +215,7 @@ function BackButton({ dark, accent, onHero = false }) {
 function HeroBackButton() {
   return (
     <button style={{
-      width: 30, height: 30, borderRadius: 9,
+      width: 30, height: 30, borderRadius: 8,
       border: 'none',
       background: 'rgba(255,255,255,0.70)',
       backdropFilter: 'blur(8px)',
@@ -255,11 +255,11 @@ function AgeAvatar({ age, dark, active, showLabel = false }) {
   }[age] || 'Všetky';
   return (
     <button style={{
-      width: 38, minHeight: 38, borderRadius: 14, border: 'none',
+      width: 38, minHeight: 38, borderRadius: 12, border: 'none',
       background: 'transparent',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       gap: showLabel ? 1 : 0,
-      boxShadow: active ? `0 6px 14px -4px ${stroke}AA` : 'none',
+      boxShadow: active ? '0 3px 8px -2px rgba(15,30,55,0.22)' : 'none',
       padding: 0, flexShrink: 0
     }}>
       <img src={iconSrc}
@@ -412,7 +412,7 @@ function CategoryTile({ cat, dark, compact, nove }) {
 
       {/* Emoji container */}
       <div style={{ ...{
-          width: '100%', flexShrink: 0, borderRadius: compact ? 14 : 18,
+          width: '100%', flexShrink: 0, borderRadius: compact ? 12 : 16,
           background: dark ? 'rgba(255,255,255,0.07)' : '#FFFFFF',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: compact ? 36 : 54,
@@ -428,7 +428,7 @@ function CategoryTile({ cat, dark, compact, nove }) {
         <div style={{
           fontSize: labelSize, fontWeight: 700,
           fontFamily: '"Dosis", sans-serif',
-          color: dark ? p.darkInk : '#1A4040',
+          color: dark ? p.darkInk : '#1A2B3D',
           textAlign: 'center',
           wordBreak: 'break-word', letterSpacing: "-0.1px", lineHeight: "1.1"
         }}>{cat.name}</div>
@@ -442,7 +442,7 @@ function ProfileAvatar({ name = 'Timo', dark }) {
   const ink = dark ? p.darkInk : p.ink;
   return (
     <button title="Menu" style={{
-      width: 38, height: 38, borderRadius: 14,
+      width: 38, height: 38, borderRadius: 12,
       border: 'none',
       background: 'transparent',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -505,7 +505,7 @@ function SpeakerIcon({ size = 46, dotFill = BRAND_TEAL, shadow = true, circleBor
 // ─────────────────────────────────────────────────────────────
 function CategoryHero({
   dark, title, icon, img, gradient, gradientDark, shadowColor,
-  showSpeaker = true, speakerDot = '#0A3D33',
+  showSpeaker = true, speakerDot = '#1A2B3D',
   ageIcon = 'all', ageActive = false, showAgeAvatar = true, showAgeLabel = false, profile = 'Timo', accent = '#4FB36A',
   crumbs = null, imgNoBg = false
 }) {
@@ -550,7 +550,7 @@ function CategoryHero({
           position: 'relative', overflow: 'hidden',
           background: dark ? gradientDark : gradient,
           padding: '8px 18px 14px',
-          borderRadius: 18
+          borderRadius: 16
         }}>
           {/* Jemné radiálne svetlo za ikonou */}
           <div style={{
@@ -597,7 +597,7 @@ function CategoryHero({
 
           <div style={{
             display: 'flex', alignItems: 'center',
-            position: 'relative', zIndex: 1, color: dark ? '#FFFFFF' : '#0D3B35',
+            position: 'relative', zIndex: 1, color: dark ? '#FFFFFF' : '#1A2B3D',
             marginLeft: -6, gap: "8px"
           }}>
             <HeroBackButton />
@@ -684,7 +684,7 @@ function SubcategoryScreen({ dark = false, columns = 2, categoryId = 'interaktiv
           img={cat.img}
           imgNoBg={cat.imgNoBg}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
-          gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
+          gradientDark="linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)"
           shadowColor="rgba(0,168,181,0.45)"
           accent="#4FB36A"
           ageIcon="all"
@@ -733,7 +733,7 @@ function PrirodaScreen({ dark = false, columns = 2 }) {
           img="uploads/Bez názvu - kópia (800 x 800 px) (41).png"
           imgNoBg={true}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
-          gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
+          gradientDark="linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)"
           shadowColor="rgba(0,168,181,0.45)"
           accent="#4FB36A"
           ageIcon="all"
@@ -786,7 +786,7 @@ function SubTile({ sub, dark, compact, active }) {
 
       {/* Emoji / image container */}
       <div style={{
-        width: '100%', flexShrink: 0, borderRadius: compact ? 14 : 18,
+        width: '100%', flexShrink: 0, borderRadius: compact ? 12 : 16,
         background: dark ? 'rgba(255,255,255,0.07)' : '#FFFFFF',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: compact ? 36 : 44,
@@ -804,7 +804,7 @@ function SubTile({ sub, dark, compact, active }) {
         <div style={{ ...{ ...{
               fontSize: sub.tinyLabel ? compact ? 11 : 12 : compact ? 13 : 16, fontWeight: 700,
               fontFamily: '"Dosis", sans-serif',
-              color: dark ? ink : '#1A4040',
+              color: dark ? ink : '#1A2B3D',
               textAlign: 'center',
               wordBreak: 'break-word', letterSpacing: sub.tinyLabel ? "-0.2px" : "-0.1px", lineHeight: sub.tinyLabel ? "1.1" : "1.1"
             }, fontSize: 16 }, fontSize: "16px" }}>{sub.name}</div>
@@ -839,7 +839,7 @@ function TestListScreen({ dark = false, expanded = false, columns = 2, age = 'al
           img="uploads/zivocichy.png"
           imgNoBg={true}
           gradient="linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)"
-          gradientDark="linear-gradient(135deg, #0E7A87 0%, #053D45 100%)"
+          gradientDark="linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)"
           shadowColor="rgba(0,168,181,0.45)"
           accent="#4FB36A"
           ageIcon={active}
@@ -905,7 +905,7 @@ function AgeFilter({ age, active, dark, all }) {
     <div style={{
       position: 'relative',
       width: 78, borderRadius: 16,
-      background: active ? bg : '#F4F6FA',
+      background: active ? bg : '#F2F7FB',
       border: active ? `2.5px solid ${stroke}` : '2.5px solid rgba(15,30,55,0.06)',
       padding: '8px 6px 6px',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
@@ -918,9 +918,9 @@ function AgeFilter({ age, active, dark, all }) {
       <div style={{
         position: 'absolute', left: -10, top: '50%',
         transform: 'translateY(-50%)',
-        width: 5, height: 28, borderRadius: 3,
+        width: 5, height: 28, borderRadius: 4,
         background: stroke,
-        boxShadow: `0 2px 6px -1px ${stroke}AA`
+        boxShadow: 'none'
       }} />}
 
       {/* check badge top-right */}
@@ -931,7 +931,7 @@ function AgeFilter({ age, active, dark, all }) {
         background: stroke,
         border: '2px solid #FFFFFF',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: `0 3px 6px -1px ${stroke}80`
+        boxShadow: '0 2px 5px -1px rgba(15,30,55,0.20)'
       }}>
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
           <path d="M2.5 6.2L4.8 8.5L9.5 3.5" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -944,7 +944,7 @@ function AgeFilter({ age, active, dark, all }) {
         alt={alt} />
       <div style={{
         fontSize: 14, fontWeight: 800,
-        color: active ? stroke : '#9AA4B5',
+        color: active ? stroke : '#8194A8',
         letterSpacing: '-0.2px', fontFamily: '"Dosis", sans-serif',
         transition: 'color .18s ease'
       }}>{label}</div>
@@ -1018,7 +1018,7 @@ function TestRow({ test, dark }) {
   return (
     <div style={{
       background: dark ? surf : '#FFFFFF',
-      borderRadius: 22, padding: '11px 12px',
+      borderRadius: 20, padding: '11px 12px',
       display: 'flex', alignItems: 'center', gap: 11,
       boxShadow: dark ?
       'none' :
@@ -1027,7 +1027,7 @@ function TestRow({ test, dark }) {
     }}>
       <AgeBadge age={test.age} />
       <button style={{
-        width: 50, height: 50, borderRadius: 18, border: 'none', flexShrink: 0,
+        width: 50, height: 50, borderRadius: 16, border: 'none', flexShrink: 0,
         background: `linear-gradient(135deg, ${(window.QUASAR || { primary: '#8FD400' }).primary} 0%, ${(window.QUASAR || { primaryDeep: '#72B600' }).primaryDeep} 100%)`,
         display: 'flex', alignItems: 'center', justifyContent: 'center'
       }}>
@@ -1073,7 +1073,7 @@ function TestTile({ test, dark, compact }) {
   return (
     <div style={{
       background: tileBg,
-      borderRadius: compact ? 22 : 26,
+      borderRadius: compact ? 20 : 24,
       padding: compact ? '11px 10px' : '14px 13px',
       position: 'relative', overflow: 'hidden',
       boxShadow: dark ? 'none' : `0 2px 4px 0px rgba(15,30,55,0.35)`,
@@ -1154,7 +1154,7 @@ function TestTile({ test, dark, compact }) {
           background: `linear-gradient(135deg, ${(window.QUASAR || { primary: '#8FD400' }).primary} 0%, ${(window.QUASAR || { primaryDeep: '#72B600' }).primaryDeep} 100%)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: '3px solid #FFFFFF',
-          boxShadow: `0 4px 12px -2px rgba(114,182,0,0.55), 0 0 0 2px rgba(15,30,55,0.05)`,
+          boxShadow: `0 4px 12px -2px rgba(15,30,55,0.20), 0 0 0 2px rgba(15,30,55,0.05)`,
           position: 'relative', zIndex: 1
         }}>
           <svg width={compact ? 26 : 32} height={compact ? 26 : 32} viewBox="0 0 24 24"
@@ -1183,7 +1183,7 @@ function TestTile({ test, dark, compact }) {
           fontWeight: 700,
           fontFamily: '"Dosis", sans-serif',
           letterSpacing: '-0.1px',
-          color: dark ? ink : '#1A4040',
+          color: dark ? ink : '#1A2B3D',
           lineHeight: 1.2,
           textAlign: 'center',
           textWrap: 'pretty',
@@ -1204,7 +1204,7 @@ Object.assign(window, { TESTS, CategoryTreeScreen, CategoryTreeContent, Subcateg
 function ProfileDrawer({ dark = false }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : '#1A2B3D';
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const surf = dark ? p.darkSurf : '#FFFFFF';
   const line = dark ? p.darkLine : 'rgba(15,30,55,0.08)';
   const headerBg = dark ? '#1A2E50' : '#D1EBF9';
@@ -1294,7 +1294,7 @@ const DRAWER_LANGS = [
 
 
 function LangFlag({ code }) {
-  const base = { width: 24, height: 16, borderRadius: 3, overflow: 'hidden', position: 'relative', flexShrink: 0, boxShadow: '0 0 0 1px rgba(15,30,55,0.10)' };
+  const base = { width: 24, height: 16, borderRadius: 4, overflow: 'hidden', position: 'relative', flexShrink: 0, boxShadow: '0 0 0 1px rgba(15,30,55,0.10)' };
   const stripes = (cols) =>
   <div style={{ ...base }}>
       {cols.map((c, i) => <div key={i} style={{ height: 100 / cols.length + '%', background: c }} />)}
@@ -1368,8 +1368,8 @@ function ProfileDrawerV2({
 }) {
   const p = ALFIK_PALETTE;
   const INK = dark ? p.darkInk : '#1A2B3D';
-  const INK_SOFT = dark ? p.darkInkSoft : '#6A7A8F';
-  const INK_MUTE = dark ? '#7C8DA0' : '#9AA8B8';
+  const INK_SOFT = dark ? p.darkInkSoft : '#4A5B6E';
+  const INK_MUTE = dark ? '#8194A8' : '#8194A8';
   const LINE = dark ? p.darkLine : 'rgba(15,30,55,0.08)';
   const SURF = dark ? p.darkSurf : '#FFFFFF';
   const STRIP = dark ? '#1F4570' : '#D1EBF9';
@@ -1411,7 +1411,7 @@ function ProfileDrawerV2({
                   <path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" /><path d="M12 7v5l3 2" />
                 </svg>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 0.2, color: '#41526A', flex: 1 }}>História</div>
+              <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 0.2, color: '#4A5B6E', flex: 1 }}>História</div>
             </div>
           );
           const isAlfBook = product === 'alfbook';
@@ -1465,7 +1465,7 @@ window.ProfileDrawerV2 = ProfileDrawerV2;
 function NastaveniaScreen({ dark = false, lang = 'sk', onLang }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : '#1A2B3D';
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const LINE = dark ? p.darkLine : 'rgba(15,30,55,0.08)';
   const SURF = dark ? p.darkSurf : '#FFFFFF';
   const accent = (window.QUASAR && window.QUASAR.primary) || '#8FD400';
@@ -1495,7 +1495,7 @@ function NastaveniaScreen({ dark = false, lang = 'sk', onLang }) {
           }}>Nastavenia</div>
           <div style={{ display: 'flex', alignItems: 'center', zIndex: 1 }}>
             <button title="Späť" style={{
-              width: 38, height: 38, borderRadius: 14, border: 'none',
+              width: 38, height: 38, borderRadius: 12, border: 'none',
               background: 'transparent', display: 'flex', alignItems: 'center',
               justifyContent: 'center', padding: 0, flexShrink: 0, cursor: 'pointer'
             }}>
@@ -1523,7 +1523,7 @@ function NastaveniaScreen({ dark = false, lang = 'sk', onLang }) {
               onClick={() => setOpen(o => !o)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 14,
-                background: SURF, borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+                background: SURF, borderRadius: 12, padding: '14px 16px', cursor: 'pointer',
                 border: `1.5px solid ${open ? ACTIVE_BLUE : LINE}`,
                 boxShadow: dark ? 'none' : '0 2px 4px 0 rgba(15,30,55,0.06)'
               }}>
@@ -1541,7 +1541,7 @@ function NastaveniaScreen({ dark = false, lang = 'sk', onLang }) {
 
             {open && (
               <div style={{
-                marginTop: 8, background: SURF, borderRadius: 14, overflow: 'hidden',
+                marginTop: 8, background: SURF, borderRadius: 12, overflow: 'hidden',
                 border: dark ? `1px solid ${p.darkLine}` : 'none',
                 boxShadow: '0 8px 24px -6px rgba(15,30,55,0.22)'
               }}>
@@ -1589,7 +1589,7 @@ window.NastaveniaScreen = NastaveniaScreen;
 function ProfileMenuScreen({ dark = false, columns = 2 }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : '#1A2B3D';
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const surf = dark ? p.darkSurf : '#FFFFFF';
   const line = dark ? p.darkLine : 'rgba(15,30,55,0.08)';
   const stripBg = dark ? '#1F4570' : '#D1EBF9';
@@ -1624,7 +1624,7 @@ function ProfileMenuScreen({ dark = false, columns = 2 }) {
 function MenuRow({ icon, label, dark, danger, active }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : '#1A2B3D';
-  const inkSoft = dark ? p.darkInkSoft : '#6A7A8F';
+  const inkSoft = dark ? p.darkInkSoft : '#4A5B6E';
   const accent = dark ? '#7FB8E8' : '#2D6FB5';
   const color = danger ? (window.QUASAR || { negative: '#E0463A' }).negative : active ? accent : ink;
   return (

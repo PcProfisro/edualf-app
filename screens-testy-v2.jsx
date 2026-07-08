@@ -36,7 +36,7 @@ function TestListV2Screen({ dark = false, expanded = false, age = 'all', columns
           img="uploads/zivocichy.png"
           imgNoBg={true}
           gradient={`linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)`}
-          gradientDark={`linear-gradient(135deg, ${tealDeep} 0%, #053D45 100%)`}
+          gradientDark={`linear-gradient(135deg, ${tealDeep} 0%, #1A2B3D 100%)`}
           shadowColor="rgba(0,168,181,0.45)"
           ageIcon={age}
           ageActive={expanded}
@@ -163,7 +163,7 @@ function TestTileV2({ test, dark, compact }) {
       <div style={{
         width: '100%', flexShrink: 0,
         aspectRatio: '3 / 2', minHeight: 0,
-        borderRadius: compact ? 14 : 18,
+        borderRadius: compact ? 12 : 16,
         background: dark ? 'rgba(255,255,255,0.07)' : '#FFFFFF',
         position: 'relative', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -205,7 +205,7 @@ function TestTileV2({ test, dark, compact }) {
           fontWeight: 700,
           fontFamily: '"Dosis", sans-serif',
           letterSpacing: '-0.1px',
-          color: dark ? ink : '#1A4040',
+          color: dark ? ink : '#1A2B3D',
           lineHeight: 1.1,
           textAlign: 'center',
           wordBreak: 'break-word',

@@ -273,7 +273,9 @@
 <script type="text/babel" src="screens-profile.jsx"></script>
 <script type="text/babel" src="screens-testy-v2.jsx"></script>
 <script type="text/babel" src="screens-testy-ucitel-pro.jsx"></script>
+<script type="text/babel" src="screens-testy-ucitel-pro2.jsx"></script>
 <script type="text/babel" src="screens-historia-ucitel.jsx"></script>
+<script type="text/babel" src="screens-historia-ziak.jsx"></script>
 <script type="text/babel" src="screens-test-vysledky.jsx"></script>
 <script type="text/babel" src="screens-alfbook.jsx"></script>
 <script type="text/babel" src="screens-alfbook-flow.jsx"></script>
@@ -502,7 +504,7 @@ const FLOW = {
     label: 'Živočíchy — testy',
     track: 'main',
     render: (ctx) => ctx.viewMode === 'ucitel'
-      ? <window.TestListTeacherProScreen dark={false} age={ctx.activeAge}/>
+      ? <window.TestListTeacherPro2Screen dark={false} age={ctx.activeAge}/>
       : <window.TestListV2Screen dark={false} age={ctx.activeAge}/>,
     spots: [
       { x: 14, y: 56, w: 40, h: 40, profile: true },
@@ -547,7 +549,9 @@ const FLOW = {
   'historia-ucitel': {
     label: 'História',
     track: 'ucitel',
-    render: () => <window.HistoriaUcitelScreen dark={false}/>,
+    render: (ctx) => ctx.viewMode === 'ucitel'
+      ? <window.HistoriaUcitelScreen dark={false}/>
+      : <window.HistoriaZiakScreen dark={false}/>,
     spots: [
       // ← Späť (hore vľavo) — dropdowny a vyhľadávanie sú živé React prvky
       { x: 14, y: 52, w: 44, h: 44, go: 'back' },
@@ -726,6 +730,20 @@ const FLOW = {
       { x: 14, y: 307, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
       { x: 14, y: 382, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
       { x: 14, y: 457, w: 362, h: 63, toast: 'Cvičenie — pripravujeme' },
+      // Učiteľský vzhľad: ikona Výsledky (pravý okraj riadku) → výsledky testu v AlfBook farbách
+      { x: 322, y: 232, w: 54, h: 63, abVysledky: true },
+      { x: 322, y: 307, w: 54, h: 63, abVysledky: true },
+      { x: 322, y: 382, w: 54, h: 63, abVysledky: true },
+      { x: 322, y: 457, w: 54, h: 63, abVysledky: true },
+    ]
+  },
+
+  'ab-test-vysledky': {
+    label: 'Výsledky testu',
+    track: 'alfbook',
+    render: () => <window.TestVysledkyScreen dark={false} theme="alfbook"/>,
+    spots: [
+      { x: 14, y: 52, w: 44, h: 44, go: 'back' },
     ]
   },
 
@@ -926,6 +944,7 @@ function App() {
     if (spot.closeProfile) return closeProfile();
     if (spot.alfbook)      return openAlfBook();
     if (spot.vysledky)     return viewMode === 'ucitel' ? go('test-vysledky') : go('test-open');
+    if (spot.abVysledky)   return viewMode === 'ucitel' ? go('ab-test-vysledky') : showToast('Cvičenie — pripravujeme');
     if (spot.go === 'back') return back();
     if (spot.go)           return go(spot.go, spot.cat);
     if (spot.toast)        showToast(spot.toast);
@@ -1194,7 +1213,7 @@ const start = () => {
     window.CategoryTreeScreen && window.SubcategoryScreen &&
     window.PrirodaScreen && window.TestListV2Screen &&
     window.TestOpenScreen && window.AgePickerSheet &&
-    window.TestListTeacherProScreen &&
+    window.TestListTeacherPro2Screen &&
     window.PracovneListyScreen && window.SportPracovneScreen &&
     window.GrafomotorikaScreen && window.PracovnyListOpenScreen &&
     window.ProfileZakladneScreen && window.ProfileHesloScreen &&
@@ -1203,7 +1222,7 @@ const start = () => {
     window.AlfBookLangSheet && window.NastaveniaScreen &&
     window.AbRocnikyScreen && window.AbPredmetyScreen &&
     window.AbTemyScreen && window.AbObsahScreen && window.AbObsahTeacherScreen &&
-    window.HistoriaUcitelScreen && window.TestVysledkyScreen;
+    window.HistoriaUcitelScreen && window.HistoriaZiakScreen && window.TestVysledkyScreen;
 
   if (!ok) return setTimeout(start, 40);
   ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);

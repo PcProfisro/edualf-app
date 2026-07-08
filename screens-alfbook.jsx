@@ -5,8 +5,8 @@
 // ─────────────────────────────────────────────────────────────
 (function () {
   const INK = '#1A2B3D';
-  const INK_SOFT = '#6A7A8F';
-  const INK_MUTE = '#9AA8B8';
+  const INK_SOFT = '#4A5B6E';
+  const INK_MUTE = '#8194A8';
   const LINE = 'rgba(15,30,55,0.08)';
   const SURF = '#FFFFFF';
   const ACCENT = '#3FA9E0';
@@ -16,7 +16,7 @@
 
   // ── Vlajky (lokálne, self-contained) ──
   function AbFlag({ code, size = 1 }) {
-    const base = { width: 24 * size, height: 16 * size, borderRadius: 3, overflow: 'hidden', position: 'relative', flexShrink: 0, boxShadow: '0 0 0 1px rgba(15,30,55,0.10)' };
+    const base = { width: 24 * size, height: 16 * size, borderRadius: 4, overflow: 'hidden', position: 'relative', flexShrink: 0, boxShadow: '0 0 0 1px rgba(15,30,55,0.10)' };
     const stripes = (cols) => (
       <div style={{ ...base }}>
         {cols.map((c, i) => <div key={i} style={{ height: (100 / cols.length) + '%', background: c }} />)}
@@ -77,7 +77,7 @@
         }}>
         <div style={{ width: 40, height: 5, borderRadius: 4, background: 'rgba(15,30,55,0.16)', margin: '0 auto 18px' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 4 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 13, background: '#EAF4FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 52, height: 52, borderRadius: 12, background: '#EAF4FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <img src="assets/alfbook_logo.svg" alt="AlfBook" style={{ width: 34, height: 34, objectFit: 'contain' }} />
           </div>
           <div style={{ fontSize: 21, fontWeight: 800, color: INK, letterSpacing: '-0.2px', lineHeight: 1.12 }}>AlfBook isn't available in English</div>
@@ -91,7 +91,7 @@
             return (
               <div key={c} onClick={() => setPick(c)} style={{
                 display: 'flex', alignItems: 'center', gap: 13, padding: '14px 16px', cursor: 'pointer',
-                borderRadius: 15, background: sel ? 'rgba(63,169,224,0.10)' : '#F4F7FA',
+                borderRadius: 16, background: sel ? 'rgba(63,169,224,0.10)' : '#F2F7FB',
                 border: sel ? `2px solid ${ACCENT}` : '2px solid transparent',
               }}>
                 <AbFlag code={c} size={1.2} />
@@ -108,7 +108,7 @@
           })}
         </div>
         <button onClick={() => onPick && onPick(pick)} style={{
-          width: '100%', border: 'none', cursor: 'pointer', padding: '16px', borderRadius: 15,
+          width: '100%', border: 'none', cursor: 'pointer', padding: '16px', borderRadius: 16,
           background: ACCENT, color: '#fff', fontFamily: 'Dosis, sans-serif', fontSize: 17, fontWeight: 800, letterSpacing: 0.2,
         }}>
           Open AlfBook in {EN_NAMES[pick]}
@@ -159,15 +159,15 @@
           <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
             {t.cats.map(([title, sub], i) => (
               <div key={title} style={{
-                background: SURF, borderRadius: 18, padding: '17px 16px', display: 'flex', alignItems: 'center', gap: 14,
+                background: SURF, borderRadius: 16, padding: '17px 16px', display: 'flex', alignItems: 'center', gap: 14,
                 boxShadow: '0 2px 8px -3px rgba(15,30,55,0.12)',
               }}>
                 <div style={{
-                  width: 52, height: 52, borderRadius: 13, flexShrink: 0,
+                  width: 52, height: 52, borderRadius: 12, flexShrink: 0,
                   background: ['#FDEBD8', '#DBF0E6', '#E2ECFB'][i],
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <div style={{ width: 23, height: 23, borderRadius: 7, background: ['#E8930C', '#1F8A5B', '#3F7FE0'][i], opacity: 0.85 }} />
+                  <div style={{ width: 23, height: 23, borderRadius: 8, background: ['#E8930C', '#1F8A5B', '#3F7FE0'][i], opacity: 0.85 }} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 18, fontWeight: 800, color: INK, lineHeight: 1.15 }}>{title}</div>

@@ -284,7 +284,7 @@ function LoginTypingScreen({ dark = false }) {
           {/* Pole s focus stavom — modrý obrys */}
           <div style={{
             background: dark ? p.darkSurf : 'rgba(255,255,255,0.94)',
-            borderRadius: 14, overflow: 'hidden',
+            borderRadius: 12, overflow: 'hidden',
             boxShadow: `0 0 0 2px ${pri}`,
             border: `1px solid ${pri}`
           }}>
@@ -319,7 +319,7 @@ function LoginTypingScreen({ dark = false }) {
             width: '100%', padding: '12px 20px',
             background: 'transparent',
             border: `2px solid ${sec}`,
-            borderRadius: 14,
+            borderRadius: 12,
             fontSize: 15, fontWeight: 800, color: sec,
             cursor: 'pointer', fontFamily: 'inherit'
           }}>
@@ -335,10 +335,10 @@ function LoginTypingScreen({ dark = false }) {
           {/* Autocomplete bar */}
           <div style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center',
-            background: '#E5E7EB', height: 34, marginBottom: 6,
+            background: '#E4EBF2', height: 34, marginBottom: 6,
             borderBottom: '1px solid #C5C9D0'
           }}>
-            <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>Platinum</span>
+            <span style={{ fontSize: 13, color: '#4A5B6E', fontWeight: 500 }}>Platinum</span>
           </div>
 
           {kbRows.map((row, ri) =>
@@ -347,11 +347,11 @@ function LoginTypingScreen({ dark = false }) {
               const isSpecial = k === '⇧' || k === '⌫';
               return (
                 <div key={ki} style={{
-                  background: isSpecial ? '#ADB5BD' : '#fff',
-                  borderRadius: 5, minWidth: isSpecial ? 34 : 28, height: 38,
+                  background: isSpecial ? '#8194A8' : '#fff',
+                  borderRadius: 4, minWidth: isSpecial ? 34 : 28, height: 38,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: isSpecial ? 14 : 15, fontWeight: 500, color: '#1F2937',
-                  boxShadow: '0 1px 0 #9CA3AF', paddingInline: 4
+                  fontSize: isSpecial ? 14 : 15, fontWeight: 500, color: '#1A2B3D',
+                  boxShadow: '0 1px 0 #8194A8', paddingInline: 4
                 }}>{k}</div>);
 
             })}
@@ -362,17 +362,17 @@ function LoginTypingScreen({ dark = false }) {
           <div style={{ display: 'flex', justifyContent: 'center', gap: 5 }}>
             {['?123', '😊', ''].map((k, i) =>
             <div key={i} style={{
-              background: i === 2 ? '#fff' : '#ADB5BD',
-              borderRadius: 5,
+              background: i === 2 ? '#fff' : '#8194A8',
+              borderRadius: 4,
               width: i === 2 ? 140 : 48,
               height: 38,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 13, fontWeight: 500, color: '#1F2937',
-              boxShadow: '0 1px 0 #9CA3AF'
+              fontSize: 13, fontWeight: 500, color: '#1A2B3D',
+              boxShadow: '0 1px 0 #8194A8'
             }}>{k}</div>
             )}
             <div style={{
-              background: '#1D6EE0', borderRadius: 5, width: 48, height: 38,
+              background: '#1D6EE0', borderRadius: 4, width: 48, height: 38,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 1px 0 #1452AA'
             }}>
@@ -431,7 +431,7 @@ function LoginFieldBlock({ dark, children, outline }) {
 
   return (
     <div ref={ref} style={{
-      background: surf, borderRadius: 14, overflow: 'hidden',
+      background: surf, borderRadius: 12, overflow: 'hidden',
       boxShadow: active
         ? `inset 0 0 0 1px ${pri}`
         : (outline ? 'none' : '0 2px 12px rgba(15,30,55,0.09)'),
@@ -455,7 +455,7 @@ function loginBtnStyle() {
   const pri = window.QUASAR && window.QUASAR.primary || QUASAR.primary;
   const priDeep = window.QUASAR && window.QUASAR.primaryDeep || QUASAR.primaryDeep;
   return {
-    height: 58, borderRadius: 18, border: 'none',
+    height: 58, borderRadius: 16, border: 'none',
     background: `linear-gradient(135deg, ${pri} 0%, ${priDeep} 100%)`,
     color: '#fff', fontFamily: '"Dosis", sans-serif', fontWeight: 800, fontSize: 18,
     letterSpacing: '0.3px', boxShadow: '0 2px 4px 0px rgba(15,30,55,0.35)',
@@ -529,7 +529,7 @@ function LoginScreen({ dark = false }) {
           width: '100%', padding: '13px 20px',
           background: 'transparent',
           border: `2px solid ${QUASAR.accent}`,
-          borderRadius: 14,
+          borderRadius: 12,
           fontSize: 15, fontWeight: 800, color: QUASAR.accent,
           cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.1px'
         }}>
@@ -762,7 +762,7 @@ function VerifyCodeScreen({ dark = false }) {
             const active = i === 3; // ďalšie políčko na zadanie
             return (
               <div key={i} style={{
-                width: 46, height: 56, borderRadius: 13,
+                width: 46, height: 56, borderRadius: 12,
                 background: surf,
                 border: `2px solid ${active ? QUASAR.primary : (filled ? line : line)}`,
                 boxShadow: active ? `0 0 0 3px ${dark ? 'rgba(125,184,0,0.28)' : 'rgba(125,184,0,0.20)'}` : '0 1px 4px rgba(15,30,55,0.06)',
@@ -868,7 +868,7 @@ function NewPasswordScreen({ dark = false }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14 }}>
           <div style={{ display: 'flex', gap: 5, flex: 1 }}>
             {[QUASAR.primary, QUASAR.primary, QUASAR.primary, 'rgba(150,165,180,0.3)'].map((c, i) =>
-              <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: c }} />
+              <div key={i} style={{ flex: 1, height: 6, borderRadius: 4, background: c }} />
             )}
           </div>
           <span style={{ fontSize: 12, fontWeight: 800, color: QUASAR.primary }}>Silné</span>
@@ -1158,12 +1158,12 @@ function Field({ dark, label, value, icon, trailing, state = 'default', error, h
       <div style={{ fontSize: 10, fontWeight: 700, color: labelColor, marginBottom: 3, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{label}</div>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        background: surf, height: 40, borderRadius: 10, padding: '0 10px',
+        background: surf, height: 40, borderRadius: 8, padding: '0 10px',
         border: `1.5px solid ${borderColor}`,
         boxShadow: shadow,
         transition: 'border-color 0.15s, box-shadow 0.15s'
       }}>
-        <span style={{ display: 'flex', width: 24, height: 24, borderRadius: 7, background: dark ? p.darkBg : '#F2F7FB', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ display: 'flex', width: 24, height: 24, borderRadius: 8, background: dark ? p.darkBg : '#F2F7FB', alignItems: 'center', justifyContent: 'center' }}>
           {icon}
         </span>
         <div style={{ flex: 1, fontSize: 14, fontWeight: 600, color: ink }}>{value}</div>
@@ -1373,7 +1373,7 @@ function ProductChoiceContent({ dark = false }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginBottom: 20 }}>
         {/* Hamburger */}
         <button style={{
-          width: 38, height: 38, borderRadius: 14,
+          width: 38, height: 38, borderRadius: 12,
           background: 'transparent', border: 'none',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', gap: 5, cursor: 'pointer', flexShrink: 0,
@@ -1489,7 +1489,7 @@ function ContinueCard({ dark }) {
         background: QUASAR.primary,
         color: '#fff', fontWeight: 800, fontSize: 13,
         cursor: 'pointer', whiteSpace: 'nowrap',
-        boxShadow: '0 4px 12px rgba(143,212,0,0.35)'
+        boxShadow: '0 2px 6px rgba(15,30,55,0.18)'
       }}>
         Pokračovať
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
@@ -1535,7 +1535,7 @@ function AlfikWorldCard({ dark }) {
           }} />
           <div style={{
             marginTop: 8, fontSize: 14, fontWeight: 700,
-            color: '#0D3B35', maxWidth: 152, lineHeight: 1.4
+            color: '#1A2B3D', maxWidth: 152, lineHeight: 1.4
           }}>
             Hravé objavovanie pre najmenších
           </div>
@@ -1674,7 +1674,7 @@ function WalkthroughScreen1({ dark = false }) {
           <div style={{ fontSize: 17, fontWeight: 700, color: dark ? '#7AB5D8' : '#3A7A9C', letterSpacing: '0.5px' }}>Učím sa hrou</div>
         </div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0,
-          borderRadius: '28px 28px 0 0', background: dark ? '#0E1622' : '#fff',
+          borderRadius: '24px 28px 0 0', background: dark ? '#0E1622' : '#fff',
           padding: '20px 36px 36px', minHeight: 280,
           display: 'flex', flexDirection: 'column', gap: 12
         }}>
@@ -1720,7 +1720,7 @@ function WalkthroughScreen2({ dark = false }) {
           <div style={{ fontSize: 17, fontWeight: 700, color: dark ? '#7AB5D8' : '#3A7A9C', letterSpacing: '0.5px' }}>Učím sa hrou</div>
         </div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0,
-          borderRadius: '28px 28px 0 0', background: dark ? '#0E1622' : '#fff',
+          borderRadius: '24px 28px 0 0', background: dark ? '#0E1622' : '#fff',
           padding: '20px 36px 36px', minHeight: 280,
           display: 'flex', flexDirection: 'column', gap: 12
         }}>
@@ -1847,7 +1847,7 @@ function WalkthroughCarousel({ dark = false }) {
         {/* Biely panel — rovnaká štruktúra ako 00b */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          borderRadius: '28px 28px 0 0',
+          borderRadius: '24px 28px 0 0',
           background: panelBg,
           minHeight: 280,
           overflow: 'hidden',

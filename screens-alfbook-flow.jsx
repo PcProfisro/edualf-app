@@ -13,9 +13,9 @@ const AB = {
   red:        '#A61B1D',
   redDeep:    '#7A1315',
   accent:     '#3FA9E0',
-  ink:        '#1A4040',
-  inkSoft:    '#6A7A8F',
-  inkMute:    '#9AA8B8',
+  ink:        '#1A2B3D',
+  inkSoft:    '#4A5B6E',
+  inkMute:    '#8194A8',
   tileBorder: '#FFFFFF',
   heroGrad:   'linear-gradient(155deg, #141F5E 0%, #253B8C 45%, #4468C8 100%)',
   modalBg:    '#FFFFFF',
@@ -70,7 +70,7 @@ const AB_OBSAH_ZEM = [
 const AB_DIAMONDS_CURRENT = 200;
 const AB_MEDALS = [
   { id: 'bronze', label: 'Bronz',  accus: 'bronzovú',   gen: 'bronzu',   threshold: 155,  color: '#C47D3A', colorDark: '#8B5020', bg: 'linear-gradient(135deg, #F0A855 0%, #C47D3A 100%)' },
-  { id: 'silver', label: 'Striebro', accus: 'striebornú', gen: 'striebra', threshold: 310, color: '#909AAD', colorDark: '#5A6478', bg: 'linear-gradient(135deg, #C8D0DC 0%, #909AAD 100%)' },
+  { id: 'silver', label: 'Striebro', accus: 'striebornú', gen: 'striebra', threshold: 310, color: '#8194A8', colorDark: '#4A5B6E', bg: 'linear-gradient(135deg, #C8D0DC 0%, #8194A8 100%)' },
   { id: 'gold',   label: 'Zlato',  accus: 'zlatú',       gen: 'zlata',    threshold: 500,  color: '#D4A017', colorDark: '#9A7000', bg: 'linear-gradient(135deg, #FFD84D 0%, #D4A017 100%)' },
 ];
 
@@ -96,7 +96,7 @@ function MedalProgressSection({ current = AB_DIAMONDS_CURRENT }) {
   const toNext = nextMedal.threshold - current;
 
   return (
-    <div style={{ margin: '-4px 14px 10px', background: '#FFFFFF', borderRadius: 14, padding: '8px 12px', boxShadow: '0 2px 5px rgba(15,30,55,0.12)', display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{ margin: '-4px 14px 10px', background: '#FFFFFF', borderRadius: 12, padding: '8px 12px', boxShadow: '0 2px 5px rgba(15,30,55,0.12)', display: 'flex', alignItems: 'center', gap: 10 }}>
       {/* Diamanty */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
         <DiamondIcon size={13} color="#A61B1D" />
@@ -104,8 +104,8 @@ function MedalProgressSection({ current = AB_DIAMONDS_CURRENT }) {
       </div>
 
       {/* Progress bar */}
-      <div style={{ flex: 1, height: 6, borderRadius: 99, background: '#E8EDF4', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #7A1315 0%, #A61B1D 100%)', borderRadius: 99 }} />
+      <div style={{ flex: 1, height: 6, borderRadius: 999, background: '#E4EBF2', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #7A1315 0%, #A61B1D 100%)', borderRadius: 999 }} />
       </div>
 
       {/* Ďalšia medaila */}
@@ -118,7 +118,7 @@ function MedalProgressSection({ current = AB_DIAMONDS_CURRENT }) {
             <path d="M13.5 20l2 2.5L18.5 17" stroke="rgba(255,255,255,0.95)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#6A7A8F', fontFamily: '"Dosis", sans-serif', whiteSpace: 'nowrap' }}>ešte <strong style={{ color: nextMedal.colorDark }}>{toNext}</strong></span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#4A5B6E', fontFamily: '"Dosis", sans-serif', whiteSpace: 'nowrap' }}>ešte <strong style={{ color: nextMedal.colorDark }}>{toNext}</strong></span>
       </div>
     </div>
   );
@@ -203,7 +203,7 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
         )}
         <div style={{
           background: AB.heroGrad,
-          borderRadius: 18,
+          borderRadius: 16,
           padding: '8px 18px 14px',
           position: 'relative', overflow: 'hidden',
         }}>
@@ -243,7 +243,7 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
           }}>
             {/* Späť */}
             <button style={{
-              width: 30, height: 30, borderRadius: 9, border: 'none',
+              width: 30, height: 30, borderRadius: 8, border: 'none',
               background: 'rgba(255,255,255,0.72)',
               backdropFilter: 'blur(8px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -296,8 +296,8 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.92)', fontFamily: '"Dosis", sans-serif' }}>{diamonds}</span>
                   </div>
                   <div style={{ position: 'relative', flex: 1, height: 16 }}>
-                    <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 0, right: 0, height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.20)' }} />
-                    <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 0, width: `calc(7px + (100% - 14px) * ${fillFrac})`, height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.8)' }} />
+                    <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 0, right: 0, height: 3, borderRadius: 999, background: 'rgba(255,255,255,0.20)' }} />
+                    <div style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 0, width: `calc(7px + (100% - 14px) * ${fillFrac})`, height: 3, borderRadius: 999, background: 'rgba(255,255,255,0.8)' }} />
                     {AB_MEDALS.map(m => {
                       const frac = m.threshold / goldT;
                       const reached = diamonds >= m.threshold;
@@ -368,7 +368,7 @@ function AbTile({ item, compact = false }) {
       {/* Emoji / ikona — BIELE pozadie rovnako ako v Alfíkovi */}
       <div style={{
         width: '100%', flexShrink: 0,
-        borderRadius: compact ? 14 : 18,
+        borderRadius: compact ? 12 : 16,
         background: '#FFFFFF',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: compact ? 30 : 40,
@@ -457,7 +457,7 @@ function AbObsahRow({ item, alt, isLast }) {
       minHeight: 62, paddingTop: 8, paddingBottom: 8, paddingRight: 14,
       paddingLeft: 26,
       background: alt ? 'rgba(246,249,252,0.9)' : '#FFFFFF',
-      borderBottom: isLast ? 'none' : '1px solid #EBEFF3',
+      borderBottom: isLast ? 'none' : '1px solid #E4EBF2',
     }}>
       {/* Typ materiálu — interaktívny test */}
       <div style={{ width: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
@@ -626,7 +626,7 @@ function AbObsahTeacherRow({ item, alt, isLast }) {
       minHeight: 62, paddingTop: 8, paddingBottom: 8, paddingRight: 14,
       paddingLeft: 26,
       background: alt ? 'rgba(246,249,252,0.9)' : '#FFFFFF',
-      borderBottom: isLast ? 'none' : '1px solid #EBEFF3',
+      borderBottom: isLast ? 'none' : '1px solid #E4EBF2',
     }}>
       {/* Typ materiálu — interaktívny test */}
       <div style={{ width: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
@@ -652,7 +652,7 @@ function AbObsahTeacherRow({ item, alt, isLast }) {
           color: AB.redDeep, background: 'transparent',
           border: 'none', padding: 0, cursor: 'pointer', lineHeight: 1,
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={AB.redDeep} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={AB.redDeep} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 16v5" />
             <path d="M16 14v7" />
             <path d="M20 10v11" />
