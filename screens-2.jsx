@@ -1422,7 +1422,6 @@ function ProfileDrawerV2({
               {isAlfBook && HistoriaRow}
               <DrawerRowV2 dark={dark} label="Alfík" active={!isAlfBook} onClick={onAlfik}
               icon={<img src="assets/alfik_logo.svg" alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />} />
-              {!isAlfBook && HistoriaRow}
             </React.Fragment>
           );
         })()}

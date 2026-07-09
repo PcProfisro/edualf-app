@@ -392,10 +392,11 @@ function LoginTypingScreen({ dark = false }) {
 // ─────────────────────────────────────────────────────────────
 
 // Login field row (štýl z reálnej app — label navrchu, hodnota dole)
-function LoginField({ dark, label, value, icon, trailing, compact, active, onActivate }) {
+function LoginField({ dark, label, value, placeholder, icon, trailing, compact, active, onActivate }) {
   const p = ALFIK_PALETTE;
   const ink = dark ? p.darkInk : p.ink;
   const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
+  const inkMute = dark ? p.darkInkSoft : p.inkMute;
   const pri = (window.QUASAR && window.QUASAR.accent) || '#3FA9E0';
   return (
     <div onClick={onActivate} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: compact ? '9px 14px' : '13px 14px', cursor: 'pointer' }}>
@@ -404,7 +405,9 @@ function LoginField({ dark, label, value, icon, trailing, compact, active, onAct
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: active ? pri : inkSoft, lineHeight: 1, transition: 'color .15s ease' }}>{label}</div>
-        {value && <div style={{ fontSize: 15, fontWeight: 700, color: ink, marginTop: 3 }}>{value}</div>}
+        {value
+          ? <div style={{ fontSize: 15, fontWeight: 700, color: ink, marginTop: 3 }}>{value}</div>
+          : (placeholder && <div style={{ fontSize: 15, fontWeight: 600, color: inkMute, marginTop: 3, opacity: 0.75 }}>{placeholder}</div>)}
       </div>
       {trailing && <div style={{ flexShrink: 0 }}>{trailing}</div>}
     </div>);
@@ -1960,4 +1963,4 @@ function ScaleTile({ design = 154, children }) {
 
 }
 
-Object.assign(window, { SplashScreen, PreMenuScreen, LoginScreen, LoginTypingScreen, LoginStep2Screen, ForgotPasswordScreen, VerifyCodeScreen, NewPasswordScreen, PasswordChangedScreen, LoginSchoolStep1Screen, LoginSchoolScreen, ProductChoiceScreen, ProductChoiceContent, PhoneFrame, Field, ALFIK_PALETTE, WalkthroughScreen1, WalkthroughScreen2, WalkthroughCarousel, ScaleTile });
+Object.assign(window, { SplashScreen, PreMenuScreen, LoginScreen, LoginTypingScreen, LoginStep2Screen, ForgotPasswordScreen, VerifyCodeScreen, NewPasswordScreen, PasswordChangedScreen, LoginSchoolStep1Screen, LoginSchoolScreen, ProductChoiceScreen, ProductChoiceContent, PhoneFrame, Field, LoginField, LoginFieldBlock, loginBtnStyle, ALFIK_PALETTE, WalkthroughScreen1, WalkthroughScreen2, WalkthroughCarousel, ScaleTile });

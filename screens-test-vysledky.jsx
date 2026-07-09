@@ -39,11 +39,9 @@ const TV_PREDMETY = ['Všetky', 'Príroda', 'Matematika', 'Slovná zásoba SJ'];
 
 // ── Časové obdobia (zhodné s obrazovkou 09) ──
 const TV_OBDOBIA = [
-  { id: 'dnes', label: 'Dnes',                desc: '6. júl 2026' },
-  { id: '7d',   label: 'Posledných 7 dní',    desc: '30. jún – 6. júl 2026' },
-  { id: '30d',  label: 'Posledných 30 dní',   desc: '7. jún – 6. júl 2026' },
-  { id: 'rok',  label: 'Aktuálny školský rok', desc: 'od 1. sep 2025' },
-  { id: 'vlastne', label: 'Vlastné obdobie',  desc: 'vyberte dátumy' }
+  { id: '7d',   label: 'Posledných 7 dní' },
+  { id: '30d',  label: 'Posledných 30 dní' },
+  { id: 'rok',  label: 'Aktuálny školský rok' }
 ];
 const TV_TODAY = new Date(2026, 6, 6);
 function tvParseDate(s) {
@@ -237,7 +235,7 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
   const line = dark ? '#2A3447' : '#E4EBF2';
   const card = dark ? '#1A2433' : '#FFFFFF';
 
-  const [trieda, setTrieda] = React.useState(initTrieda || 'Všetky');
+  const [trieda, setTrieda] = React.useState(initTrieda || null);
   const [ziak, setZiak] = React.useState(initZiak || 'Všetci');
   const [obdobie, setObdobie] = React.useState(initObdobie || '7d');
   const [custom, setCustom] = React.useState(initCustom || { od: '', do: '' });
@@ -263,9 +261,9 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
           <div style={{
             position: 'absolute', left: 56, right: 56, top: 6, bottom: 10,
             display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none',
-            fontSize: 19, fontWeight: 800, letterSpacing: '-0.2px',
-            fontFamily: '"Dosis", sans-serif', color: ink
-          }}>Filter</div>
+            fontSize: 17, fontWeight: 800, letterSpacing: '-0.2px',
+            fontFamily: '"Dosis", sans-serif', color: ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+          }}>{TV_TEST.nazov}</div>
           <button title="Späť" style={{
             width: 38, height: 38, borderRadius: 12, border: 'none',
             background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -281,11 +279,6 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
 
         {/* obsah */}
         <div data-scroll-area onWheel={e => e.stopPropagation()} style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '4px 18px 18px' }}>
-          <div style={{
-            fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 700,
-            color: inkSoft, lineHeight: 1.35, margin: '2px 2px 16px'
-          }}>Test <span style={{ fontWeight: 800, color: ink }}>{TV_TEST.nazov}</span> — vyberte obdobie (povinné), triedu a žiaka.</div>
-
           <div style={sectionLabel}>Časové obdobie <span style={{ color: '#E5484D' }}>*</span></div>
           <div style={{ marginBottom: 14 }}>
             <TvFilterField
@@ -308,10 +301,10 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
               ))}
             </div>}
 
-          <div style={sectionLabel}>Trieda</div>
+          <div style={sectionLabel}>Trieda <span style={{ color: '#E5484D' }}>*</span></div>
           <div style={{ marginBottom: 14 }}>
             <TvFilterField
-              valueLabel={trieda} changed={trieda !== 'Všetky'} dark={dark}
+              valueLabel={trieda || 'Vyberte triedu…'} changed={!!trieda} dark={dark}
               options={TV_TRIEDY.map(o => ({ value: o, label: o, sel: trieda === o, onPick: () => setTrieda(o) }))} />
           </div>
 
@@ -321,21 +314,18 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
               valueLabel={ziak} changed={ziak !== 'Všetci'} dark={dark}
               options={TV_ZIACI.map(o => ({ value: o, label: o, sel: ziak === o, onPick: () => setZiak(o) }))} />
           </div>
-        </div>
 
-        {/* pätička */}
-        <div style={{ padding: '12px 18px 16px', borderTop: `1px solid ${line}` }}>
           <button
-            disabled={!obdobie}
-            onClick={() => { if (obdobie) onSubmit({ trieda, ziak, obdobie, custom }); }}
+            disabled={!obdobie || !trieda}
+            onClick={() => { if (obdobie && trieda) onSubmit({ trieda, ziak, obdobie, custom }); }}
             style={{
-              display: 'block', width: '100%', padding: '14px 0', borderRadius: 14,
-              cursor: obdobie ? 'pointer' : 'not-allowed',
-              background: obdobie ? `linear-gradient(135deg, ${TV_PLAY} 0%, #5E9600 100%)` : (dark ? '#243040' : '#DCE7F0'),
+              display: 'block', width: '100%', padding: '14px 0', borderRadius: 14, marginTop: 18,
+              cursor: (obdobie && trieda) ? 'pointer' : 'not-allowed',
+              background: (obdobie && trieda) ? `linear-gradient(135deg, ${TV_PLAY} 0%, #5E9600 100%)` : (dark ? '#243040' : '#DCE7F0'),
               border: 'none',
               fontFamily: '"Dosis", sans-serif', fontSize: 16.5, fontWeight: 800,
-              color: obdobie ? '#FFFFFF' : (dark ? '#5A6B7E' : '#9CB0C2')
-            }}>Zobraziť výsledky</button>
+              color: (obdobie && trieda) ? '#FFFFFF' : (dark ? '#5A6B7E' : '#9CB0C2')
+            }}>Zobraziť</button>
         </div>
       </div>
     </window.PhoneFrame>
@@ -350,7 +340,7 @@ function TestVysledkyScreen({ dark = false, theme = 'alfik' }) {
   const card = dark ? '#1A2433' : '#FFFFFF';
 
   const [stage, setStage] = React.useState('filter');   // 'filter' | 'results'
-  const [trieda, setTrieda] = React.useState('Všetky');
+  const [trieda, setTrieda] = React.useState(null);
   const [ziak, setZiak] = React.useState('Všetci');
   const [obdobie, setObdobie] = React.useState('7d');
   const [custom, setCustom] = React.useState({ od: '', do: '' });
@@ -403,9 +393,9 @@ function TestVysledkyScreen({ dark = false, theme = 'alfik' }) {
             position: 'absolute', left: 56, right: 56, top: 6, bottom: 10,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             pointerEvents: 'none',
-            fontSize: 19, fontWeight: 800, letterSpacing: '-0.2px',
-            fontFamily: '"Dosis", sans-serif', color: ink
-          }}>História</div>
+            fontSize: 17, fontWeight: 800, letterSpacing: '-0.2px',
+            fontFamily: '"Dosis", sans-serif', color: ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+          }}>{TV_TEST.nazov}</div>
 
           <button onClick={() => setStage('filter')} title="Späť na filter" style={{
             width: 38, height: 38, borderRadius: 12, border: 'none',
@@ -433,35 +423,11 @@ function TestVysledkyScreen({ dark = false, theme = 'alfik' }) {
           </button>
         </div>
 
-        {/* ── Identita testu — banner vo farbách hero (Alfik / AlfBook) ── */}
-        <div style={{ padding: '0 18px 12px' }}>
-          <div style={{
-            background: abHero
-              ? 'linear-gradient(155deg, #141F5E 0%, #253B8C 45%, #4468C8 100%)'
-              : (dark
-                ? 'linear-gradient(135deg, #0E7A87 0%, #1A2B3D 100%)'
-                : 'linear-gradient(160deg, #00A8B5 0%, #5DD8D2 45%, #C2EDD4 100%)'),
-            borderRadius: 16,
-            boxShadow: abHero
-              ? '0 1px 3px rgba(20,31,94,0.18), 0 10px 26px -14px rgba(20,31,94,0.55)'
-              : (dark ? 'none' : '0 1px 3px rgba(0,168,181,0.15), 0 10px 26px -14px rgba(0,168,181,0.45)'),
-            padding: '14px 16px',
-            display: 'flex', alignItems: 'center', gap: 12
-          }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{
-                fontFamily: '"Dosis", sans-serif', fontWeight: 800, fontSize: 16.5,
-                color: abHero ? '#FFFFFF' : (dark ? '#E7F6F4' : '#1A2B3D'), lineHeight: 1.2
-              }}>{TV_TEST.nazov}</div>
-            </div>
-          </div>
-        </div>
-
         {/* ── Aktuálne výbery ako štítky so zrušením (podľa 09) ── */}
         <div style={{ padding: '0 18px 10px', display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, flex: 1, minWidth: 0 }}>
             {[
-              { key: 'obdobie', label: 'Obdobie', text: obLabel, fixed: true },
+              { key: 'obdobie', label: 'Obdobie', text: obLabel, onClear: () => setStage('filter') },
               trieda !== 'Všetky' && { key: 'trieda', label: 'Trieda', text: trieda, onClear: () => setTrieda('Všetky') },
               ziak !== 'Všetci' && { key: 'ziak', label: 'Žiak', text: ziak, onClear: () => setZiak('Všetci') }
             ].filter(Boolean).map(chip =>
@@ -479,7 +445,7 @@ function TestVysledkyScreen({ dark = false, theme = 'alfik' }) {
                 <button onClick={chip.onClear} title="Zrušiť filter" style={{
                   width: 20, height: 20, borderRadius: 999, flexShrink: 0, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
-                  border: 'none', background: dark ? 'rgba(255,255,255,0.06)' : '#EDF3F8'
+                  border: 'none', background: 'transparent'
                 }}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round">
                     <path d="M18 6 6 18M6 6l12 12"></path>

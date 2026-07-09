@@ -79,10 +79,13 @@ const AB_MEDALS = [
 // ─────────────────────────────────────────────────────────────
 function DiamondIcon({ size = 14, color = '#FFFFFF' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} style={{ flexShrink: 0, display: 'block' }}>
-      <path d="M6 3h12l4 6-10 13L2 9z"/>
-      <path d="M2 9h20M6 3l4 6m4 0l4-6m-8 0v6" fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
-    </svg>
+    <span style={{
+      display: 'inline-block', width: size, height: size, flexShrink: 0, background: color,
+      WebkitMaskImage: 'url(uploads/diamond.svg)', maskImage: 'url(uploads/diamond.svg)',
+      WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+      WebkitMaskPosition: 'center', maskPosition: 'center',
+      WebkitMaskSize: 'contain', maskSize: 'contain'
+    }} />
   );
 }
 
@@ -307,9 +310,12 @@ function AbHero({ title, emoji, img, crumbs = [], diamonds = null }) {
                       return (
                         <button key={m.id} onClick={() => setOpenMedal(openMedal === m.id ? null : m.id)}
                           style={{ position: 'absolute', top: '50%', left: `calc(7px + (100% - 14px) * ${frac})`, transform: 'translate(-50%,-50%)', zIndex: openMedal === m.id ? 3 : (isNext ? 2 : 1), padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '50%', boxShadow: openMedal === m.id ? '0 0 0 3px rgba(255,255,255,0.45)' : 'none' }}>
-                          <div style={{ borderRadius: '50%', border: `1.5px solid ${isNext || openMedal === m.id ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}` }}>
-                            <MedalCoin size={sz} bg={m.bg} state={state} />
-                          </div>
+                          <img
+                            src={`medaily/${m.id}-${reached ? 'dosiahnuty' : 'nedosiahnuty'}.svg`}
+                            alt={m.label}
+                            draggable="false"
+                            style={{ width: sz + 7, height: sz + 7, display: 'block', borderRadius: '50%' }}
+                          />
                         </button>
                       );
                     })}

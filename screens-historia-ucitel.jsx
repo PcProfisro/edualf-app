@@ -94,11 +94,9 @@ const HIST_FILTERS = {
 
 // ── Časové obdobia pre úvodný filter ──
 const HIST_OBDOBIA = [
-  { id: 'dnes', label: 'Dnes',                desc: '6. júl 2026' },
-  { id: '7d',   label: 'Posledných 7 dní',    desc: '30. jún – 6. júl 2026' },
-  { id: '30d',  label: 'Posledných 30 dní',   desc: '7. jún – 6. júl 2026' },
-  { id: 'rok',  label: 'Aktuálny školský rok', desc: 'od 1. sep 2025' },
-  { id: 'vlastne', label: 'Vlastné obdobie',  desc: 'vyberte dátumy' }
+  { id: '7d',   label: 'Posledných 7 dní' },
+  { id: '30d',  label: 'Posledných 30 dní' },
+  { id: 'rok',  label: 'Aktuálny školský rok' }
 ];
 
 const HIST_MONTHS = { 'január': 0, 'február': 1, 'marec': 2, 'apríl': 3, 'máj': 4, 'jún': 5, 'júl': 6, 'august': 7, 'september': 8, 'október': 9, 'november': 10, 'december': 11 };
@@ -216,8 +214,6 @@ function HistRow({ r, dark, last, alt }) {
         }}>{r.nazov}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 13, fontWeight: 600, color: inkSoft, lineHeight: 1.2 }}>{r.ziak}</span>
-          <span style={{ width: 1, height: 13, background: line, flexShrink: 0 }}></span>
-          <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 13, fontWeight: 600, color: inkSoft, lineHeight: 1.2 }}>{r.trieda}</span>
           <span style={{ width: 1, height: 13, background: line, flexShrink: 0 }}></span>
           <span style={{
             fontFamily: '"Dosis", sans-serif', fontSize: 13, fontWeight: 600,
@@ -341,7 +337,25 @@ function HistSheet({ filters, dark, onApply, onClose }) {
   );
 }
 
-// ── Uzol stromu kategórií — každá položka sa dá rozbaliť aj vybrať ──
+// ── Sploštenie stromu na hľadateľný zoznam { name, path } ──
+function histFlattenKat(tree, path, out) {
+  out = out || [];
+  path = path || [];
+  for (const node of tree) {
+    out.push({ name: node.name, path });
+    if (node.children && node.children.length)
+      histFlattenKat(node.children, [...path, node.name], out);
+  }
+  return out;
+}
+const HIST_KAT_FLAT = histFlattenKat(HIST_KAT_TREE);
+
+// Odstráni diakritiku pre hľadanie (Matematika ≈ matematika)
+function histNorm(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+// ── Uzol stromu kategórií — rozbaľovací + vyberateľný ──
 function HistKatNode({ node, depth, value, expanded, toggle, onPick, dark }) {
   const ink = dark ? '#F2F7FB' : '#1A2B3D';
   const inkSoft = dark ? '#A8B6C8' : '#4A5B6E';
@@ -349,113 +363,181 @@ function HistKatNode({ node, depth, value, expanded, toggle, onPick, dark }) {
   const hasKids = node.children && node.children.length > 0;
   const isOpen = expanded.has(node.name);
   const sel = value === node.name;
-  const pad = 10 + depth * 20;
+  const pad = 12 + depth * 18;
   return (
     <div>
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        paddingLeft: pad, paddingRight: 12,
+        display: 'flex', alignItems: 'center', gap: 6,
+        paddingLeft: pad, paddingRight: 12, borderTop: `1px solid ${line}`,
         background: sel ? (dark ? 'rgba(63,169,224,0.15)' : 'rgba(63,169,224,0.08)') : 'transparent'
       }}>
-        {/* rozbaľovacie tlačidlo — na každej položke */}
-        <button onClick={() => toggle(node.name)} title={isOpen ? 'Zbaliť' : 'Rozbaliť'} style={{
-          width: 22, height: 22, borderRadius: 6, flexShrink: 0, cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
-          border: `1.5px solid ${dark ? '#2A3447' : '#E4EBF2'}`,
-          background: dark ? '#101A28' : '#F7FCFE'
-        }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3.4" strokeLinecap="round">
-            <path d="M5 12h14"></path>
-            {!isOpen && <path d="M12 5v14"></path>}
-          </svg>
-        </button>
-        {/* vyberateľný názov */}
+        {hasKids
+          ? <button onClick={() => toggle(node.name)} title={isOpen ? 'Zbaliť' : 'Rozbaliť'} style={{
+              width: 26, height: 26, borderRadius: 8, flexShrink: 0, cursor: 'pointer', padding: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: 'none', background: 'transparent'
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={dark ? '#7CC7EE' : HIST_ACCENT_DEEP} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"></path>
+                {!isOpen && <path d="M12 5v14"></path>}
+              </svg>
+            </button>
+          : <span style={{ width: 26, flexShrink: 0 }} />}
         <button onClick={() => onPick(node.name)} style={{
-          flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8,
-          padding: '7px 0', cursor: 'pointer', border: 'none', background: 'transparent', textAlign: 'left'
+          flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+          padding: '10px 0', cursor: 'pointer', border: 'none', background: 'transparent', textAlign: 'left'
         }}>
           <span style={{
-            width: 16, height: 16, borderRadius: 999, flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: `2px solid ${sel ? HIST_ACCENT : (dark ? '#3A4658' : '#C9D6E2')}`,
-            background: sel ? HIST_ACCENT : 'transparent'
-          }}>
-            {sel && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>}
-          </span>
-          <span style={{
-            display: 'inline-block',
-            padding: '3px 10px', borderRadius: 8,
-            border: `1.5px solid ${sel ? HIST_ACCENT : (dark ? '#2A3447' : 'rgba(125,184,0,0.5)')}`,
-            fontFamily: '"Dosis", sans-serif', fontSize: 14, fontWeight: sel ? 800 : 700,
-            color: sel ? (dark ? '#7CC7EE' : HIST_ACCENT_DEEP) : ink, lineHeight: 1.25
+            fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600, color: ink, lineHeight: 1.2
           }}>{node.name}</span>
+          {sel &&
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={dark ? '#7CC7EE' : HIST_ACCENT_DEEP} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M20 6 9 17l-5-5"></path>
+            </svg>}
         </button>
       </div>
-      {isOpen && (hasKids
-        ? node.children.map(c =>
-            <HistKatNode key={c.name} node={c} depth={depth + 1} value={value} expanded={expanded} toggle={toggle} onPick={onPick} dark={dark} />)
-        : <div style={{
-            paddingLeft: pad + 30, paddingRight: 12, padding: `4px 12px 6px ${pad + 30}px`,
-            fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, fontStyle: 'italic',
-            color: inkSoft
-          }}>Podkategórie sa doplnia</div>)}
+      {isOpen && hasKids &&
+        node.children.map(c =>
+          <HistKatNode key={c.name} node={c} depth={depth + 1} value={value} expanded={expanded} toggle={toggle} onPick={onPick} dark={dark} />)}
     </div>
   );
 }
 
-// ── Pole Kategória s rozbaľovacím stromom ──
-function HistKatTree({ value, open, onToggle, onPick, dark }) {
+// ── Pole Kategória — vyhľadávanie + strom ──
+function HistKatSearch({ value, open, onToggle, onPick, dark }) {
   const ink = dark ? '#F2F7FB' : '#1A2B3D';
   const inkSoft = dark ? '#A8B6C8' : '#4A5B6E';
   const line = dark ? '#2A3447' : '#E4EBF2';
   const card = dark ? '#1A2433' : '#FFFFFF';
-  const [expanded, setExpanded] = React.useState(() => new Set(['Informatika']));
-  const toggle = (n) => setExpanded(prev => {
+  const changed = value !== 'Všetky';
+  const [q, setQ] = React.useState(changed ? value : '');
+  const [mode, setMode] = React.useState('search');   // 'search' | 'tree'
+  const [panelOpen, setPanelOpen] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(() => new Set());
+  const toggleNode = (n) => setExpanded(prev => {
     const s = new Set(prev); s.has(n) ? s.delete(n) : s.add(n); return s;
   });
-  const changed = value !== 'Všetky';
+  const inputRef = React.useRef(null);
+  const wrapRef = React.useRef(null);
+
+  const closePanel = () => { setPanelOpen(false); setMode('search'); setQ(value !== 'Všetky' ? value : ''); };
+  const openSearch = () => { setPanelOpen(true); setMode('search'); setQ(''); };
+  const openTree = () => { setPanelOpen(true); setMode('tree'); };
+  const pick = (name) => { onPick(name); setPanelOpen(false); setMode('search'); setQ(name !== 'Všetky' ? name : ''); };
+
+  React.useEffect(() => {
+    if (!panelOpen) return;
+    const onDoc = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) closePanel(); };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [panelOpen, value]);
+
+  const nq = histNorm(q.trim());
+  const results = nq
+    ? HIST_KAT_FLAT.filter(it => histNorm(it.name).includes(nq)).slice(0, 40)
+    : HIST_KAT_FLAT;
+
   return (
-    <div style={{ position: 'relative' }}>
-      <button onClick={onToggle} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        width: '100%', padding: '10px 14px', cursor: 'pointer',
-        background: card, border: 'none', borderRadius: 13,
-        fontFamily: '"Dosis", sans-serif', fontSize: 15.5, fontWeight: 600,
-        color: ink, textAlign: 'left',
-        boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)'
-      }}>
-        {changed ? value : 'Všetky'}
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-          style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s ease' }}>
-          <path d="m6 9 6 6 6-6"></path>
-        </svg>
-      </button>
-      {open &&
-        <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
-          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 5, zIndex: 20,
-          maxHeight: 320, overflowY: 'auto', padding: '6px 0',
-          background: card, border: `1.5px solid ${line}`, borderRadius: 13,
-          boxShadow: '0 12px 34px rgba(10,20,32,0.22)'
+    <div ref={wrapRef} style={{ position: 'relative' }}>
+      {/* Prepínač: vyhľadávanie / strom — vždy viditeľné */}
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 8 }}>
+        <div onClick={() => inputRef.current && inputRef.current.focus()} style={{
+          flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 13px', borderRadius: 13, cursor: 'text', background: card,
+          border: 'none',
+          boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)'
         }}>
-          <button onClick={() => onPick('Všetky')} style={{
-            display: 'flex', alignItems: 'center', gap: 9, width: '100%',
-            padding: '8px 12px', cursor: 'pointer', border: 'none',
-            borderBottom: `1px solid ${line}`, marginBottom: 4, textAlign: 'left',
-            background: !changed ? (dark ? 'rgba(63,169,224,0.15)' : 'rgba(63,169,224,0.08)') : 'transparent'
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={panelOpen && mode === 'search' ? (dark ? '#7CC7EE' : HIST_ACCENT_DEEP) : inkSoft} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <input
+            ref={inputRef}
+            value={q}
+            onChange={e => { setQ(e.target.value); setMode('search'); setPanelOpen(true); }}
+            onFocus={openSearch}
+            placeholder="Vyhľadať kategóriu…"
+            style={{
+              flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
+              fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600, color: ink
+            }} />
+          {q && <button onClick={(e) => { e.stopPropagation(); onPick('Všetky'); setQ(''); setPanelOpen(true); setMode('search'); inputRef.current && inputRef.current.focus(); }} style={{
+            border: 'none', background: 'transparent', cursor: 'pointer', padding: 2, flexShrink: 0, display: 'flex'
           }}>
-            <span style={{
-              width: 18, height: 18, borderRadius: 999, flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: `2px solid ${!changed ? HIST_ACCENT : (dark ? '#3A4658' : '#C9D6E2')}`,
-              background: !changed ? HIST_ACCENT : 'transparent'
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2.6" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+          </button>}
+        </div>
+        <button onClick={openTree} style={{
+          flexShrink: 0, padding: '10px 16px', borderRadius: 13, cursor: 'pointer', background: card,
+          border: 'none',
+          boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)',
+          fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 700,
+          color: panelOpen && mode === 'tree' ? (dark ? '#7CC7EE' : HIST_ACCENT_DEEP) : ink, whiteSpace: 'nowrap'
+        }}>Vybrať kategóriu</button>
+      </div>
+      {panelOpen &&
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 6, zIndex: 20,
+          background: card, border: `1.5px solid ${line}`, borderRadius: 13,
+          boxShadow: '0 12px 34px rgba(10,20,32,0.22)', overflow: 'hidden'
+        }}>
+          {/* Telo — výsledky vyhľadávania alebo strom */}
+          <div data-scroll-area onWheel={e => e.stopPropagation()} style={{
+            maxHeight: 300, overflowY: 'auto', padding: '4px 0'
+          }}>
+            {/* Všetky kategórie — vždy dostupné */}
+            <button onClick={() => pick('Všetky')} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, width: '100%',
+              padding: '10px 14px', cursor: 'pointer', border: 'none',
+              borderBottom: `1px solid ${line}`, textAlign: 'left',
+              background: !changed ? (dark ? 'rgba(63,169,224,0.15)' : 'rgba(63,169,224,0.08)') : 'transparent'
             }}>
-              {!changed && <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>}
-            </span>
-            <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 14.5, fontWeight: 800, color: !changed ? (dark ? '#7CC7EE' : HIST_ACCENT_DEEP) : ink }}>Všetky kategórie</span>
-          </button>
-          {HIST_KAT_TREE.map(n =>
-            <HistKatNode key={n.name} node={n} depth={0} value={value} expanded={expanded} toggle={toggle} onPick={onPick} dark={dark} />
-          )}
+              <span style={{ fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600, color: ink }}>Všetky kategórie</span>
+              {!changed &&
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={dark ? '#7CC7EE' : HIST_ACCENT_DEEP} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M20 6 9 17l-5-5"></path>
+                </svg>}
+            </button>
+
+            {/* Režim: strom */}
+            {mode === 'tree' &&
+              HIST_KAT_TREE.map(n =>
+                <HistKatNode key={n.name} node={n} depth={0} value={value} expanded={expanded} toggle={toggleNode} onPick={pick} dark={dark} />)}
+
+            {/* Režim: vyhľadávanie */}
+            {mode === 'search' && results.map((it, i) => {
+              const sel = value === it.name;
+              return (
+                <button key={it.name + '·' + i} onClick={() => pick(it.name)} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+                  width: '100%', padding: '9px 14px', cursor: 'pointer',
+                  border: 'none', borderTop: i === 0 ? 'none' : `1px solid ${line}`, textAlign: 'left',
+                  background: sel ? (dark ? 'rgba(63,169,224,0.15)' : 'rgba(63,169,224,0.08)') : 'transparent'
+                }}>
+                  <span style={{ minWidth: 0 }}>
+                  {it.path.length > 0 &&
+                    <div style={{
+                      fontFamily: '"Dosis", sans-serif', fontSize: 12, fontWeight: 600, color: inkSoft,
+                      marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                    }}>{it.path.join(' › ')}</div>}
+                  <div style={{
+                    fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600,
+                    color: ink, lineHeight: 1.2
+                  }}>{it.name}</div>
+                  </span>
+                  {sel &&
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={dark ? '#7CC7EE' : HIST_ACCENT_DEEP} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M20 6 9 17l-5-5"></path>
+                    </svg>}
+                </button>
+              );
+            })}
+
+            {mode === 'search' && results.length === 0 &&
+              <div style={{
+                padding: '18px 14px', textAlign: 'center',
+                fontFamily: '"Dosis", sans-serif', fontSize: 14, fontWeight: 600, fontStyle: 'italic', color: inkSoft
+              }}>Nič sa nenašlo</div>}
+          </div>
         </div>}
     </div>
   );
@@ -557,13 +639,8 @@ function HistIntro({ dark, initTrieda, initPredmet, initKategoria, initZiak, ini
         </div>
 
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '4px 18px 18px' }} onWheel={e => e.stopPropagation()}>
-          <div style={{
-            fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 600, color: inkSoft,
-            lineHeight: 1.35, margin: '2px 2px 16px'
-          }}>Vyberte obdobie (povinné), prípadne spresnite triedu, predmet, kategóriu a žiaka.</div>
-
           {/* Obdobie — povinné, prvé */}
-          <div style={sectionLabel}>Časové obdobie <span style={{ color: '#E5484D' }}>*</span></div>
+          <div style={sectionLabel}>Časové obdobie <span style={{ color: ink }}>*</span></div>
           <div style={{ marginBottom: 14 }}>
             <Field
               fieldKey="obdobie"
@@ -590,13 +667,13 @@ function HistIntro({ dark, initTrieda, initPredmet, initKategoria, initZiak, ini
               ))}
             </div>}
 
-          {/* Trieda */}
-          <div style={sectionLabel}>Trieda</div>
+          {/* Trieda — povinné */}
+          <div style={sectionLabel}>Trieda <span style={{ color: ink }}>*</span></div>
           <div style={{ marginBottom: 14 }}>
             <Field
               fieldKey="trieda"
-              valueLabel={trieda || 'Všetky'}
-              changed={!!trieda && trieda !== 'Všetky'}
+              valueLabel={trieda || 'Vyberte triedu…'}
+              changed={!!trieda}
               options={HIST_FILTERS.trieda.options.map(o => ({
                 value: o, label: o, sel: trieda === o,
                 onPick: () => { setTrieda(o); setOpenKey(null); }
@@ -616,10 +693,10 @@ function HistIntro({ dark, initTrieda, initPredmet, initKategoria, initZiak, ini
               }))} />
           </div>
 
-          {/* Kategória — rozbaľovací strom */}
+          {/* Kategória — textové vyhľadávanie */}
           <div style={sectionLabel}>Kategória</div>
           <div style={{ marginBottom: 14 }}>
-            <HistKatTree
+            <HistKatSearch
               value={kategoria}
               open={openKey === 'kategoria'}
               onToggle={() => setOpenKey(openKey === 'kategoria' ? null : 'kategoria')}
@@ -639,21 +716,18 @@ function HistIntro({ dark, initTrieda, initPredmet, initKategoria, initZiak, ini
                 onPick: () => { setZiak(o); setOpenKey(null); }
               }))} />
           </div>
-        </div>
 
-        {/* Pätička */}
-        <div style={{ padding: '12px 18px 16px', borderTop: `1px solid ${line}` }}>
           <button
-            disabled={!obdobie}
-            onClick={() => { if (obdobie) onSubmit({ trieda, predmet, kategoria, ziak, obdobie, custom }); }}
+            disabled={!obdobie || !trieda}
+            onClick={() => { if (obdobie && trieda) onSubmit({ trieda, predmet, kategoria, ziak, obdobie, custom }); }}
             style={{
-              display: 'block', width: '100%', padding: '14px 0', borderRadius: 14,
-              cursor: obdobie ? 'pointer' : 'not-allowed',
-              background: obdobie ? `linear-gradient(135deg, ${HIST_PRIMARY} 0%, ${HIST_PRIMARY_DEEP} 100%)` : (dark ? '#243040' : '#DCE7F0'),
+              display: 'block', width: '100%', padding: '14px 0', borderRadius: 14, marginTop: 18,
+              cursor: (obdobie && trieda) ? 'pointer' : 'not-allowed',
+              background: (obdobie && trieda) ? `linear-gradient(135deg, ${HIST_PRIMARY} 0%, ${HIST_PRIMARY_DEEP} 100%)` : (dark ? '#243040' : '#DCE7F0'),
               border: 'none',
               fontFamily: '"Dosis", sans-serif', fontSize: 16.5, fontWeight: 800,
-              color: obdobie ? '#FFFFFF' : (dark ? '#5A6B7E' : '#9CB0C2')
-            }}>Zobraziť výsledky</button>
+              color: (obdobie && trieda) ? '#FFFFFF' : (dark ? '#5A6B7E' : '#9CB0C2')
+            }}>Zobraziť</button>
         </div>
       </div>
     </window.PhoneFrame>
@@ -780,7 +854,7 @@ function HistoriaUcitelScreen({ dark = false }) {
           {/* aktuálne výbery — každý so zrušením */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, flex: 1, minWidth: 0 }}>
             {[
-              { key: 'obdobie', label: 'Obdobie', text: obLabel, fixed: true },
+              { key: 'obdobie', label: 'Obdobie', text: obLabel, onClear: () => setStage('filter') },
               trieda && trieda !== 'Všetky' && { key: 'trieda', label: 'Trieda', text: trieda, onClear: () => setTrieda('Všetky') },
               kategoria !== 'Všetky' && { key: 'kategoria', label: 'Kategória', text: kategoria, onClear: () => setKategoria('Všetky') },
               predmet !== 'Všetky' && { key: 'predmet', label: 'Predmet', text: predmet, onClear: () => setPredmet('Všetky') },
@@ -800,7 +874,7 @@ function HistoriaUcitelScreen({ dark = false }) {
                 <button onClick={chip.onClear} title="Zrušiť filter" style={{
                   width: 20, height: 20, borderRadius: 999, flexShrink: 0, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
-                  border: 'none', background: dark ? 'rgba(255,255,255,0.06)' : '#EDF3F8'
+                  border: 'none', background: 'transparent'
                 }}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round">
                     <path d="M18 6 6 18M6 6l12 12"></path>
@@ -844,10 +918,6 @@ function HistoriaUcitelScreen({ dark = false }) {
               fontFamily: '"Dosis", sans-serif', fontSize: 15.5, fontWeight: 800,
               color: '#FFFFFF'
             }}>Načítať ďalšie</button>
-            <div style={{
-              textAlign: 'center', marginTop: 8,
-              fontFamily: '"Dosis", sans-serif', fontSize: 12.5, fontWeight: 600, color: inkSoft
-            }}>Záznamy: 1 – {visible.length} z 104</div>
           </>}
         </div>
       </div>
