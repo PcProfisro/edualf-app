@@ -279,7 +279,7 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
 
         {/* obsah */}
         <div data-scroll-area onWheel={e => e.stopPropagation()} style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '4px 18px 18px' }}>
-          <div style={sectionLabel}>Časové obdobie <span style={{ color: '#E5484D' }}>*</span></div>
+          <div style={sectionLabel}>Časové obdobie <span style={{ color: ink }}>*</span></div>
           <div style={{ marginBottom: 14 }}>
             <TvFilterField
               valueLabel={obdobie ? ((TV_OBDOBIA.find(o => o.id === obdobie) || {}).label || '') : 'Vyberte obdobie…'}
@@ -301,18 +301,11 @@ function TvIntro({ dark, initTrieda, initZiak, initObdobie, initCustom, onSubmit
               ))}
             </div>}
 
-          <div style={sectionLabel}>Trieda <span style={{ color: '#E5484D' }}>*</span></div>
+          <div style={sectionLabel}>Trieda <span style={{ color: ink }}>*</span></div>
           <div style={{ marginBottom: 14 }}>
             <TvFilterField
               valueLabel={trieda || 'Vyberte triedu…'} changed={!!trieda} dark={dark}
               options={TV_TRIEDY.map(o => ({ value: o, label: o, sel: trieda === o, onPick: () => setTrieda(o) }))} />
-          </div>
-
-          <div style={sectionLabel}>Žiak</div>
-          <div style={{ marginBottom: 14 }}>
-            <TvFilterField
-              valueLabel={ziak} changed={ziak !== 'Všetci'} dark={dark}
-              options={TV_ZIACI.map(o => ({ value: o, label: o, sel: ziak === o, onPick: () => setZiak(o) }))} />
           </div>
 
           <button

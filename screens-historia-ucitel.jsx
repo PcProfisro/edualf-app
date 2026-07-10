@@ -466,13 +466,6 @@ function HistKatSearch({ value, open, onToggle, onPick, dark }) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="2.6" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
           </button>}
         </div>
-        <button onClick={openTree} style={{
-          flexShrink: 0, padding: '10px 16px', borderRadius: 13, cursor: 'pointer', background: card,
-          border: 'none',
-          boxShadow: dark ? 'none' : '0 1px 3px rgba(20,40,60,0.06)',
-          fontFamily: '"Dosis", sans-serif', fontSize: 15, fontWeight: 700,
-          color: panelOpen && mode === 'tree' ? (dark ? '#7CC7EE' : HIST_ACCENT_DEEP) : ink, whiteSpace: 'nowrap'
-        }}>Vybrať kategóriu</button>
       </div>
       {panelOpen &&
         <div style={{
@@ -676,7 +669,7 @@ function HistIntro({ dark, initTrieda, initPredmet, initKategoria, initZiak, ini
               changed={!!trieda}
               options={HIST_FILTERS.trieda.options.map(o => ({
                 value: o, label: o, sel: trieda === o,
-                onPick: () => { setTrieda(o); setOpenKey(null); }
+                onPick: () => { setTrieda(o); setZiak('Všetci'); setOpenKey(null); }
               }))} />
           </div>
 
@@ -704,18 +697,27 @@ function HistIntro({ dark, initTrieda, initPredmet, initKategoria, initZiak, ini
               dark={dark} />
           </div>
 
-          {/* Žiak */}
-          <div style={sectionLabel}>Žiak</div>
-          <div style={{ marginBottom: 14 }}>
-            <Field
-              fieldKey="ziak"
-              valueLabel={ziak}
-              changed={ziak !== 'Všetci'}
-              options={HIST_FILTERS.ziak.options.map(o => ({
-                value: o, label: o, sel: ziak === o,
-                onPick: () => { setZiak(o); setOpenKey(null); }
-              }))} />
-          </div>
+          {/* Žiak — až po výbere triedy */}
+          {trieda && trieda !== 'Všetky' && (() => {
+            const ziaciVTriede = ['Všetci', ...Array.from(new Set(
+              HIST_RECORDS.filter(r => r.trieda === trieda).map(r => r.ziak)
+            )).sort((a, b) => a.localeCompare(b, 'sk'))];
+            return (
+              <React.Fragment>
+                <div style={sectionLabel}>Žiak</div>
+                <div style={{ marginBottom: 14 }}>
+                  <Field
+                    fieldKey="ziak"
+                    valueLabel={ziak}
+                    changed={ziak !== 'Všetci'}
+                    options={ziaciVTriede.map(o => ({
+                      value: o, label: o, sel: ziak === o,
+                      onPick: () => { setZiak(o); setOpenKey(null); }
+                    }))} />
+                </div>
+              </React.Fragment>
+            );
+          })()}
 
           <button
             disabled={!obdobie || !trieda}
