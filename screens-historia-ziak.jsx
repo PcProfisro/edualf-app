@@ -270,7 +270,6 @@ function HzKatSearch({ value, open, onToggle, onPick, dark }) {
           </button>}
         </div>
       </div>
-      </div>
       {panelOpen &&
         <div style={{
           position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 6, zIndex: 20,
