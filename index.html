@@ -267,6 +267,8 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="screens-free-trial.jsx"></script>
+<script type="text/babel" src="screens-skola-flow.jsx"></script>
 <script type="text/babel" src="screens-2.jsx"></script>
 <script type="text/babel" src="screens-pracovne.jsx"></script>
 <script type="text/babel" src="screens-quiz.jsx"></script>
@@ -338,9 +340,77 @@ const FLOW = {
       { x: 256, y: 368, w: 112, h: 34, go: 'login-reset' },
       // Dalej → (button y≈414)
       { x: 22, y: 410, w: 346, h: 66, go: 'login-heslo' },
-      // Registruj sa (y≈488)
-      { x: 22, y: 484, w: 346, h: 58, toast: 'Registracia — zatial neimplementovana' },
+      // Registruj sa (y≈488) → registračný flow
+      { x: 22, y: 484, w: 346, h: 58, go: 'reg-sk01' },
     ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // REGISTRÁCIA (interaktívne obrazovky — klik priamo na tlačidlá)
+  //   Login → SK-01 → SK-02 → SK-03 ─ Skúšobná → FT-03 → FT-04 → Hotovo
+  //                            └ Školská  → SK-03b → SK-04 (bez Hotovo)
+  // ═══════════════════════════════════════════════════════════
+  'reg-sk01': {
+    label: 'Registrácia — e-mail',
+    track: 'register',
+    render: (ctx) => <window.FreeTrialEmailScreen dark={false} nav={{ next: () => ctx.go('reg-sk02'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-sk02': {
+    label: 'Overenie kódu',
+    track: 'register',
+    render: (ctx) => <window.FreeTrialCodeScreen dark={false} nav={{ next: () => ctx.go('reg-sk03'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-sk03': {
+    label: 'Spôsob registrácie',
+    track: 'register',
+    render: (ctx) => <window.SkolaChoiceScreen dark={false} nav={{ trial: () => ctx.go('reg-ft03'), school: () => ctx.go('reg-sk03b'), back: ctx.back }}/>,
+    spots: []
+  },
+  // — vetva Skúšobná verzia —
+  'reg-ft03': {
+    label: 'Typ konta',
+    track: 'register',
+    render: (ctx) => <window.FreeTrialChoiceScreen dark={false} nav={{ next: (variant) => ctx.go(variant === 'school' ? 'reg-ft04school' : 'reg-ft04parent'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-ft04school': {
+    label: 'Formulár — učiteľ',
+    track: 'register',
+    render: (ctx) => <window.FreeTrialRegFormScreen dark={false} variant="school" nav={{ next: () => ctx.go('reg-done'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-ft04parent': {
+    label: 'Formulár — rodič',
+    track: 'register',
+    render: (ctx) => <window.FreeTrialRegFormScreen dark={false} variant="parent" nav={{ next: () => ctx.go('reg-done'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-done': {
+    label: 'Konto vytvorené',
+    track: 'register',
+    render: (ctx) => <window.FreeTrialDoneScreen dark={false} nav={{ restart: () => ctx.go('product') }}/>,
+    spots: []
+  },
+  // — vetva Školská licencia (bez záverečnej obrazovky „Konto vytvorené“) —
+  'reg-sk03b': {
+    label: 'Školská licencia — rola',
+    track: 'register',
+    render: (ctx) => <window.SkolaLicenseRoleScreen dark={false} nav={{ next: (role) => ctx.go(role === 'ziak' ? 'reg-sk04' : 'reg-sk04b'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-sk04': {
+    label: 'Formulár — žiak',
+    track: 'register',
+    render: (ctx) => <window.SkolaFormScreen dark={false} nav={{ done: () => ctx.go('product'), back: ctx.back }}/>,
+    spots: []
+  },
+  'reg-sk04b': {
+    label: 'Formulár — učiteľ',
+    track: 'register',
+    render: (ctx) => <window.SkolaFormTeacherScreen dark={false} nav={{ done: () => ctx.go('product'), back: ctx.back }}/>,
+    spots: []
   },
 
   // ── 01z ZABUDNUTÉ HESLO ─────────────────────────────────────
@@ -414,8 +484,8 @@ const FLOW = {
     spots: [
       // Prihlasit sa button (2 polia → y≈453)
       { x: 22, y: 445, w: 346, h: 74, go: 'product' },
-      // SPAT (text dole)
-      { x: 22, y: 765, w: 110, h: 32, go: 'back' },
+      // Späť — šípka vľavo hore
+      { x: 8, y: 50, w: 48, h: 48, go: 'back' },
     ]
   },
 
@@ -827,6 +897,7 @@ const TRACKS = {
   alfbook:  ['ab-rocniky', 'ab-predmety', 'ab-temy', 'ab-obsah'],
   profile:  ['profile-zakladne', 'profile-heslo', 'profile-ucitel', 'profile-ziak', 'profile-gdpr'],
   ucitel:   ['historia-ucitel', 'test-vysledky'],
+  register: ['reg-sk01', 'reg-sk02', 'reg-sk03', 'reg-ft03', 'reg-sk03b', 'reg-done'],
 };
 
 function App() {
@@ -1083,7 +1154,7 @@ function App() {
         }}
         style={{ width: 390, height: 844, position: 'relative', borderRadius: 44, overflow: 'hidden' }}
       >
-        {step.render({ activeAge, subscribed, activeCat, alfbookLang, lang, viewMode, onLang: setLang })}
+        {step.render({ activeAge, subscribed, activeCat, alfbookLang, lang, viewMode, onLang: setLang, go, back, restart })}
 
         {/* HOTSPOT OVERLAY */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
@@ -1222,7 +1293,10 @@ const start = () => {
     window.AlfBookLangSheet && window.NastaveniaScreen &&
     window.AbRocnikyScreen && window.AbPredmetyScreen &&
     window.AbTemyScreen && window.AbObsahScreen && window.AbObsahTeacherScreen &&
-    window.HistoriaUcitelScreen && window.HistoriaZiakScreen && window.TestVysledkyScreen;
+    window.HistoriaUcitelScreen && window.HistoriaZiakScreen && window.TestVysledkyScreen &&
+    window.FreeTrialEmailScreen && window.FreeTrialCodeScreen && window.FreeTrialChoiceScreen &&
+    window.FreeTrialRegFormScreen && window.FreeTrialDoneScreen &&
+    window.SkolaChoiceScreen && window.SkolaLicenseRoleScreen && window.SkolaFormScreen && window.SkolaFormTeacherScreen;
 
   if (!ok) return setTimeout(start, 40);
   ReactDOM.createRoot(document.getElementById('screen-root')).render(<App/>);

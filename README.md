@@ -27,6 +27,8 @@ Repozitár má `index.html` v koreni tohto priečinka — stačí zapnúť GitHu
 |---|---|
 | `index.html` | Hlavný shell — flow, hotspoty, navigácia |
 | `screens.jsx` | Prihlásenie, výber sveta, úvodné obrazovky |
+| `screens-free-trial.jsx` | Registrácia — e-mail, overenie kódu, typ konta, formuláre, hotovo |
+| `screens-skola-flow.jsx` | Registrácia — spôsob (skúšobná / školská licencia), rola, formuláre |
 | `screens-2.jsx` | Strom kategórií, interaktívne cvičenia |
 | `screens-pracovne.jsx` | Pracovné listy |
 | `screens-quiz.jsx` | Kvízy / cvičenia |

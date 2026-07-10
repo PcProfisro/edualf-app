@@ -470,7 +470,7 @@ function loginBtnStyle() {
 // ─────────────────────────────────────────────────────────────
 // 2. LOGIN — krok 1 (email / kód školy)
 // ─────────────────────────────────────────────────────────────
-function LoginScreen({ dark = false }) {
+function LoginScreen({ dark = false, nav }) {
   const p = ALFIK_PALETTE;
   const inkSoft = dark ? p.darkInkSoft : p.inkSoft;
   const bgTop = dark ? '#16335A' : '#D1EBF9';
@@ -535,7 +535,7 @@ function LoginScreen({ dark = false }) {
           borderRadius: 12,
           fontSize: 15, fontWeight: 800, color: QUASAR.accent,
           cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.1px'
-        }}>
+        }} onClick={() => nav && nav.register && nav.register()}>
           Nemáš účet? Registruj sa
         </button>
       </div>
@@ -616,11 +616,9 @@ function LoginStep2Screen({ dark = false }) {
           </svg>
         </button>
 
-        <div style={{ flex: 1 }} />
-
-        {/* ← SPÄŤ */}
-        <div style={{ fontSize: 13, fontWeight: 700, color: inkSoft, position: 'relative', zIndex: 1 }}>
-          ← SPÄŤ
+        {/* ← Späť (hore vľavo, iba šípka) */}
+        <div style={{ position: 'absolute', top: 6, left: 14, zIndex: 5, width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
         </div>
       </div>
     </PhoneFrame>);
@@ -654,7 +652,6 @@ function ForgotPasswordScreen({ dark = false }) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Späť
         </div>
 
         {/* Logo */}
@@ -733,7 +730,6 @@ function VerifyCodeScreen({ dark = false }) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Späť
         </div>
 
         {/* Ikona obálky v kruhu */}
@@ -839,7 +835,6 @@ function NewPasswordScreen({ dark = false }) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={inkSoft} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          Späť
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14, marginBottom: 16 }}>
