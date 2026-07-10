@@ -347,11 +347,13 @@
           <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
             <FtFieldLabel dark={dark}>Prístup od školy</FtFieldLabel>
             <window.LoginFieldBlock dark={dark}>
-              <window.LoginField compact label="Kód školy *" value="SKOLA-1234" icon={schoolIcon} dark={dark} />
               <window.LoginField compact label="Kód žiaka *" value="ALF-2026-••••" icon={keyIcon} dark={dark} />
             </window.LoginFieldBlock>
-
-            <FtFieldLabel dark={dark}>Údaje žiaka</FtFieldLabel>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginTop: -7, paddingLeft: 4 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 600, color: ACCENT, lineHeight: 1.35 }}>
+                Základná škola Lipová, <span style={{ fontWeight: 600, color: ACCENT }}>Lipová 12, 949 01 Nitra</span>
+              </div>
+            </div>
             <window.LoginFieldBlock dark={dark}>
               <window.LoginField compact label="Meno *" icon={userIcon} dark={dark} />
               <window.LoginField compact label="Priezvisko *" icon={userIcon} dark={dark} />
@@ -402,10 +404,15 @@
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
             <FtFieldLabel dark={dark}>Prístup od školy</FtFieldLabel>
-            <window.LoginFieldBlock dark={dark}>
-              <window.LoginField compact label="Kód školy *" value="SKOLA-1234" icon={schoolIcon} dark={dark} />
-              <window.LoginField compact label="Kód učiteľa *" value="ALF-2026-••••" icon={keyIcon} dark={dark} />
-            </window.LoginFieldBlock>
+            <div style={{ borderRadius: 12, boxShadow: '0 0 0 2px #E5484D' }}>
+              <window.LoginFieldBlock dark={dark}>
+                <window.LoginField compact label="Kód učiteľa *" value="ALF-2026-••••" icon={keyIcon} dark={dark} />
+              </window.LoginFieldBlock>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: -3, paddingLeft: 4 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E5484D" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+              <div style={{ fontSize: 12.5, fontWeight: 700, color: '#E5484D', lineHeight: 1.35 }}>Kód učiteľa je nesprávny</div>
+            </div>
 
             <FtFieldLabel dark={dark}>Údaje učiteľa</FtFieldLabel>
             <window.LoginFieldBlock dark={dark}>
